@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef PROJECT_ORDER_H
-#define PROJECT_ORDER_H
+#ifndef ORDER_H
+#define ORDER_H
 
 #include <string>
 #include <iostream>
@@ -18,18 +18,9 @@ class Order {
   double weight;								// total weight of the order
   std::vector<std::pair<ItemInfo,int>> items;	// item info and quantity
 
-  // TODO: how to construct the order????
-  Order(const std::string artist, const std::string& title) :
-      artist(artist), title(title) {}
+  Order(std::string ID) :
+      ID(ID) {}
 
-	// TODO: what form?
-  /**
-   * Convert an order to string format 
-   * @return 	string in a form of ????
-   */
-  public std::string toString() const {
-  }
-  
   /**
    * return the status of an order 
    * @return 	status of order in string format
@@ -50,6 +41,20 @@ class Order {
    */
    public std::string returnOrderID() {
    }
+   
+   /**
+   * assign truck ID to order
+   * @return 	ID of order in string format
+   */
+   public assignTruckID(std::string truckID) {
+   }
+   
+   /**
+   * Convert an order to string format 
+   * @return 	order in string format
+   */
+  public std::string toString() const {
+  }
    
 
    /**
@@ -94,4 +99,4 @@ class Order {
 
 };
 
-#endif //PROJECT_ORDER_H
+#endif //ORDER_H
