@@ -67,7 +67,7 @@ class ItemQueue: public DynamicQueue{
 		* Creates the dynamic item queue
 		*/
 		ItemQueue(): SuperClass() {}
-}
+};
 
 class QuoteQueue: public DynamicQueue{
 	public:
@@ -75,7 +75,7 @@ class QuoteQueue: public DynamicQueue{
 		* Creates the dynamic quote queue
 		*/
 		QuoteQueue(): SuperClass() {}
-}
+};
 
 class TruckQueue: public DynamicQueue{
 	public:
@@ -83,7 +83,7 @@ class TruckQueue: public DynamicQueue{
 		* Creates the dynamic truck queue
 		*/
 		TruckQueue(): SuperClass() {}
-}
+};
 
 class OrderQueue: public DynamicQueue{
 	private:
@@ -119,6 +119,6 @@ class OrderQueue: public DynamicQueue{
 		*/
 		bool searchOrderID(orderID : std::string, Order& outorder){
 		}
-}
+};
 
 #endif // DYNAMICQUEUE_H
