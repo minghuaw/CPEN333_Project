@@ -11,6 +11,11 @@ private:
     int shelf;              // shelf level "1, 2, 3 ...."
 public:
     /**
+     * default constructor
+     */
+    Coordinate(){}
+
+    /**
      * Constructor for Coordinate class
      * @param col column number, captitalized char from 'A' to 'Z'
      * @param row row number, positive integer

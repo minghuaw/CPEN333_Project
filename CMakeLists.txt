@@ -8,10 +8,11 @@ find_package( Threads REQUIRED )  # Multithreading package required
 include_directories(../library/include)
 include_directories(include)
 
-set(AMAZOOM_HEADERS header/*.h)
+set(AMAZOOM_HEADERS header/Warehouse.h header/Amazoom.h header/Item.h header/Cell.h header/Coordinate.h header/DeliveryTruck.h
+        header/DynamicQueue.h header/Message.h header/Order.h header/RestockTruck.h header/Truck.h header/WarehouseComputer.h)
 
 #==============================================================
 # Amazoom
 #==============================================================
-#add_executable(webserver)
-#target_link_libraries()
+add_executable(warehouse src/Warehouse.cpp ${AMAZOOM_HEADERS})
+target_link_libraries(warehouse Threads::Threads)

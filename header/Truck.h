@@ -9,7 +9,7 @@
 #include <iostream>
 #include <vector>
 #include "Item.h"
-#include "TruckQueue.h"
+#include "DynamicQueue.h"
 #include "Amazoom.h"
 
 class Truck{
