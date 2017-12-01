@@ -11,7 +11,10 @@
 #include "Item.h"
 #include "Quote.h"
 #include "TruckInfo.h"
-
+#include <iostream>
+#include <mutex>
+#include <condition_variable>
+#include <deque>
 
 template <class T>
 
@@ -25,7 +28,7 @@ class DynamicQueue{
 		/**
 		* Creates the dynamic queue
 		*/
-		DynamicOrderQueue() :
+		DynamicQueue() :
 			buff_(), mutex_(), cv_(){}
 			
 		/**
@@ -66,7 +69,7 @@ class ItemQueue: public DynamicQueue{
 		/**
 		* Creates the dynamic item queue
 		*/
-		ItemQueue(): SuperClass() {}
+		ItemQueue(): DynamicQueue() {}
 };
 
 class QuoteQueue: public DynamicQueue{
@@ -74,7 +77,7 @@ class QuoteQueue: public DynamicQueue{
 		/**
 		* Creates the dynamic quote queue
 		*/
-		QuoteQueue(): SuperClass() {}
+		QuoteQueue(): DynamicQueue() {}
 };
 
 class TruckQueue: public DynamicQueue{
@@ -82,7 +85,7 @@ class TruckQueue: public DynamicQueue{
 		/**
 		* Creates the dynamic truck queue
 		*/
-		TruckQueue(): SuperClass() {}
+		TruckQueue(): DynamicQueue() {}
 };
 
 class MessageQueue: public DynamicQueue{
@@ -90,8 +93,8 @@ class MessageQueue: public DynamicQueue{
 		/**
 		* Creates the dynamic message queue
 		*/
-		MessageQueue(): SuperClass() {}
-}
+		MessageQueue(): DynamicQueue() {}
+};
 
 class OrderQueue: public DynamicQueue{
 	private:
@@ -100,7 +103,7 @@ class OrderQueue: public DynamicQueue{
 		/**
 		* Creates the dynamic order queue
 		*/
-		OrderQueue(): SuperClass() {}
+		OrderQueue(): DynamicQueue() {}
 		
 		/**
 		* Try to get an order that weighs less than or equal to the specified weight
@@ -125,7 +128,7 @@ class OrderQueue: public DynamicQueue{
 		* @param outorder	the ordre found to match the ID
 		* @return True if an order if found, false otherwise
 		*/
-		bool searchOrderID(orderID : std::string, Order& outorder){
+		bool searchOrderID(std::string orderID, Order& outorder){
 		}
 };
 
