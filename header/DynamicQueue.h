@@ -7,10 +7,10 @@
 #ifndef DYNAMICQUEUE_H
 #define DYNAMICQUEUE_H
 
-#include <Order.h>
-#include <Item.h>
-#include <Quote.h>
-#include <TruckInfo.h>
+#include "Order.h"
+#include "Item.h"
+#include "Quote.h"
+#include "TruckInfo.h"
 
 
 template <class T>
@@ -67,7 +67,7 @@ class ItemQueue: public DynamicQueue{
 		* Creates the dynamic item queue
 		*/
 		ItemQueue(): SuperClass() {}
-}
+};
 
 class QuoteQueue: public DynamicQueue{
 	public:
@@ -75,7 +75,7 @@ class QuoteQueue: public DynamicQueue{
 		* Creates the dynamic quote queue
 		*/
 		QuoteQueue(): SuperClass() {}
-}
+};
 
 class TruckQueue: public DynamicQueue{
 	public:
@@ -83,6 +83,14 @@ class TruckQueue: public DynamicQueue{
 		* Creates the dynamic truck queue
 		*/
 		TruckQueue(): SuperClass() {}
+};
+
+class MessageQueue: public DynamicQueue{
+	public:
+		/**
+		* Creates the dynamic message queue
+		*/
+		MessageQueue(): SuperClass() {}
 }
 
 class OrderQueue: public DynamicQueue{
@@ -119,6 +127,6 @@ class OrderQueue: public DynamicQueue{
 		*/
 		bool searchOrderID(orderID : std::string, Order& outorder){
 		}
-}
+};
 
 #endif // DYNAMICQUEUE_H
