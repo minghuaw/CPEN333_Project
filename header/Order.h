@@ -22,40 +22,40 @@ class Order {
       ID(ID) {}
 
   /**
-   * return the status of an order 
+   * return the status of an order
    * @return 	status of order in string format
    */
    public std::string returnOrderStatus() {
    }
-   
+
    /**
-   * change the status of an order 
+   * change the status of an order
    * @param newStatus	status of an order to be changed
    */
    public changeOrderStatus(std::String newStatus) {
    }
-   
+
    /**
-   * return the ID of an order 
+   * return the ID of an order
    * @return 	ID of order in string format
    */
    public std::string returnOrderID() {
    }
-   
+
    /**
    * assign truck ID to order
    * @return 	ID of order in string format
    */
    public assignTruckID(std::string truckID) {
    }
-   
+
    /**
-   * Convert an order to string format 
+   * Convert an order to string format
    * @return 	order in string format
    */
   public std::string toString() const {
   }
-   
+
 
    /**
    * less-than operator for comparisons, sort by order ID
@@ -66,14 +66,14 @@ class Order {
   friend bool operator<(const Order& a, const Order& b) {
     if (a.ID < b.ID) {
       return true;
-    } 
+    }
 	else {
       return false;
     }
   }
 
    /**
-   * equal-to operator for comparisons, ID must match 
+   * equal-to operator for comparisons, ID must match
    * @return 	true if order IDs are the same, false otherwise
    */
   friend bool operator==(const Order& a, const Order& b) {

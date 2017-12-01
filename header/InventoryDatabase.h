@@ -14,6 +14,7 @@
 
 class InventoryDatabase{
 private:
+    //TODO: supply our own comparator for ItemInfo's, as map internally is a binary tree
     std::map<ItemInfo, int> inventory;              // map of iteminfo to quantity
     std::multimap<std::string, Coordinate> itemLocation;    // multimap of itemLocations. One type of item may be store
                                                             // multiple locations
@@ -24,9 +25,7 @@ public:
      */
     InventoryDatabase(){}
 
-    /**
-     * TO-DO: Add more constructor
-     */
+    //TODO: Add another constructor
 
     /**
      * add additional entry with quantity if ItemInfo is not in inventory

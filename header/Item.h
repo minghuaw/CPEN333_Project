@@ -17,6 +17,7 @@ private:
     std::string ID;                                // item ID
     double weight;                                // total weight of the item
 
+public:
     // TODO: how to construct the item????
     Item(const std::string ID, const double weight) :
             ID(ID), weight(weight) {}
@@ -24,10 +25,8 @@ private:
     // TODO: what form?
     /**
      * Convert an item to string format
-     * @return 	string in a form of ????
+     * @return 	string "[ItemName][ItemWeight]"
      */
-public
-
     std::string toString() const {
     }
 
@@ -77,9 +76,20 @@ class ItemInfo : public Item {
 private:
     Coordinate location;
 public:
-    ItemInfo(std::string ID, const double weight, Coordinate location) : SuperClass(ID, weight) {}
 
+    ItemInfo(std::string ID, const double weight, Coordinate location) : Item(ID, weight) {}
+
+    /**
+     * returns the location of the item
+     * @return Coordinate
+     */
     Coordinate getLocation() {}
+
+    /**
+     * set the location of the ItemInfo to loc
+     * @param loc coordinate to set the ItemInfo location into
+     */
+    void setLocation(Coordinate loc){}
 };
 
 

@@ -9,7 +9,7 @@
 #include <vector>
 #include "Amazoom.h"
 #include "Truck.h" 
-#include "ItemQueue.h"
+#include "DynamicQueue.h"
 #include "Item.h"
 
 class DeliveryTruck: public Truck{
@@ -25,7 +25,7 @@ public:
      * @param truckQ truckQ for notifying computer
      * @param loadQ ItemQ for robot to load items
      */
-    DeliveryTruck(std::string truckID, double cap, std::vector<Item> items, TruckQueue& truckQ, ItemQueue& loadQ) :SuperClass(truckID, cap, items, truckQ){}
+    DeliveryTruck(std::string truckID, double cap, std::vector<Item> items, TruckQueue& truckQ, ItemQueue& loadQ) :Truck(truckID, cap, items, truckQ){}
 
     /**
      * @brief wait at the loading bay until both

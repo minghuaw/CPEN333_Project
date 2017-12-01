@@ -6,8 +6,7 @@
 #define AMAZOOM_RESTOCKTRUCK_H
 
 #include "Truck.h"
-#include "ItemQueue.h"
-#include "OrderQueue.h"
+#include "DynamicQueue.h"
 #include "Order.h"
 
 class RestockTruck: public Truck{
@@ -26,8 +25,8 @@ public:
      * @param unloadQ ItemQ for robot to unload items
      * @param truckOrderQ order queue for restock truck to receive order from manager
      */
-    RestockTruck(std::string truckID, double cap, std::vector<Item> items, 
-                TruckQueue& truckQ, ItemQueue& unloadQ, OrderQueue& truckOrderQ) :SuperClass(truckID, cap, items, truckQ){}
+    RestockTruck(const std::string truckID, double cap, std::vector<Item> items,
+                TruckQueue& truckQ, ItemQueue& unloadQ, OrderQueue& truckOrderQ) :Truck(truckID, cap, items, truckQ){}
     
     /**
      * @brief collect next restocking order from the truckOrderQueue
