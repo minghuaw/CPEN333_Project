@@ -1,2 +1,0 @@
-/home/minghua/Documents/Workspace_Cpp/cpen333/CPEN333_Project/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/minghua/Documents/Workspace_Cpp/cpen333/CPEN333_Project/cmake-build-debug/CMakeFiles/edit_cache.dir
