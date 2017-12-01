@@ -10,10 +10,11 @@
 
 #include <string>
 #include <iostream>
-#include <InventoryDatabase>
-#include <DynamicQueue>
-#include <Layout>
-#include <Coordinate>
+
+#include "InventoryDatabase.h"
+#include "DynamicQueue.h"
+#include "Layout.h"
+#include "Coordinate.h"
 
 class WarehouseComputer{
     private:
