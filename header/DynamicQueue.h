@@ -7,10 +7,10 @@
 #ifndef DYNAMICQUEUE_H
 #define DYNAMICQUEUE_H
 
-#include <Order.h>
-#include <Item.h>
-#include <Quote.h>
-#include <TruckInfo.h>
+#include "Order.h"
+#include "Item.h"
+#include "Quote.h"
+#include "TruckInfo.h"
 
 
 template <class T>
@@ -84,6 +84,14 @@ class TruckQueue: public DynamicQueue{
 		*/
 		TruckQueue(): SuperClass() {}
 };
+
+class MessageQueue: public DynamicQueue{
+	public:
+		/**
+		* Creates the dynamic message queue
+		*/
+		MessageQueue(): SuperClass() {}
+}
 
 class OrderQueue: public DynamicQueue{
 	private:

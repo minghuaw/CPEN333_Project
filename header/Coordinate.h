@@ -2,6 +2,7 @@
 #define COORDINATE_H
 
 #include <string>
+
 class Coordinate {
 private:
     char col;               // column number "A, B, C ..."

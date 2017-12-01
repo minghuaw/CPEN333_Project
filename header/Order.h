@@ -11,51 +11,65 @@
 #include <string>
 #include <iostream>
 
+enum OrderType {
+  CUSTOMER,
+  MANAGER,
+  UNKNOWN
+};
+
+enum OrderStatus {
+  RECEIVED,		// when computer creates the order
+  PROCESSING,	// robot starts to pick it up and put on truck
+  SHIPPED		// robot finishes the order
+};
+
 class Order {
  private:
   std::string ID;								// order ID
-  std::string status;							// status of order
+  OrderStatus status;							// status of order
   double weight;								// total weight of the order
+  OrderType type;								// type of order, either from customer or manager
   std::vector<std::pair<ItemInfo,int>> items;	// item info and quantity
+  std::string truckID;
 
-  Order(std::string ID) :
-      ID(ID) {}
+public:
+    Order(std::string ID) : ID(ID) {}
 
-  /**
-   * return the status of an order
-   * @return 	status of order in string format
-   */
-   public std::string returnOrderStatus() {
-   }
+    /**
+    * return the status of an order
+    * @return 	status of order
+    */
+    OrderStatus returnOrderStatus() {
+    }
+   
+    /**
+    * change the status of an order
+    * @param newStatus	status of an order to be changed
+    */
+    void changeOrderStatus(OrderStatus newStatus) {
+    }
+   
+    /**
+    * return the ID of an order
+    * @return 	ID of order in string format
+    */
+    std::string returnOrderID() {
+    }
+   
+    /**
+    * assign truck ID to order
+    * @return 	ID of order in string format
+    */
+    void assignTruckID(std::string truckID) {
+    }
 
-   /**
-   * change the status of an order
-   * @param newStatus	status of an order to be changed
-   */
-   public changeOrderStatus(std::String newStatus) {
-   }
-
-   /**
-   * return the ID of an order
-   * @return 	ID of order in string format
-   */
-   public std::string returnOrderID() {
-   }
-
-   /**
-   * assign truck ID to order
-   * @return 	ID of order in string format
-   */
-   public assignTruckID(std::string truckID) {
-   }
-
-   /**
-   * Convert an order to string format
-   * @return 	order in string format
-   */
-  public std::string toString() const {
-  }
-
+    /**
+    * Convert an order to string format
+    * @return 	order in string format
+    */
+    std::string toString() const {
+    }
+   
 
    /**
    * less-than operator for comparisons, sort by order ID
@@ -66,14 +80,14 @@ class Order {
   friend bool operator<(const Order& a, const Order& b) {
     if (a.ID < b.ID) {
       return true;
-    }
+    } 
 	else {
       return false;
     }
   }
 
    /**
-   * equal-to operator for comparisons, ID must match
+   * equal-to operator for comparisons, ID must match 
    * @return 	true if order IDs are the same, false otherwise
    */
   friend bool operator==(const Order& a, const Order& b) {
