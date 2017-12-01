@@ -27,7 +27,7 @@ public:
      * @param truckOrderQ order queue for restock truck to receive order from manager
      */
     RestockTruck(std::string truckID, double cap, std::vector<Item> items, 
-                TruckQueue& truckQ, ItemQueue unloadQ, OrderQueue truckOrderQ) :SuperClass(truckID, cap, items, truckQ){}
+                TruckQueue& truckQ, ItemQueue& unloadQ, OrderQueue& truckOrderQ) :SuperClass(truckID, cap, items, truckQ){}
     
     /**
      * @brief collect next restocking order from the truckOrderQueue
@@ -48,6 +48,6 @@ public:
      */
     void empty(){}
 
-}
+};
 
 #endif //AMAZOOM_RESTOCKTRUCK_H
