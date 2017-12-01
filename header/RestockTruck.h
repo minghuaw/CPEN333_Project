@@ -13,7 +13,7 @@ class RestockTruck: public Truck{
 private:
     ItemQueue unloadingQueue;
     OrderQueue truckOrderQueue;
-    Order& order;
+    Order order;
 public:
     /**
      * @brief constructor, calls Truck's constructor

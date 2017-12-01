@@ -12,19 +12,20 @@
 
 #include "Order.h"
 #include <string>
+#include <vector>
 
 /**
  * Types of messages that can be sent between client/server
  */
 enum MessageType {
-  ADD,
-  ADD_RESPONSE,
-  REMOVE,
-  REMOVE_RESPONSE,
-  SEARCH,
-  SEARCH_RESPONSE,
-  GOODBYE,
-  UNKNOWN
+    ADD,
+    ADD_RESPONSE,
+    REMOVE,
+    REMOVE_RESPONSE,
+    SEARCH,
+    SEARCH_RESPONSE,
+    GOODBYE,
+    UNKNOWN
 };
 
 // status messages for response objects
@@ -35,20 +36,21 @@ enum MessageType {
  * Base class for messages
  */
 class Message {
- public:
-  virtual MessageType type() const = 0;
+public:
+    virtual MessageType type() const = 0;
 };
 
 /**
  * Base class for response messages
  */
 class ResponseMessage : public Message {
- public:
-  const std::string status;
-  const std::string info;
-  ResponseMessage(const std::string& status,
-                  const std::string& info="") :
-      status(status), info(info){}
+public:
+    const std::string status;
+    const std::string info;
+
+    explicit ResponseMessage(const std::string &status,
+                    const std::string &info = "") :
+            status(status), info(info) {}
 
 };
 
@@ -56,100 +58,103 @@ class ResponseMessage : public Message {
  * Add a order to central computer
  */
 class AddMessage : public Message {
- public:
-  const Order order;
+public:
+    const Order order;
 
-  AddMessage(const Order& order)  : order(order) {}
+    explicit AddMessage(const Order &order) : order(order) {}
 
-  MessageType type() const {
-    return MessageType::ADD;
-  }
+    MessageType type() const override {
+        return MessageType::ADD;
+    }
 };
 
 /**
  * Response to adding a order to centreal computer
  */
 class AddResponseMessage : public ResponseMessage {
- public:
-  const AddMessage  add;
+public:
+    const AddMessage add;
 
-  AddResponseMessage(const AddMessage& add, std::string status, std::string info = "") :
-      ResponseMessage(status, info), add(add) {}
+    AddResponseMessage(const AddMessage &add, std::string status, std::string info = "") :
+            ResponseMessage(status, info), add(add) {}
 
-  MessageType type() const {
-    return MessageType::ADD_RESPONSE;
-  }
+    MessageType type() const override {
+        return MessageType::ADD_RESPONSE;
+    }
 };
 
 /**
  * Remove an order from the central computer
  */
 class RemoveMessage : public Message {
- public:
-  const Order order;
+public:
+    const Order order;
 
-  RemoveMessage(const Order& order) : order(order) {}
+    RemoveMessage(const Order &order) : order(order) {}
 
-  MessageType type() const {
-    return MessageType::REMOVE;
-  }
+    MessageType type() const override {
+        return MessageType::REMOVE;
+    }
 };
 
 /**
  * Response to removing an order from the central computer
  */
 class RemoveResponseMessage : public ResponseMessage {
- public:
-  const RemoveMessage remove;
+public:
+    const RemoveMessage remove;
 
-  RemoveResponseMessage(const RemoveMessage& remove, std::string status, std::string info = "") :
-      ResponseMessage(status, info), remove(remove) {}
+    RemoveResponseMessage(const RemoveMessage &remove, std::string status, std::string info = "") :
+            ResponseMessage(status, info), remove(remove) {}
 
-  MessageType type() const {
-    return MessageType::REMOVE_RESPONSE;
-  }
+    MessageType type() const override {
+        return MessageType::REMOVE_RESPONSE;
+    }
 };
+
+//TODO: Add removeItemMessage, removeItemResponseMessage,
+//TODO: Add searchItemMessage, searchItemResponseMessage
 
 /**
  * Search the central computer using regular expressions
  */
 class SearchMessage : public Message {
- public:
-  const std::string item_name;
+public:
+    const std::string item_name;
 
-  SearchMessage(const std::string& item_name) :
-      item_name(item_name) {}
+    SearchMessage(const std::string &item_name) :
+            item_name(item_name) {}
 
-  MessageType type() const {
-    return MessageType::SEARCH;
-  }
+    MessageType type() const override {
+        return MessageType::SEARCH;
+    }
 };
 
 /**
  * Response to a central computer order search
  */
 class SearchResponseMessage : public ResponseMessage {
- public:
-  const SearchMessage search;
-  const std::vector<Order> results;
+public:
+    const SearchMessage search;
+    const std::vector<Order> results;
 
-  SearchResponseMessage(const SearchMessage& search, const std::vector<Order>& results,
-    const std::string& status, const std::string& info = "" ) :
-      ResponseMessage(status, info), search(search), results(results) {}
+    SearchResponseMessage(const SearchMessage &search, const std::vector<Order> &results,
+                          const std::string &status, const std::string &info = "") :
+            ResponseMessage(status, info), search(search), results(results) {}
 
-  MessageType type() const {
-    return MessageType::SEARCH_RESPONSE;
-  }
+    MessageType type() const override {
+        return MessageType::SEARCH_RESPONSE;
+    }
 };
 
 /**
  * Goodbye message
  */
 class GoodbyeMessage : public Message {
- public:
-  MessageType type() const {
-    return MessageType::GOODBYE;
-  }
+public:
+    MessageType type() const override {
+        return MessageType::GOODBYE;
+    }
 };
 
 #endif //PROJECT_MESSAGES_H

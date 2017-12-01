@@ -46,10 +46,18 @@ struct SharedData {
 };
 
 class Layout{
+<<<<<<< HEAD
 protected:
     std::map<std::string, Cell> coordinate2cell;
 public:
 
+=======
+    protected:
+        char layoutInfo[MAX_LAYOUT_ROW][MAX_LAYOUT_COL];
+        std::map<std::string, Cell> coordinate2cell;        // map coordinate to storage cells
+    public:
+    
+>>>>>>> 095cf428b39a61bfff0f46e7eec92930c4a4ec8a
 };
 
 #endif //AMAZOOM_LAYOUT_H
