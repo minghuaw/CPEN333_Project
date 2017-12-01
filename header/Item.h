@@ -77,6 +77,12 @@ private:
     Coordinate location;
 public:
 
+    /**
+     * Constructor for ItemInfo class, calls Item constructor
+     * @param ID item ID, string
+     * @param weight weight of the item, double
+     * @param location location of the item, Coordinate
+     */
     ItemInfo(std::string ID, const double weight, Coordinate location) : Item(ID, weight) {}
 
     /**

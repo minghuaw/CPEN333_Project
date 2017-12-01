@@ -10,7 +10,7 @@
 class Layout{
     protected:
         char layoutInfo[MAX_LAYOUT_ROW][MAX_LAYOUT_COL];
-        std::map<std::string, Cell> coordinate2cell;
+        std::map<std::string, Cell> coordinate2cell;        // map coordinate to storage cells
     public:
     
 };
