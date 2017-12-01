@@ -66,7 +66,7 @@ class ItemQueue: public DynamicQueue{
 		/**
 		* Creates the dynamic item queue
 		*/
-		ItemQueue(): SuperClass() {}
+		ItemQueue(): DynamicQueue() {}
 };
 
 class QuoteQueue: public DynamicQueue{
@@ -74,7 +74,7 @@ class QuoteQueue: public DynamicQueue{
 		/**
 		* Creates the dynamic quote queue
 		*/
-		QuoteQueue(): SuperClass() {}
+		QuoteQueue(): DynamicQueue() {}
 };
 
 class TruckQueue: public DynamicQueue{
@@ -82,7 +82,7 @@ class TruckQueue: public DynamicQueue{
 		/**
 		* Creates the dynamic truck queue
 		*/
-		TruckQueue(): SuperClass() {}
+		TruckQueue(): DynamicQueue() {}
 };
 
 class MessageQueue: public DynamicQueue{
@@ -90,7 +90,7 @@ class MessageQueue: public DynamicQueue{
 		/**
 		* Creates the dynamic message queue
 		*/
-		MessageQueue(): SuperClass() {}
+		MessageQueue(): DynamicQueue() {}
 }
 
 class OrderQueue: public DynamicQueue{
@@ -100,7 +100,7 @@ class OrderQueue: public DynamicQueue{
 		/**
 		* Creates the dynamic order queue
 		*/
-		OrderQueue(): SuperClass() {}
+		OrderQueue(): DynamicQueue() {}
 		
 		/**
 		* Try to get an order that weighs less than or equal to the specified weight
