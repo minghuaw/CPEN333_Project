@@ -53,15 +53,15 @@ class WarehouseComputer{
 		bool confirmRestockingQuote(Quote quote, Order& outorder) {}
 		
 		/**
-		 * confirm if a customer quote can be processed after checking stock, if confirmed, convert quote to an order
+		 * confirm if a client quote can be processed after checking stock, if confirmed, convert quote to an order
 		 * and call "placeOrderInQueue" to put the order in the robotOrderQueue. This is being called from the socket 
-		 * switch case after receving a quote from the RemoteWebServer
-		 * @param quote		customer quote to be confirmed by warehouse
+		 * switch case after receiving a quote from the RemoteWebServer
+		 * @param quote		client quote to be confirmed by warehouse
 		 * @param outorder	output order
 		 * @return true if a restocking quote can be confirmed, false otherwise
 		 */
-		bool confirmCustomerQuote(Quote quote, Order& outorder) {}
-		
+		bool confirmClientQuote(Quote quote, Order& outorder) {}
+
 		/**
 		 * place an order in the robotOrderQueue or truckOrderQueue depend on the order type
 		 * @param order		order to be placed

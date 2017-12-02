@@ -11,6 +11,7 @@
 #define PROJECT_MESSAGES_H
 
 #include "Order.h"
+#include "Quote.h"
 #include <string>
 #include <vector>
 
@@ -59,13 +60,13 @@ public:
 };
 
 /**
- * Add a order to central computer
+ * Add a quote to central computer
  */
 class AddMessage : public Message {
 public:
-    const Order order;
+    const Quote quote;
 
-    explicit AddMessage(const Order &order) : order(order) {}
+    explicit AddMessage(const Quote &quote) : quote(quote) {}
 
     MessageType type() const override {
         return MessageType::ADD;
@@ -168,9 +169,9 @@ public:
 class SearchResponseMessage : public ResponseMessage {
 public:
     const SearchMessage search;
-    const std::vector<Order> results;
+    const std::string results;
 
-    SearchResponseMessage(const SearchMessage &search, const std::vector<Order> &results,
+    SearchResponseMessage(const SearchMessage &search, const std::string &results,
                           const std::string &status, const std::string &info = "") :
             ResponseMessage(status, info), search(search), results(results) {}
 
@@ -184,10 +185,10 @@ public:
  */
 class SearchItemMessage : public Message {
 public:
-    const std::string item_name;
+    const std::string itemName;
 
-    SearchItemMessage(const std::string &item_name) :
-            item_name(item_name) {}
+    SearchItemMessage(const std::string &itemName) :
+            itemName(itemName) {}
 
     MessageType type() const override {
         return MessageType::SEARCH_ITEM;
@@ -200,9 +201,9 @@ public:
 class SearchItemResponseMessage : public ResponseMessage {
 public:
     const SearchItemMessage searchItem;
-    const std::vector<Order> results;
+    const std::string results;
 
-    SearchItemResponseMessage(const SearchItemMessage &searchItem, const std::vector<Order> &results,
+    SearchItemResponseMessage(const SearchItemMessage &searchItem, const std::string &results,
                           const std::string &status, const std::string &info = "") :
             ResponseMessage(status, info), searchItem(searchItem), results(results) {}
 
