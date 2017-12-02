@@ -12,7 +12,7 @@
 #include <iostream>
 
 enum OrderType {
-  CUSTOMER,
+  CLIENT,
   MANAGER,
   UNKNOWN
 };
@@ -28,7 +28,7 @@ class Order {
   std::string ID;								// order ID
   OrderStatus status;							// status of order
   double weight;								// total weight of the order
-  OrderType type;								// type of order, either from customer or manager
+  OrderType type;								// type of order, either from client or manager
   std::vector<std::pair<ItemInfo,int>> items;	// item info and quantity
   std::string truckID;
 
