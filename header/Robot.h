@@ -1,5 +1,5 @@
 //
-// Created by mli on 11/30/2017.
+// Robot.h
 //
 
 #ifndef AMAZOOM_ROBOT_H
@@ -9,7 +9,7 @@
 #include "Item.h"
 #include "DynamicQueue.h"
 #include "InventoryDatabase.h"
-#include "Layout_archived.h"
+#include "Layout.h"
 
 class Robot {
 private:

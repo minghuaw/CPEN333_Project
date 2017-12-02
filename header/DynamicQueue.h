@@ -1,8 +1,6 @@
-/**
- * @file 
- * This document defines the thread-safe dynamic queue class
- * 
- */
+//
+//  DynamicQueue.h
+//
 
 #ifndef DYNAMICQUEUE_H
 #define DYNAMICQUEUE_H

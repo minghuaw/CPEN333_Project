@@ -1,10 +1,6 @@
-/**
- *@file
- *
- * This file contains the definition of an item in the database
- *
- */
-
+//
+//  Item.h
+//
 #ifndef PROJECT_ITEM_H
 #define PROJECT_ITEM_H
 

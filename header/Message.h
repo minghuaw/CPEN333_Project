@@ -1,5 +1,5 @@
 /**
- * @file
+ * @file Message.h
  *
  * This file contains all message-related objects, independent of the specific API
  *

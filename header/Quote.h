@@ -1,5 +1,5 @@
 //
-// Created by mli on 12/1/2017.
+// Quote.h
 //
 
 #ifndef AMAZOOM_QUOTE_H

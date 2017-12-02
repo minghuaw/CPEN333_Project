@@ -1,3 +1,8 @@
+//
+//  Amazoom.h
+//  common definitions
+//
+
 #ifndef AMAZOOM_H
 #define AMAZOOM_H
 

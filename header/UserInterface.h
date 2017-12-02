@@ -1,5 +1,5 @@
 //
-// Created by mli on 12/1/2017.
+// UserInterface.h
 //
 
 #ifndef AMAZOOM_USERINTERFACE_H

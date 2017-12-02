@@ -1,5 +1,5 @@
 /**
- *@file
+ *@file Order.h
  *
  * This file contains the definition of an order in the database
  *
@@ -10,6 +10,8 @@
 
 #include <string>
 #include <iostream>
+#include <vector>
+#include "Item.h"
 
 enum OrderType {
   CLIENT,

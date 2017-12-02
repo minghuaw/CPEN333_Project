@@ -1,5 +1,5 @@
 //
-// Created by minghua on 30/11/17.
+// Truck.h
 //
 
 #ifndef CPEN333_PROJECT_TRUCK_H

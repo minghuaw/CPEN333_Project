@@ -1,5 +1,5 @@
 //
-// Created by minghua on 30/11/17.
+// RestockingTruck.h
 //
 
 #ifndef AMAZOOM_RESTOCKTRUCK_H

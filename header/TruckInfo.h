@@ -1,5 +1,5 @@
 //
-// Created by minghua on 30/11/17.
+// TruckInfo.h
 //
 
 #ifndef AMAZOOM_TRUCKINFO_H

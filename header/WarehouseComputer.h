@@ -1,5 +1,5 @@
 /**
- * @file 
+ * @file WarehouseComputer.h
  * This document defines the attribute and public operation of WarehouseComputer class
  * 
  */

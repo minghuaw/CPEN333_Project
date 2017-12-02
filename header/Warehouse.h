@@ -1,5 +1,5 @@
 //
-// Created by minghua on 30/11/17.
+// Warehouse.h
 //
 
 #ifndef AMAZOOM_WAREHOUSE_H
@@ -7,7 +7,7 @@
 
 #include "Amazoom.h"
 #include <cpen333/process/semaphore.h>
-#include "Layout_archived.h"
+#include "Layout.h"
 
 class Warehouse{
 private:

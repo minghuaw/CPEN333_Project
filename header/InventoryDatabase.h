@@ -1,5 +1,5 @@
 //
-//
+//  InventoryDatabase.h
 //
 
 #ifndef AMAZOOM_INVENTORYDATABASE_H
