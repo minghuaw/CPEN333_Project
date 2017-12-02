@@ -74,7 +74,7 @@ public:
 };
 
 /**
- * Response to adding a order to centreal computer
+ * Response to adding a quote to central computer
  */
 class AddResponseMessage : public ResponseMessage {
 public:
