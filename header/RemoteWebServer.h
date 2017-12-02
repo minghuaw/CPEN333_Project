@@ -28,7 +28,8 @@ public:
 
     /**
      * Main thread function for handling communication with a single remote
-     * client. Message received from client socket is pushed onto msg2warehouseQueue.
+     * client. Message received from client socket is appended with client id
+     * and  pushed onto msg2warehouseQueue.
      * Reads msg from msg2clientQueue, if the msg match the client ID,
      * pass the msg to client over client socket
      * @param api WarehouseComputerAPI for sending and recving messages from warehouseComputer

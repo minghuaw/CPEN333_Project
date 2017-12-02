@@ -12,6 +12,24 @@ private:
     std::vector<std::pair<std::string,int>> quotes;
 public:
     /**
+     * default constructor
+     */
+    Quote(){}
+
+    /**
+     * constructor
+     * @param itemName single item name
+     * @param quantity item wanted wanted
+     */
+    Quote(std::string itemName, int quantity){}
+
+    /**
+     * constructor
+     * @param itemVector vector of std::pair<std::string itemName, int quantity>
+     */
+    Quote(std::vector<std::pair<std::string, int >> &itemVector){}
+
+    /**
      * add a quote of item to the quote
      * @param itemName name of item
      * @param quantity quantity of item
