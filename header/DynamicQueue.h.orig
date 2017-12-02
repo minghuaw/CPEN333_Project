@@ -94,7 +94,11 @@ class MessageQueue: public DynamicQueue{
 		* Creates the dynamic message queue
 		*/
 		MessageQueue(): DynamicQueue() {}
+<<<<<<< HEAD
 };
+=======
+}
+>>>>>>> cc2019d91cbf95557d0c44ccc32ffd9a16cd689f
 
 class OrderQueue: public DynamicQueue{
 	private:

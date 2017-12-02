@@ -11,10 +11,11 @@
 #include <string>
 
 
-class RemoteServer{
+class RemoteWebServer{
 private:
     std::mutex mutex_;              // mutex for multi client connection
-    std::deque<std::string> msgQueue;
+    std::deque<std::string> msg2warehouseQueue;
+    std::deque<std::string> msg2clientQueue;
     cpen333::process::socket_server server;
     cpen333::process::socket client;
     cpen333::process::socket whComputer[WAREHOUSE_NUM];
@@ -23,20 +24,19 @@ public:
     /**
      * Constructor, initializes socket server and warehouseComputer API
      */
-    RemoteServer(){}
+    RemoteWebServer(){}
 
     /**
      * Main thread function for handling communication with a single remote
-     * client. Message recved from client socket is pushed onto msgQueue.
+     * client. Message received from client socket is pushed onto msg2warehouseQueue.
+     * Reads msg from msg2clientQueue, if the msg match the client ID,
+     * pass the msg to client over client socket
      * @param api WarehouseComputerAPI for sending and recving messages from warehouseComputer
      * @param id client id
      */
     void serviceClient(int id){}
 
     /**
-     * TO-DO: should there be two separate queue? one of a warehouse, and message is first pushed to queue#1, if not success from warehouse #1
-     * the message is pushed to queue #2, then if warehouse #2 also returns a failure, this order is unsuccessful
-     *
      * Main thread function for handling communication with a single remote warehouse computer
      * Message on the msgQueue is popped and sent to warehouseComputer on whComputer sockets
      * @param api warehouseComputreAPI

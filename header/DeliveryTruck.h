@@ -28,9 +28,10 @@ public:
     DeliveryTruck(std::string truckID, double cap, std::vector<Item> items, TruckQueue& truckQ, ItemQueue& loadQ) :Truck(truckID, cap, items, truckQ){}
 
     /**
-     * @brief wait at the loading bay until both
+     * @brief wait at the loading bay until both conditions are true
      * 1. truck is full enough
-     * 2. all orders are completely loaded
+     * 2. all orders are completely loaded (a poison pill will be given by
+     * robot to indicate the end of an order)
      */
     void waitTillFull(){}
 

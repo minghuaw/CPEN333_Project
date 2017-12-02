@@ -10,6 +10,7 @@
 
 #include <string>
 #include <iostream>
+#include <vector>
 
 #include "InventoryDatabase.h"
 #include "DynamicQueue.h"
@@ -65,7 +66,7 @@ class WarehouseComputer{
 		 * place an order in the robotOrderQueue or truckOrderQueue depend on the order type
 		 * @param order		order to be placed
 		 */
-		placeOrderInQueue(Order order) {}
+		void placeOrderInQueue(Order order) {}
 		
 		/**
 		 * find the weight of an order
@@ -88,7 +89,6 @@ class WarehouseComputer{
 		 */
 		bool removeOrder(Order& order) {}
 		
-		placeOrderInQueue() {}
 };
 
 #endif // WAREHOUSE_COMPUTER

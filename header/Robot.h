@@ -41,29 +41,31 @@ public:
     /**
      * picks item on cell, add pairs in items, call cell "removeItem"
      */
-    pickItemFromShelf(){}
+    void pickItemFromShelf(){}
 
     /**
      * picks item on loading bay, add pairs in items
+     * a poison pill will be given by restocking truck
+     * to indicate an end of itemQueue
      */
-    pickItemFromUnloading(){}
+    void pickItemFromUnloading(){}
 
     /**
      * put item on cell, remove pairs in items, call cell "addItem"
      */
-    putItemOnShelf(){}
+    void putItemOnShelf(){}
 
     /**
      * put item on loadingQueue, remove pairs in items
      */
-    putItemOnLoading(){}
+    void putItemOnLoading(){}
 
     /**
      * set the location of robot
      * @param col   the column of location to be set to robot
      * @param row   the row of location to be set to robot
      */
-    setLocation(char col, int row){}
+    void setLocation(char col, int row){}
 
     /**
      * let the robot recursively go the specified location at col, row
@@ -76,17 +78,17 @@ public:
     /**
      * robot returns to the home location
      */
-    returnHome(){}
+    void returnHome(){}
 
     /**
      * update the order that the robot currently has to processing, once robot picks one item on shelf
      */
-    updateOrderProcessing(){}
+    void updateOrderProcessing(){}
 
     /**
      * update the order that the robot currently has to finished, after robot has put all order items on loadingQueue
      */
-    updateOrderFinished(){}
+    void updateOrderFinished(){}
 };
 
 
