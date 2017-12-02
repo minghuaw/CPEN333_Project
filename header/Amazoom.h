@@ -9,5 +9,6 @@
 #define UNLOADING_BAY_NAME "unloading"
 #define LAYOUT_0 "../data/layout0.txt"
 #define WAREHOUSE_NUM 2
+#define MAX_ROBOT 50
 
 #endif // AMAZOOM_H

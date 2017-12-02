@@ -38,11 +38,7 @@ public:
     * @return 	true if item a smaller than item b, false otherwise
     */
     friend bool operator<(const Item &a, const Item &b) {
-        if (a.ID < b.ID) {
-            return true;
-        } else {
-            return false;
-        }
+        return a.ID < b.ID;
     }
 
     /**

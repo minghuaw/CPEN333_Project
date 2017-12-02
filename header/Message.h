@@ -22,8 +22,12 @@ enum MessageType {
     ADD_RESPONSE,
     REMOVE,
     REMOVE_RESPONSE,
+    REMOVE_ITEM,
+    REMOVE_ITEM_RESPONSE,
     SEARCH,
     SEARCH_RESPONSE,
+    SEARCH_ITEM,
+    SEARCH_ITEM_RESPONSE,
     GOODBYE,
     UNKNOWN
 };
@@ -88,9 +92,9 @@ public:
  */
 class RemoveMessage : public Message {
 public:
-    const Order order;
+    const std::string orderID;
 
-    RemoveMessage(const Order &order) : order(order) {}
+    RemoveMessage(const std::string &orderID) : orderID(orderID) {}
 
     MessageType type() const override {
         return MessageType::REMOVE;
@@ -112,18 +116,46 @@ public:
     }
 };
 
-//TODO: Add removeItemMessage, removeItemResponseMessage,
-//TODO: Add searchItemMessage, searchItemResponseMessage
+/**
+ * Remove an order from the central computer
+ */
+class RemoveItemMessage : public Message {
+public:
+    const std::string orderID;
+    const std::string itemName;
+
+    RemoveItemMessage(const std::string &orderID, const std::string &itemName)
+                        : orderID(orderID), itemName(itemName){}
+
+    MessageType type() const override {
+        return MessageType::REMOVE_ITEM;
+    }
+};
 
 /**
- * Search the central computer using regular expressions
+ * Response to removing an order from the central computer
+ */
+class RemoveItemResponseMessage : public ResponseMessage {
+public:
+    const RemoveItemMessage removeItem;
+
+    RemoveItemResponseMessage(const RemoveItemMessage &removeItem, std::string status, std::string info = "") :
+            ResponseMessage(status, info), removeItem(removeItem) {}
+
+    MessageType type() const override {
+        return MessageType::REMOVE_ITEM_RESPONSE;
+    }
+};
+
+/**
+ * Search the order in the central computer using regular expressions
  */
 class SearchMessage : public Message {
 public:
-    const std::string item_name;
+    const std::string orderID;
 
-    SearchMessage(const std::string &item_name) :
-            item_name(item_name) {}
+    SearchMessage(const std::string &orderID) :
+            orderID(orderID) {}
 
     MessageType type() const override {
         return MessageType::SEARCH;
@@ -144,6 +176,38 @@ public:
 
     MessageType type() const override {
         return MessageType::SEARCH_RESPONSE;
+    }
+};
+
+/**
+ * Search the central computer using regular expressions
+ */
+class SearchItemMessage : public Message {
+public:
+    const std::string item_name;
+
+    SearchItemMessage(const std::string &item_name) :
+            item_name(item_name) {}
+
+    MessageType type() const override {
+        return MessageType::SEARCH_ITEM;
+    }
+};
+
+/**
+ * Response to a central computer order search
+ */
+class SearchItemResponseMessage : public ResponseMessage {
+public:
+    const SearchItemMessage searchItem;
+    const std::vector<Order> results;
+
+    SearchItemResponseMessage(const SearchItemMessage &searchItem, const std::vector<Order> &results,
+                          const std::string &status, const std::string &info = "") :
+            ResponseMessage(status, info), searchItem(searchItem), results(results) {}
+
+    MessageType type() const override {
+        return MessageType::SEARCH_ITEM_RESPONSE;
     }
 };
 

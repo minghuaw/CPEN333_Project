@@ -1,24 +1,48 @@
 //
+<<<<<<< HEAD
+// User Interface
+=======
 // Created by mli on 12/1/2017.
+>>>>>>> cc2019d91cbf95557d0c44ccc32ffd9a16cd689f
 //
 
 #ifndef AMAZOOM_USERINTERFACE_H
 #define AMAZOOM_USERINTERFACE_H
 
 #include "Order.h"
+<<<<<<< HEAD
 #include <vector>
 #include <string>
+=======
+>>>>>>> cc2019d91cbf95557d0c44ccc32ffd9a16cd689f
 #include "Quote.h"
 
 class UserInterface{
 private:
-    Quote selectedItems;
+<<<<<<< HEAD
+
 public:
     /**
      * default constructor
      */
     UserInterface(){}
 
+    OrderStatus queryOrder(std::string){}
+
+    std::vector<std::pair<std::string, int>> selectItems(){}
+
+    Quote createQuote(std::vector<std::pair<std::string, int>>){}
+
+    void displayUI(){}
+
+};
+
+class ManagerUI: public UserInterface{
+private:
+public:
+=======
+    Quote selectedItems;
+public:
     /**
      * query the status of an order
      * for manager, check shared object directly, for client, send to server
@@ -46,16 +70,11 @@ public:
     void displayUI() {}
 };
 
-class ManagerUI: public UserInterface {
+class ManagerUI: UserInterface {
 private:
     cpen333::process::shared_object<SharedData> memory_;
 
 public:
-    /**
-     * default constructor, calls default constructor of superclass
-     */
-    ManagerUI():UserInterface(){}
-
     /**
     * cancel an order, if not processing or shipped
     * @param orderID ID of order
@@ -109,11 +128,6 @@ private:
     pen333::process::socket socket;
 public:
     /**
-     * default constructor
-     * calls default constructor of superclass
-     */
-    ClientUI():UserInterface(){}
-    /**
     * cancel an order, send to server
     * @param orderID ID of order
     */
@@ -130,6 +144,7 @@ public:
      * send quote to server
      */
     void sendQuote() {}
+>>>>>>> cc2019d91cbf95557d0c44ccc32ffd9a16cd689f
 };
 
 #endif //AMAZOOM_USERINTERFACE_H
