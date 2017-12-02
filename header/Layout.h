@@ -25,12 +25,13 @@
 #define MAGIC_NUMBER 1373858591
 
 #include "Cell.h"
+#include "Coordinate.h"
 #include <map>
 
 struct LayoutInfo {
     int rows;           // rows in warehouse
     int cols;           // columns in warehouse
-    char maze[MAX_LAYOUT_COL][MAX_LAYOUT_ROW];  // warehouse storage
+    char layout[MAX_LAYOUT_COL][MAX_LAYOUT_ROW];  // warehouse storage
 };
 
 struct RobotInfo {
@@ -46,18 +47,8 @@ struct SharedData {
 };
 
 class Layout{
-<<<<<<< HEAD
-protected:
-    std::map<std::string, Cell> coordinate2cell;
-public:
-
-=======
     protected:
-        char layoutInfo[MAX_LAYOUT_ROW][MAX_LAYOUT_COL];
         std::map<std::string, Cell> coordinate2cell;        // map coordinate to storage cells
-    public:
-    
->>>>>>> 095cf428b39a61bfff0f46e7eec92930c4a4ec8a
 };
 
 #endif //AMAZOOM_LAYOUT_H
