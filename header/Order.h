@@ -78,22 +78,29 @@ public:
     */
     std::string toString() const {
     }
+
+    /**
+     * get an item info from the order and remove pair from the vector from the back
+     * @param outItemInfo  output with item info and quantity
+     * @return true if there are still pairs in the vector
+     */
+    bool getItemInfo(std::pair<ItemInfo,int>& outItemInfo) {}
    
 
-   /**
-   * less-than operator for comparisons, sort by order ID
-   * @param a	order to be compared
-   * @param b	order to be compared
-   * @return 	true if order a smaller than order b, false otherwise
-   */
-  friend bool operator<(const Order& a, const Order& b) {
+    /**
+    * less-than operator for comparisons, sort by order ID
+    * @param a	order to be compared
+    * @param b	order to be compared
+    * @return 	true if order a smaller than order b, false otherwise
+    */
+    friend bool operator<(const Order& a, const Order& b) {
     if (a.ID < b.ID) {
-      return true;
-    } 
-	else {
-      return false;
+        return true;
     }
-  }
+    else {
+        return false;
+    }
+    }
 
    /**
    * equal-to operator for comparisons, ID must match 
