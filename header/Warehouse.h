@@ -7,10 +7,13 @@
 
 #include "Amazoom.h"
 #include <cpen333/process/semaphore.h>
-#include "Layout.h"
+#include "Layout_archived.h"
 
 class Warehouse{
 private:
+    cpen333::process::shared_object<SharedData> memory_;    // warehouse info
+    cpen333::process::mutex mutex_;
+
     cpen333::process::semaphore loadingBay;
     cpen333::process::semaphore unloadingBay;
     Layout warehouseLayout;
@@ -26,7 +29,7 @@ public:
     /**
      * load layout from text file
      */
-    void loadLayout(){}
+    void loadLayout(const std::string& filename){}
 
     /**
      * display layout in a separate console/process
@@ -42,14 +45,6 @@ public:
      * start remote server in a separate console/process
      */
     void startRemoteServer(){}
-
-    /**
-     * start the Warehouse system
-     * initialize all inter-thread communication queues
-     * @return
-     */
-    int main(){}
-
 };
 
 #endif //AMAZOOM_WAREHOUSE_H

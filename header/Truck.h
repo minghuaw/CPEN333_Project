@@ -46,6 +46,6 @@ public:
      * Cast ID, capacity, and action (departure) into TruckInfo 
      * and push TruckInfo into TruckQueue
      */
-    void notiryLeaving(){}
+    void notifyLeaving(){}
 };
 #endif //CPEN333_PROJECT_TRUCK_H
