@@ -5,6 +5,7 @@
 #ifndef AMAZOOM_USERINTERFACE_H
 #define AMAZOOM_USERINTERFACE_H
 
+#include "Amazoom.h"
 #include "Order.h"
 #include <vector>
 #include <string>

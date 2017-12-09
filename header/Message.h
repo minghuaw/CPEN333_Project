@@ -30,12 +30,16 @@ enum MessageType {
     SEARCH_ITEM,
     SEARCH_ITEM_RESPONSE,
     GOODBYE,
-    UNKNOWN
+//    UNKNOWN
 };
 
 // status messages for response objects
 #define MESSAGE_STATUS_OK "OK"
 #define MESSAGE_STATUS_ERROR "ERROR"
+#define MESSAGE_STATUS_RECEIVED "RECEIVED"
+#define MESSAGE_STATUS_PROCESSING "PROCESSING"
+#define MESSAGE_STATUS_NOT_FOUND "NOT_FOUND"
+#define MESSAGE_STATUS_SHIPPED "SHIPPED"
 
 /**
  * Base class for messages

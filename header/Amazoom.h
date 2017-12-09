@@ -15,6 +15,9 @@
 #define LAYOUT_0 "../data/layout0.txt"
 #define WAREHOUSE_NUM 2
 #define MAX_ROBOT 50
+
+#define LOCAL_HOST "127.0.0.1"#define CLIENT_PORT 52102
+#define WAREHOUSE_PORT 51102
 #define LAYOUT_MEMORY_NAME "amazoom_layout"
 #define LAYOUT_MEMORY_MUTEX_NAME "amazoom_layout_mutex"
 
