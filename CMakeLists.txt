@@ -6,13 +6,40 @@ find_package( Threads REQUIRED )  # Multithreading package required
 
 # add library directory
 include_directories(../library/include)
+# add json support
 include_directories(include)
+# access to src/ files for tests
+include_directories(src)
+include_directories(header)
 
-set(AMAZOOM_HEADERS header/Warehouse.h header/Amazoom.h header/Item.h header/Cell.h header/Coordinate.h header/DeliveryTruck.h
-        header/DynamicQueue.h header/Message.h header/Order.h header/RestockTruck.h header/Truck.h header/WarehouseComputer.h)
+
+# copy data files
+FILE(COPY data DESTINATION "${CMAKE_BINARY_DIR}")
+FILE(COPY data DESTINATION "${CMAKE_BINARY_DIR}/Debug")
+
+set(AMAZOOM_HEADERS 
+	header/Warehouse.h 
+	header/Amazoom.h 
+	header/Item.h header/Cell.h 
+	header/Coordinate.h 
+	header/DeliveryTruck.h
+	header/DynamicQueue.h 
+	header/Message.h 
+	header/Order.h 
+	header/RestockTruck.h 
+	header/Truck.h 
+	header/WarehouseComputer.h)
 
 #==============================================================
 # Amazoom
 #==============================================================
 add_executable(warehouse src/Warehouse.cpp ${AMAZOOM_HEADERS})
 target_link_libraries(warehouse Threads::Threads)
+
+add_executable(LayoutGUI src/LayoutGUI.cpp ${AMAZOOM_HEADERS})
+target_link_libraries(LayoutGUI Threads::Threads)
+
+if(WIN32)
+    target_link_libraries(Warehouse wsock32 ws2_32)
+    target_link_libraries(LayoutGUI wsock32 ws2_32)
+endif()
