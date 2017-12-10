@@ -116,6 +116,13 @@ int main(){
 	std::cout << "Starting Warehouse" << std::endl;
 	Warehouse warehouse(inventory);
 
+	// connect to server
+	OrderQueue queue;
+	connectToServer(std::ref(queue), std::ref(inventory));
+
+	std::cout << "========================================" << std::endl;
+	cpen333::pause();
+
 	// show manager UI
 	warehouse.showManagerUI();
 
