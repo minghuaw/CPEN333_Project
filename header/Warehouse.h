@@ -134,6 +134,14 @@ private:
 
 public:
 	/**
+	 * default constructor
+	 */
+	Warehouse() :memory_(WAREHOUSE_MEMORY_NAME), ly_mutex_(WAREHOUSE_MEMORY_MUTEX_NAME), \
+		magicKey(LAYOUT_MAGIC_KEY), db_mutex(DB_MUTEX_NAME), inventory(inventory), \
+		loadingBay(LOADING_BAY_NAME, LOADING_BAY_SEM_RESOURCE), \
+		unloadingBay(UNLOADING_BAY_NAME, LOADING_BAY_SEM_RESOURCE) {}
+
+	/**
 	*  Warehouse constructor
 	*  start the Warehouse system
 	* initialize all inter-thread communication queues
