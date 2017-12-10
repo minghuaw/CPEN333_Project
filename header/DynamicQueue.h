@@ -15,7 +15,7 @@
 
 template <class T>
 class DynamicQueue{
-	private:
+	protected:
 		std::deque<T> buff_;
 		std::mutex mutex_;
 		std::condition_variable cv_;
@@ -97,8 +97,52 @@ class OrderQueue: public DynamicQueue<Order>{
 		/**
 		* Creates the dynamic order queue
 		*/
-		OrderQueue() {}
+		OrderQueue(): DynamicQueue<Order>() {
+			buff_ = std::deque<Order>(); // initialize buff_
+			processIndex = 0;
+		}
 		
+		/**/
+		OrderQueue(std::vector<Order>& orders): DynamicQueue<Order>(){
+			buff_ = std::deque<Order>(); // initialize buff_
+
+			processIndex = 0;
+
+			// push orders into buff_
+			for (Order& od : orders) {
+				buff_.push_back(od);
+			}
+		}
+
+		bool addOrder(Order& od) {
+			try {
+				buff_.push_back(od);
+				return true;
+			}
+			catch (std::exception &e) {
+				std::cerr << e.what();
+				return false;
+			}
+		}
+
+		/**
+		 * get reference to order at processIndex
+		 * get is NOT destructive
+		 * processIndex++ after a successful get
+		 * @param outorder reference to outorder
+		 * @return true if success, false if failed
+		 */
+		bool getOrder(Order& outorder) {
+			if (buff_.size() > 0) {
+				outorder = buff_.at(processIndex);
+				processIndex++;
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+
 		/**
 		* Try to get an order that weighs less than or equal to the specified weight
 		* @param weight		maximum weight of order
@@ -123,6 +167,13 @@ class OrderQueue: public DynamicQueue<Order>{
 		* @return True if an order if found, false otherwise
 		*/
 		bool searchOrderID(std::string orderID, Order& outorder){
+			for (Order& od : buff_) {
+				if (orderID == od.returnOrderID()) {
+					outorder = od;
+					return true;
+				}
+			}
+			return false;
 		}
 };
 

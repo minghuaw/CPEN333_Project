@@ -32,7 +32,7 @@ class Order {
   double weight;								// total weight of the order
   OrderType type;								// type of order, either from client or manager
   std::vector<std::pair<ItemInfo,int>> items;	// item info and quantity
-  std::string truckID;
+  //std::string truckID;
 
 public:
     /**
@@ -46,8 +46,8 @@ public:
      */
     Order(std::string ID) : ID(ID) {}
 
-	Order(std::string ID, std::vector<std::pair<ItemInfo, int>> items, std::string truckID, OrderType type=CLIENT): 
-		ID(ID), items(items), truckID(truckID), type(type){
+	Order(std::string ID, std::vector<std::pair<ItemInfo, int>> items, OrderType type=CLIENT): 
+		ID(ID), items(items), type(type){
 		status = RECEIVED;
 	}
 
@@ -70,6 +70,7 @@ public:
     * @return 	ID of order in string format
     */
     std::string returnOrderID() {
+		return ID;
     }
    
     /**
@@ -132,6 +133,10 @@ public:
   friend std::ostream& operator<<(std::ostream& os, const Order& order) {
     os << order.toString();
     return os;
+  }
+
+  static Order toOrder(Quote& quote) {
+  
   }
 
 };
