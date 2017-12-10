@@ -15,6 +15,8 @@ static const char CLIENT_REMOVE_ITEM = '4';
 static const char CLIENT_SEARCH_ITEM = '5';
 static const char CLIENT_QUIT = 'Q';
 
+int orderCounter = 1;
+
 void service(WarehouseComputerAPI&& api_, OrderQueue& queue_, InventoryDatabase& inventory_){
 	std::unique_ptr<Message> msg = api_.recvMessage();
 
@@ -36,7 +38,10 @@ void service(WarehouseComputerAPI&& api_, OrderQueue& queue_, InventoryDatabase&
 			std::cout << "[special check] "<< "client ID " << add.clientID << std::endl;
 			// extract quote out of add message
 			Quote quote = add.quote;
+			std::string orderID;
+			int clientID;
 
+			bool success = true;
 			std::string itemName;
 			int num;
 			for (auto& pair : quote.quote_) {

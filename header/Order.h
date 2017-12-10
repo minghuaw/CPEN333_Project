@@ -51,14 +51,6 @@ public:
 		status = RECEIVED;
 	}
 
-	/**
-	* return the ID of an order
-	* @return 	ID of order in string format
-	*/
-	std::string returnOrderID() {
-		return ID;
-	}
-
     /**
     * return the status of an order
     * @return 	status of order
