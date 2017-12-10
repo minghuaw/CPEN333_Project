@@ -1,10 +1,10 @@
-xxxxxxxxxxx
-x         x
-x | | | | x
-x | | | | x
-x | | | | x
-x | | | | x
-x | | | | x
-x | | | | x
-x         x
-xxxxxxxxxxx
+XXXXXXXXXXX
+X         X
+X | | | | X
+X | | | | X
+X | | | | X
+X | | | | X
+X | | | | X
+X | | | | X
+X         X
+XLXUXXXXXHX
