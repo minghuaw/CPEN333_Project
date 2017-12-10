@@ -87,11 +87,6 @@ private:
 	// robots
 	std::vector<Robot*> robots;
 
-	// Queues
-	OrderQueue robotOrderQueue;
-	OrderQueue truckOrderQueue;
-	ItemQueue loadingQueue;
-	ItemQueue unloadingQueue;
 	//TruckQueue truckQueue;
 	int orderCounter = 1;		// keep track of manager order
 
@@ -99,6 +94,12 @@ private:
 	std::map<std::string, double> itemName2weight;			// map item name to weight
 
 public:
+	// Queues
+	OrderQueue robotOrderQueue;
+	OrderQueue truckOrderQueue;
+	ItemQueue loadingQueue;
+	ItemQueue unloadingQueue;
+
 	/**
 	*  Warehouse constructor
 	*  start the Warehouse system
@@ -425,6 +426,15 @@ public:
 						for (auto q : quote.quote_) {
 							std::cout << q.first << q.second << std::endl;
 						}
+						{
+							std::string orderID = "M0" + std::to_string(orderCounter);
+							Order order = Warehouse::toOrder(std::ref(orderID), std::ref(quote),
+								std::ref(inventory), OrderType::MANAGER);
+							orderCounter++;
+							// push manager order to order queue
+							robotOrderQueue.addOrder(std::ref(order));
+							std::cout << "order added to queue" << std::endl;
+						}
 						break;
 					case MANAGER_QUIT:
 						break;
@@ -445,6 +455,15 @@ public:
 			cpen333::pause();
 		}
 	}
+
+	/**
+	* convert a quote to order
+	* @param id			order ID
+	* @param quote		quote to convert
+	* @param inventory	inventory database
+	* @param type		type of order
+	* @return reference of order object
+	*/
 	static Order & toOrder(std::string & id, Quote & quote, InventoryDatabase & inventory, OrderType type) {
 		std::string name;
 		int num;
