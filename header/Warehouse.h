@@ -238,13 +238,38 @@ public:
 	/**
 	* spawn a new delivery truck and move to another thread
 	* @param quantity	number of delivery trucks to be spawned
+	* @return true if robot spawned, false if there are already MAX_TRUCKS robots running
 	*/
-	void spawn_dtruck(int quantity) {
+	bool spawn_dtruck(int quantity) {
 		for (int i = 0; i < quantity; i++) {
-			DeliveryTruck* d = new DeliveryTruck(loadingQueue);
-			dTrucks.push_back(d);
-			d->start();
+			if (dTrucks.size() < MAX_TRUCKS) {
+				DeliveryTruck* d = new DeliveryTruck(loadingQueue);
+				dTrucks.push_back(d);
+				d->start();
+			}
+			else {
+				return false;
+			}
 		}
+		return true;
+	}
+
+	/**
+	* spawn a new restock truck and move to another thread
+	* @param quantity	number of delivery trucks to be spawned
+	*/
+	bool spawn_rtruck(int quantity) {
+		for (int i = 0; i < quantity; i++) {
+			if (rTrucks.size() < MAX_TRUCKS) {
+				RestockTruck* r = new RestockTruck(truckOrderQueue, unloadingQueue);
+				rTrucks.push_back(r);
+				r->start();
+			}
+			else {
+				return false;
+			}
+		}
+		return true;
 	}
 
     /**
@@ -379,9 +404,21 @@ public:
 				break;
 			case ADD_DELIVERY_TRUCK:
 				// add delivery truck
+				std::cout << "Enter number of delivery trucks to be added" << std::endl;
+				std::cin >> quantity;
+				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+				if (!spawn_dtruck(quantity)) {
+					std::cout << "error" << std::endl;
+				}
 				break;
 			case ADD_RESTOCK_TRUCK:
 				// add restock truck
+				std::cout << "Enter number of restock trucks to be added" << std::endl;
+				std::cin >> quantity;
+				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+				if (!spawn_rtruck(quantity)) {
+					std::cout << "error" << std::endl;
+				}
 				break;
 			case ADD_ORDER:
 				// create a new order
