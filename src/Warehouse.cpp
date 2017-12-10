@@ -17,8 +17,6 @@ static const char CLIENT_QUIT = 'Q';
 
 int orderCounter = 1;
 
-static Order& toOrder(std::string& id, Quote& quote, InventoryDatabase& inventory, OrderType type);
-
 void service(WarehouseComputerAPI&& api_, OrderQueue& queue_, InventoryDatabase& inventory_){
 	std::unique_ptr<Message> msg = api_.recvMessage();
 
@@ -67,7 +65,7 @@ void service(WarehouseComputerAPI&& api_, OrderQueue& queue_, InventoryDatabase&
 				orderCounter++;
 
 				// create client order
-				Order order = toOrder(std::ref(orderID), std::ref(quote), 
+				Order order = Warehouse::toOrder(std::ref(orderID), std::ref(quote), 
 							std::ref(inventory_), OrderType::CLIENT);		
 
 				// push client order to order queue
@@ -105,26 +103,6 @@ void service(WarehouseComputerAPI&& api_, OrderQueue& queue_, InventoryDatabase&
 		//msg = api_.recvJSON();
 		msg = api_.recvMessage();
 	}
-}
-
-static Order& toOrder(std::string& id, Quote& quote, InventoryDatabase& inventory, OrderType type) {
-	std::string name;
-	int num;
-	double weight;
-	Coordinate loc;
-	ItemInfo info;
-	std::vector<std::pair<ItemInfo, int>> outorder;
-
-	for (std::pair<std::string, int>& pair : quote.quote_) {
-		name = pair.first;
-		num = pair.second;
-		weight = inventory.findItemWeight(std::ref(name)); // get item weight
-		loc = inventory.findItemLocation(std::ref(name)); // get item location
-		info = ItemInfo(name, weight, loc); // create item info object
-		outorder.push_back(std::pair<ItemInfo, int>(info, num)); // push to vector
-	}
-
-	return Order(id, outorder, type);
 }
 
 void connectToServer(OrderQueue& queue, InventoryDatabase& inventory,

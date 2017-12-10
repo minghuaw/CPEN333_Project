@@ -21,7 +21,6 @@
 #include <cstdio>
 #include <thread>
 #include <chrono>
-#include <fstream>
 #include <string>
 #include <random>
 #include <ctime>
@@ -94,6 +93,7 @@ private:
 	ItemQueue loadingQueue;
 	ItemQueue unloadingQueue;
 	//TruckQueue truckQueue;
+	int orderCounter = 1;		// keep track of manager order
 
 	// store a map of items and its weight
 	std::map<std::string, double> itemName2weight;			// map item name to weight
@@ -115,7 +115,6 @@ public:
 			initSpecialLocations();
 			init_robots();
 		}
-		loadItemList(ITEM_LIST);
 	}
 
 	/**
@@ -258,26 +257,6 @@ public:
     void startRemoteServer(){}
 
 	/**
-	* load item names and weights from a txt file
-	*/
-	void loadItemList(std::string filename) {
-		std::ifstream fin(filename);
-		std::string itemName;
-		std::string weight;
-
-		// read itemlist file
-		if (fin.is_open()) {
-			while (std::getline(fin, itemName,',')) {
-				// laze way to populate item list
-				std::getline(fin, weight, '\n');
-				const char *cweight = weight.c_str();
-				itemName2weight.insert(std::pair<std::string, double>(itemName,std::atof(cweight)));
-			}
-			fin.close();
-		}
-	}
-
-	/**
 	* close warehouse
 	*/
 	void close() {
@@ -359,9 +338,6 @@ public:
 	void showManagerUI() {
 		// keep reading commands until the user quits
 		char cmd = 0;
-		char order_cmd = 0;
-		int quantity = 0;
-		std::string s = "";
 		while (cmd != MANAGER_QUIT) {
 			print_mainmenu();
 
@@ -372,12 +348,15 @@ public:
 
 			switch (cmd) {
 			case ADD_ROBOT:
+			{
+				int quantity = 0;
 				std::cout << "Enter number of robots to be added" << std::endl;
 				std::cin >> quantity;
 				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 				if (!spawn_robot(quantity)) {
 					std::cout << "error" << std::endl;
 				}
+			}
 				break;
 			case REMOVE_ROBOT:
 				// remove robot
@@ -386,6 +365,8 @@ public:
 				}
 				break;
 			case ADD_DELIVERY_TRUCK:
+			{
+				int quantity = 0;
 				// add delivery truck
 				std::cout << "Enter number of delivery trucks to be added" << std::endl;
 				std::cin >> quantity;
@@ -393,8 +374,11 @@ public:
 				if (!spawn_dtruck(quantity)) {
 					std::cout << "error" << std::endl;
 				}
+			}
 				break;
 			case ADD_RESTOCK_TRUCK:
+			{
+				int quantity = 0;
 				// add restock truck
 				std::cout << "Enter number of restock trucks to be added" << std::endl;
 				std::cin >> quantity;
@@ -402,11 +386,18 @@ public:
 				if (!spawn_rtruck(quantity)) {
 					std::cout << "error" << std::endl;
 				}
+			}
 				break;
 			case ADD_ORDER:
+			{
 				// create a new quote
+				Quote quote;
 				// order menu starts
+				char order_cmd = 0;		
 				while (order_cmd != MANAGER_QUIT && order_cmd != CONFIRM_ORDER) {
+					int quantity = 0;
+					std::string s = "";
+
 					print_ordermenu();
 					// get menu entry
 					std::cin >> order_cmd;
@@ -419,12 +410,21 @@ public:
 						std::cout << "Enter ID of item to be added" << std::endl;
 						std::cin >> s;
 						std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-						std::cout << "Enter number of items to be added" << std::endl;
-						std::cin >> quantity;
-						std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+						if (inventory.findItemWeight(s) == ITEM_NOT_FOUND) {		// check if there is weight associated with item
+							std::cout << "Item does not exist" << std::endl;
+						}
+						else {
+							std::cout << "Enter number of items to be added" << std::endl;
+							std::cin >> quantity;
+							std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							quote.addItemQuote(s, quantity);
+						}
 						break;
 					case CONFIRM_ORDER:
 						// place order in queue
+						for (auto q : quote.quote_) {
+							std::cout << q.first << q.second << std::endl;
+						}
 						break;
 					case MANAGER_QUIT:
 						break;
@@ -432,6 +432,8 @@ public:
 						std::cout << "Invalid command number " << cmd << std::endl << std::endl;
 					}
 				}
+
+			}
 				break;
 			case MANAGER_QUIT:
 				std::cout << "Closing warehouse" << std::endl;
@@ -442,6 +444,25 @@ public:
 
 			cpen333::pause();
 		}
+	}
+	static Order & toOrder(std::string & id, Quote & quote, InventoryDatabase & inventory, OrderType type) {
+		std::string name;
+		int num;
+		double weight;
+		Coordinate loc;
+		ItemInfo info;
+		std::vector<std::pair<ItemInfo, int>> outorder;
+
+		for (std::pair<std::string, int>& pair : quote.quote_) {
+			name = pair.first;
+			num = pair.second;
+			weight = inventory.findItemWeight(std::ref(name)); // get item weight
+			loc = inventory.findItemLocation(std::ref(name)); // get item location
+			info = ItemInfo(name, weight, loc); // create item info object
+			outorder.push_back(std::pair<ItemInfo, int>(info, num)); // push to vector
+		}
+
+		return Order(id, outorder, type);
 	}
 };
 
