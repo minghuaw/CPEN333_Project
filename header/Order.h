@@ -46,6 +46,11 @@ public:
      */
     Order(std::string ID) : ID(ID) {}
 
+	Order(std::string ID, std::vector<std::pair<ItemInfo, int>> items, std::string truckID, OrderType type=CLIENT): 
+		ID(ID), items(items), truckID(truckID), type(type){
+		status = RECEIVED;
+	}
+
     /**
     * return the status of an order
     * @return 	status of order

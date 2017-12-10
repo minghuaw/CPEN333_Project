@@ -122,19 +122,27 @@ private:
 	ItemQueue unloadingQueue;
 	TruckQueue truckQueue;
 
+	// test queue added only to testing
+	DynamicQueue<int>& robotPosQueue;
+
+
 	// store a map of items and its weight
 	std::map<std::string, double> itemName2weight;			// map item name to weight
 
 public:
+
+	Warehouse():memory_(LAYOUT_MEMORY_NAME), ly_mutex_(LAYOUT_MEMORY_MUTEX_NAME), \
+		loadingBay(LOADING_BAY_SEM_RESOURCE), unloadingBay(LOADING_BAY_SEM_RESOURCE), \
+		magicKey(LAYOUT_MAGIC_KEY), db_mutex(DB_MUTEX_NAME), inventory(inventory), robotPosQueue(robotPosQueue) {}
 	/**
 	*  Warehouse constructor
 	*  start the Warehouse system
 	* initialize all inter-thread communication queues
      * Initialize magicKey to LAYOUT_MAGIC_KEY
      */
-    Warehouse(InventoryDatabase& inventory):memory_(LAYOUT_MEMORY_NAME),ly_mutex_(LAYOUT_MEMORY_MUTEX_NAME),\
+    Warehouse(InventoryDatabase& inventory, DynamicQueue<int>& robotPosQueue):memory_(LAYOUT_MEMORY_NAME),ly_mutex_(LAYOUT_MEMORY_MUTEX_NAME),\
 		loadingBay(LOADING_BAY_SEM_RESOURCE),unloadingBay(LOADING_BAY_SEM_RESOURCE),\
-		magicKey(LAYOUT_MAGIC_KEY), db_mutex(DB_MUTEX_NAME),inventory(inventory) {
+		magicKey(LAYOUT_MAGIC_KEY), db_mutex(DB_MUTEX_NAME),inventory(inventory), robotPosQueue(robotPosQueue) {
 		{
 			std::unique_lock<decltype(ly_mutex_)> lock(ly_mutex_);
 			// load layout, init robots
