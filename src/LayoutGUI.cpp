@@ -73,7 +73,7 @@ public:
 	}
 
 	/**
-	* Draws all runners in the maze
+	* Draws all robots in the warehouse
 	*/
 	void draw_robots() {
 
@@ -140,6 +140,44 @@ public:
 			//}
 
 	/**
+	* draw status of all trucks
+	*/
+	void draw_trucks() {
+		TruckInfo& tinfo = memory_->tinfo;
+
+		int ndtrucks, nrtrucks, print_count = 0, colwidth;
+		{
+			std::lock_guard<decltype(mutex_)> lock(mutex_);
+			ndtrucks = tinfo.ndtrucks;
+			nrtrucks = tinfo.nrtrucks;
+			colwidth = memory_->linfo.cols;
+		}
+		for (size_t i = 0; i < ndtrucks; ++i) {
+			char me = 'A' + i;
+			char s; // status of trucks
+			mutex_.lock();
+			s = tinfo.dtruckStatus[i];
+			mutex_.unlock();
+			// set print location and increase count
+			display_.set_cursor_position(YOFF + print_count, XOFF + colwidth + 2);
+			print_count++;
+			std::printf("Delivery Truck %c status: %c ", me, s);
+		}
+		for (size_t i = 0; i < nrtrucks; ++i) {
+			char me = 'A' + i;
+			char s; // status of trucks
+			mutex_.lock();
+			s = tinfo.rtruckStatus[i];
+			mutex_.unlock();
+			// set print location and increase count
+			display_.set_cursor_position(YOFF + print_count, XOFF + colwidth + 2);
+			print_count++;
+			std::printf("Restock Truck %c status: %c ", me, s);
+		}
+		
+	}
+
+	/**
 	* Checks if we are supposed to quit
 	* @return true if memory tells us to quit
 	*/
@@ -174,6 +212,7 @@ int main() {
 		// continue looping until main program has quit
 		while (!ui.quit()) {
 			ui.draw_robots();
+			ui.draw_trucks();
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
 	}
