@@ -46,9 +46,17 @@ public:
      */
     Order(std::string ID) : ID(ID) {}
 
-	Order(std::string ID, std::vector<std::pair<ItemInfo, int>> items, std::string truckID, OrderType type=CLIENT): 
-		ID(ID), items(items), truckID(truckID), type(type){
+	Order(std::string ID, std::vector<std::pair<ItemInfo, int>> items, OrderType type=CLIENT): 
+		ID(ID), items(items), type(type){
 		status = RECEIVED;
+	}
+
+	/**
+	* return the ID of an order
+	* @return 	ID of order in string format
+	*/
+	std::string returnOrderID() {
+		return ID;
 	}
 
     /**
@@ -63,13 +71,6 @@ public:
     * @param newStatus	status of an order to be changed
     */
     void changeOrderStatus(OrderStatus newStatus) {
-    }
-   
-    /**
-    * return the ID of an order
-    * @return 	ID of order in string format
-    */
-    std::string returnOrderID() {
     }
    
     /**
