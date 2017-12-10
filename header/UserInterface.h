@@ -160,7 +160,7 @@ public:
 			
 			items.push_back(std::pair<std::string, int>(itemName, num));
 
-			std::cout << "Add another item? (Y/N)" << std::endl;
+			std::cout << "Add another item? (Y/N): ";
 			cnt++;
 			//std::cin >> cmd;
 			std::getline(std::cin, cmd);

@@ -80,6 +80,8 @@ public:
      * @return
      */
     bool sendJSON(std::string jsonStr){
+		std::cout << "Sending JSON string" << std::endl; // test
+
         // encode json string size
         char jsonID = JSON_ID;
         char buff[4];
@@ -96,6 +98,8 @@ public:
             success &= socket_.write(buff, 4); // content size
             success &= socket_.write(jsonStr); // content
         }
+
+		std::cout << "JSON string is sent" << std::endl; // test
         return success;
     }
 
@@ -110,13 +114,17 @@ public:
     }
 
 
-	//TODO: 
+	//TODO: recvc message
 
     /**
      *
      * @return parsed message, nullptr if an error occurred
      */
-    std::unique_ptr<Message> recvMessage(){}
+    std::unique_ptr<Message> recvMessage(){
+		std::unique_ptr<std::string> jsonStr = recvJSON();
+		JSON jmsg = JSON::parse(*jsonStr);
+		return JsonConverter::parseMessage(jmsg);
+	}
 
     /**
      *

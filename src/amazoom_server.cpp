@@ -16,7 +16,7 @@
 #include "Message.h"
 #include <json.hpp>
 #include <deque>
-#include "jsonConverter.h"
+#include "JsonConverter.h"
 #include "WarehouseComputerAPI.h"
 
 using JSON = nlohmann::json;
@@ -102,8 +102,7 @@ void serviceWarehouse(WarehouseComputerAPI&& api, std::deque<JSON>& msg2warehous
 
     // pop front from msg2warehouse queue
     whSem.wait();
-    JSON& msg2warehosue = msg2warehouseQueue.front();
-	std::cout << msg2warehosue.dump() << std::endl; // test
+    JSON msg2warehosue = msg2warehouseQueue.front();
     while (msg2warehosue!= nullptr){
         {
             std::lock_guard<decltype(mutex_)> lock(mutex_); // for thread safety
@@ -114,8 +113,14 @@ void serviceWarehouse(WarehouseComputerAPI&& api, std::deque<JSON>& msg2warehous
         // parse to string
         std::string jStr = msg2warehosue.dump();
 
+		// test
+		std::cout << jStr << std::endl;
+
         // send to warehouse
         api.sendJSON(jStr);
+		
+		// test
+		std::cout << "Sending to warehouse" << std::endl;
 
         // receive response message from warehouse computer
         std::unique_ptr<std::string> jsonStrPtr = api.recvJSON();

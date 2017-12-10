@@ -70,8 +70,12 @@ public:
 class AddMessage : public Message {
 public:
     const Quote quote;
+	const int clientID;
 
-    explicit AddMessage(const Quote &quote) : quote(quote) {}
+    explicit AddMessage(const Quote &quote) : quote(quote), clientID(-1) {}
+
+	explicit AddMessage(const Quote &quote, int& clientID) : 
+		quote(quote), clientID(clientID) {}
 
     MessageType type() const override {
         return MessageType::ADD;
