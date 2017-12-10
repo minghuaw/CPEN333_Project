@@ -32,7 +32,7 @@ class Order {
   double weight;								// total weight of the order
   OrderType type;								// type of order, either from client or manager
   std::vector<std::pair<ItemInfo,int>> items;	// item info and quantity
-  std::string truckID;
+  //std::string truckID;
 
 public:
     /**
@@ -71,6 +71,14 @@ public:
     * @param newStatus	status of an order to be changed
     */
     void changeOrderStatus(OrderStatus newStatus) {
+    }
+   
+    /**
+    * return the ID of an order
+    * @return 	ID of order in string format
+    */
+    std::string returnOrderID() {
+		return ID;
     }
    
     /**
@@ -134,7 +142,6 @@ public:
     os << order.toString();
     return os;
   }
-
 };
 
 #endif //ORDER_H

@@ -9,11 +9,16 @@
 #include "Coordinate.h"
 
 class Item {
-private:
+protected:
     std::string ID;                      // item ID, 'ABC'
     double weight;                                // total weight of the item
 
 public:
+	/**
+	 * default constructor
+	 */
+	Item() {}
+
     /**
 	* constructor of item
 	*/
@@ -73,6 +78,8 @@ class ItemInfo : public Item {
 private:
     Coordinate location;
 public:
+
+	ItemInfo():Item() {}
 
     /**
      * Constructor for ItemInfo class, calls Item constructor

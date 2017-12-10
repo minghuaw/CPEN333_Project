@@ -189,7 +189,7 @@ public:
 			JSON jmsg = JSON::parse(*jsonStrPtr);
 			
 			//show response message
-			std::cout << "Order response" << std::endl;
+			std::cout << "Add order request response" << std::endl;
 			if (jmsg[MESSAGE_STATUS] == MESSAGE_STATUS_OK) {
 				std::cout << "Order is successfully placed!" << std::endl;
 				std::cout << "Order number is: " << jmsg[MESSAGE_ORDER_ID] << std::endl;
@@ -222,7 +222,15 @@ public:
 
 		// wait for response
 		std::unique_ptr<std::string> jsonStrPtr = api_.recvJSON();
+		JSON jmsg = JSON::parse(*jsonStrPtr);
 
+		std::cout << "Remove order request response" << std::endl;
+		if (jmsg[MESSAGE_STATUS] == MESSAGE_STATUS_OK) {
+			std::cout << "Order " << jmsg[MESSAGE_ORDER_ID] << " is successfully removed" << std::endl;
+		}
+		else {
+			std::cout << "Order " << jmsg[MESSAGE_ORDER_ID] << " removal is unsuccesfull" << std::endl;
+		}
 		//TODO: show response message
 	}
 

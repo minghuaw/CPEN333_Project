@@ -37,7 +37,6 @@ void service(WarehouseComputerAPI&& api_, OrderQueue& queue_, InventoryDatabase&
 			// extract quote out of add message
 			Quote quote = add.quote;
 
-			bool success = false;
 			std::string itemName;
 			int num;
 			for (auto& pair : quote.quote_) {
@@ -45,6 +44,26 @@ void service(WarehouseComputerAPI&& api_, OrderQueue& queue_, InventoryDatabase&
 				num = pair.second;
 
 				//TODO: find item & find item name
+			}
+
+			// send response message
+			if (success) {
+				orderID = "C0" + std::to_string(orderCounter);
+				AddResponseMessage add_re(add, orderID, clientID, MESSAGE_STATUS_OK);
+				api_.sendMessage(add_re);
+				orderCounter++;
+
+				// create order
+				std::vector<std::pair<ItemInfo, int>> item_list;
+				ItemInfo itinfo;
+				int num;
+				
+				
+			}
+			else {
+				orderID = "F00";
+				AddResponseMessage add_re(add, orderID, clientID, MESSAGE_STATUS_ERROR);
+				api_.sendMessage(add_re);
 			}
 			break;		
 		}
@@ -71,6 +90,22 @@ void service(WarehouseComputerAPI&& api_, OrderQueue& queue_, InventoryDatabase&
 
 		//msg = api_.recvJSON();
 			msg = api_.recvMessage();
+	}
+}
+
+static Order& toOrder(Quote& quote, InventoryDatabase& inventory) {
+	std::string name;
+	int num;
+	double weight;
+	Coordinate loc;
+	ItemInfo info;
+
+	for (std::pair<std::string, int>& pair : quote.quote_) {
+		name = pair.first;
+		num = pair.second;
+		weight = inventory.findItemWeight(std::ref(name));
+		
+
 	}
 }
 
