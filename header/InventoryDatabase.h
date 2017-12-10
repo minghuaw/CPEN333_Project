@@ -21,7 +21,7 @@ private:
     //TODO: supply our own comparator for ItemInfo's, as map internally is a binary tree
     std::map<ItemInfo, int> inventory;						// map of iteminfo to quantity
 	std::map<std::string, int> itemQuantity_;				// map of item name to quantity
-	std::map<std::string, int> itemWeight_;					// map of item name to weight
+	std::map<std::string, double> itemWeight_;					// map of item name to weight
 	std::map<std::string, Coordinate> itemLocation_;
 	//TODO: use map instead? to simplify the problem
     std::multimap<std::string, Coordinate> itemLocation;    // multimap of itemLocations. One type of item may be store
@@ -145,14 +145,19 @@ public:
      * @param itemName name of an item that is in the inventory
      * @return int quantity of the item, -1 if item not found
      */
-    int findItemQuantity(std::string itemName){
+    int findItemQuantity(std::string& itemName){
 		if (itemQuantity_.find(itemName) == itemQuantity_.end())
 			return ITEM_NOT_FOUND;
 		return itemQuantity_[itemName];
 	}
 
-	Coordinate& findItemLocation(std::string itemName) {
-		return itemLocation_[itemName];
+	Coordinate& findItemLocation(std::string& itemName) {
+		try {
+			return itemLocation_[itemName];
+		}
+		catch (std::exception& e) {
+			return Coordinate();
+		}
 	}
 
     /**
@@ -160,7 +165,7 @@ public:
      * @param itemName name of an item that is in the inventory
      * @return double weight of the item
      */
-    double findItemWeight(std::string itemName){
+    double findItemWeight(std::string& itemName){
 		if (itemWeight_.find(itemName) == itemWeight_.end())
 			return ITEM_NOT_FOUND;
 		return itemWeight_[itemName];

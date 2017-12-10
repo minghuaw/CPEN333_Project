@@ -116,7 +116,10 @@ class OrderQueue: public DynamicQueue<Order>{
 
 		bool addOrder(Order& od) {
 			try {
-				buff_.push_back(od);
+					{
+						std::lock_guard<decltype(mutex_)> lock(mutex_);
+						buff_.push_back(od);
+					}
 				return true;
 			}
 			catch (std::exception &e) {
@@ -135,7 +138,10 @@ class OrderQueue: public DynamicQueue<Order>{
 		bool getOrder(Order& outorder) {
 			if (buff_.size() > 0) {
 				outorder = buff_.at(processIndex);
-				processIndex++;
+				{
+					std::lock_guard<decltype(mutex_)> lock(mutex_);
+					processIndex++;
+				}
 				return true;
 			}
 			else {
