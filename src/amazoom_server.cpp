@@ -61,7 +61,7 @@ void serviceClient(WarehouseComputerAPI&& api, std::deque<JSON>& msg2warehouseQu
 
         // peek msg
         clientSem.wait();
-        JSON& msg2client = msg2clientQueue.front();
+        JSON msg2client = msg2clientQueue.front();
 		std::cout << "pick from msg2client queue" << std::endl;
         int clientID = msg2client[MESSAGE_CLIENT_ID];
         while (clientID != id){
@@ -75,7 +75,7 @@ void serviceClient(WarehouseComputerAPI&& api, std::deque<JSON>& msg2warehouseQu
             std::lock_guard<decltype(mutex_)> lock(mutex_); // thread safety
             msg2clientQueue.pop_front();
         }
-        JSON jStr = msg2client.dump();
+        std::string jStr = msg2client.dump();
         api.sendJSON(jStr);
 
         // receive message
@@ -124,6 +124,9 @@ void serviceWarehouse(WarehouseComputerAPI&& api, std::deque<JSON>& msg2warehous
 
         // receive response message from warehouse computer
         std::unique_ptr<std::string> jsonStrPtr = api.recvJSON();
+
+		std::cout << "Resposne message received from warehouse" << std::endl;
+		std::cout << "[Response] " << *jsonStrPtr << std::endl;
 
         // parse string to JSON object
         JSON msg2client;

@@ -30,8 +30,11 @@ void service(WarehouseComputerAPI&& api_, OrderQueue& queue_, InventoryDatabase&
 		switch (type)
 		{
 		case MessageType::ADD: {
+			// cast message to add type
 			AddMessage& add = (AddMessage &)(*msg);
+			// testing
 			std::cout << "[special check] "<< "client ID " << add.clientID << std::endl;
+			// extract quote out of add message
 			Quote quote = add.quote;
 
 			bool success = false;

@@ -8,3 +8,4 @@ src/Warehouse_BASE_20052.cpp
 src/Warehouse_LOCAL_20052.cpp
 src/Warehouse_REMOTE_20052.cpp
 build/
+header/Warehouse.h.orig

@@ -178,18 +178,31 @@ public:
 		//std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		if (cmd == ADD_YES){
+			// if user order is complete
+			// create quote and send to server
 			Quote quote(std::move(items));
 			AddMessage add(quote);
 			api_.sendMessage(add);
 
 			// wait for response
 			std::unique_ptr<std::string> jsonStrPtr = api_.recvJSON();
+			JSON jmsg = JSON::parse(*jsonStrPtr);
+			
+			//show response message
+			std::cout << "Order response" << std::endl;
+			if (jmsg[MESSAGE_STATUS] == MESSAGE_STATUS_OK) {
+				std::cout << "Order is successfully placed!" << std::endl;
+				std::cout << "Order number is: " << jmsg[MESSAGE_ORDER_ID] << std::endl;
+			}
+			else {
+				std::cout << "Order placement failed" << std::endl;
+			}
 
-			//TODO: show response message
 		}
 		else {
 			std::cout << "Cancelling quote \n quit to main menu" << std::endl;
 		}
+		cpen333::pause();
 	}
 
 	/**/
