@@ -8,7 +8,6 @@
 #include "Order.h"
 #include "Item.h"
 #include "Quote.h"
-#include "TruckInfo.h"
 #include <iostream>
 #include <mutex>
 #include <condition_variable>
@@ -75,13 +74,13 @@ class QuoteQueue: public DynamicQueue<Quote>{
 		QuoteQueue(){}
 };
 
-class TruckQueue: public DynamicQueue<TruckInfo>{
-	public:
-		/**
-		* Creates the dynamic truck queue
-		*/
-		TruckQueue(){}
-};
+//class TruckQueue: public DynamicQueue<TruckInfo>{
+//	public:
+//		/**
+//		* Creates the dynamic truck queue
+//		*/
+//		TruckQueue(){}
+//};
 
 class MessageQueue: public DynamicQueue<std::string>{
 	public:

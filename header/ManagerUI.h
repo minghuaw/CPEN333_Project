@@ -2,10 +2,14 @@
 #define AMAZOOM_MANAGERUI_H
 
 #define MANAGER_QUIT 'Q'
+
 #define ADD_ROBOT 'R'
 #define REMOVE_ROBOT 'T'
-#define ADD_ORDER 'A'
 
+#define ADD_DELIVERY_TRUCK 'D'
+#define ADD_RESTOCK_TRUCK 'S'
+
+#define ADD_ORDER 'A'
 #define ADD_ITEM 'A'
 #define CONFIRM_ORDER 'C'
 

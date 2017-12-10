@@ -19,7 +19,7 @@ class Robot: public cpen333::thread::thread_object {
 private:
 	// shared information layout info and robot info, shared among LayoutGUI and Warehouse processes
 	cpen333::process::shared_object<SharedData> memory_;
-	cpen333::process::mutex ly_mutex_;
+	cpen333::process::mutex mutex_;
     
     char col;
     int row;
@@ -28,7 +28,7 @@ private:
     std::vector<std::pair<Item,int>> items;
     double currWeight;
     ItemQueue unloadingQueue;
-    OrderQueue robotOrderQueue;
+    OrderQueue& robotOrderQueue;
     cpen333::process::mutex db_mutex;       // for database protection
     InventoryDatabase& database;			// shared database
 	LayoutInfo linfo_;             // local copy of layout
@@ -36,17 +36,15 @@ private:
 	int loc_[2];   // current location
 	Robot();	// prevent default constructor
 
-	DynamicQueue<int>& robotPosQueue;
-
 public:
 	int idx_;
 
-    Robot(InventoryDatabase& database, DynamicQueue<int>& q): \
+    Robot(InventoryDatabase& database, OrderQueue& q): \
 		database(database),db_mutex(DB_MUTEX_NAME),\
-		ly_mutex_(LAYOUT_MEMORY_MUTEX_NAME),memory_(LAYOUT_MEMORY_NAME),\
-		robotPosQueue(q){
+		mutex_(WAREHOUSE_MEMORY_MUTEX_NAME),memory_(WAREHOUSE_MEMORY_NAME),\
+		robotOrderQueue(q){
 		{
-			std::unique_lock<decltype(ly_mutex_)> lock(ly_mutex_);
+			std::unique_lock<decltype(mutex_)> lock(mutex_);
 			linfo_ = memory_->linfo;
 			idx_ = memory_->rinfo.nrobots;
 			memory_->rinfo.nrobots++;
@@ -105,7 +103,7 @@ public:
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		{
 			// update position
-			std::unique_lock<decltype(ly_mutex_)> lock(ly_mutex_);
+			std::unique_lock<decltype(mutex_)> lock(mutex_);
 			// check for quit
 			if (memory_->quit) {
 				return -1;
@@ -165,7 +163,7 @@ public:
 		linfo_.layout[c][r] = EMPTY_CHAR;
 		{
 			// update position
-			std::unique_lock<decltype(ly_mutex_)> lock(ly_mutex_);
+			std::unique_lock<decltype(mutex_)> lock(mutex_);
 			memory_->rinfo.rloc[idx_][COL_IDX] = c;
 			memory_->rinfo.rloc[idx_][ROW_IDX] = r;
 		}
@@ -205,18 +203,28 @@ public:
 		loc_[ROW_IDX] = -1;
 		{
 			// update position
-			std::unique_lock<decltype(ly_mutex_)> lock(ly_mutex_);
+			std::unique_lock<decltype(mutex_)> lock(mutex_);
 			memory_->rinfo.rloc[idx_][COL_IDX] = loc_[COL_IDX];
 			memory_->rinfo.rloc[idx_][ROW_IDX] = loc_[ROW_IDX];
 		}
 	}
 
+	/**
+	* Checks if we are supposed to quit
+	* @return true if memory tells us to quit
+	*/
+	bool quit() {
+		// check if we need to quit
+		std::lock_guard<decltype(mutex_)> lock(mutex_);
+		return memory_->quit;
+	}
+
 	int main() {
-		size_t target = 0;
-		// TODO: replace -1 with poision pill
-		while (target != -1) {
-			target = robotPosQueue.get();
-			go(target, target);
+		// TODO: add poision pill order
+		while (!quit()) {
+			Order t = robotOrderQueue.get();
+			//partse order to item info, call robot go
+			//go(target, target);
 		}
 		removeMe();
 		return 0;
