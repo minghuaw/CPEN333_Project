@@ -28,7 +28,11 @@ set(AMAZOOM_HEADERS
 	header/Order.h 
 	header/RestockTruck.h 
 	header/Truck.h 
-	header/WarehouseComputer.h)
+	header/WarehouseComputer.h
+	header/InventoryDatabase.h
+	header/Layout.h
+	header/safe_printf.h
+	header/Robot.h)
 
 #==============================================================
 # Amazoom
@@ -40,6 +44,6 @@ add_executable(LayoutGUI src/LayoutGUI.cpp ${AMAZOOM_HEADERS})
 target_link_libraries(LayoutGUI Threads::Threads)
 
 if(WIN32)
-    target_link_libraries(Warehouse wsock32 ws2_32)
+    target_link_libraries(warehouse wsock32 ws2_32)
     target_link_libraries(LayoutGUI wsock32 ws2_32)
 endif()
