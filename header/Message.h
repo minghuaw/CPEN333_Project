@@ -30,7 +30,7 @@ enum MessageType {
     SEARCH_ITEM,
     SEARCH_ITEM_RESPONSE,
     GOODBYE,
-//    UNKNOWN
+    //UNKNOWN,
 };
 
 // status messages for response objects
@@ -54,12 +54,13 @@ public:
  */
 class ResponseMessage : public Message {
 public:
+	const int clientID;
     const std::string status;
     const std::string info;
 
-    explicit ResponseMessage(const std::string &status,
+    explicit ResponseMessage(const int& clientID, const std::string &status,
                     const std::string &info = "") :
-            status(status), info(info) {}
+            clientID(clientID), status(status), info(info) {}
 
 };
 
@@ -83,9 +84,11 @@ public:
 class AddResponseMessage : public ResponseMessage {
 public:
     const AddMessage add;
+	const std::string orderID;
 
-    AddResponseMessage(const AddMessage &add, std::string status, std::string info = "") :
-            ResponseMessage(status, info), add(add) {}
+    AddResponseMessage(const AddMessage &add, const std::string orderID, int clientID, 
+						const std::string status, std::string info = "") :
+            ResponseMessage(clientID, status, info), add(add), orderID(orderID) {}
 
     MessageType type() const override {
         return MessageType::ADD_RESPONSE;
@@ -113,8 +116,9 @@ class RemoveResponseMessage : public ResponseMessage {
 public:
     const RemoveMessage remove;
 
-    RemoveResponseMessage(const RemoveMessage &remove, std::string status, std::string info = "") :
-            ResponseMessage(status, info), remove(remove) {}
+    RemoveResponseMessage(const RemoveMessage &remove, const int clientID, 
+							const std::string status, std::string info = "") :
+            ResponseMessage(clientID, status, info), remove(remove) {}
 
     MessageType type() const override {
         return MessageType::REMOVE_RESPONSE;
@@ -144,8 +148,9 @@ class RemoveItemResponseMessage : public ResponseMessage {
 public:
     const RemoveItemMessage removeItem;
 
-    RemoveItemResponseMessage(const RemoveItemMessage &removeItem, std::string status, std::string info = "") :
-            ResponseMessage(status, info), removeItem(removeItem) {}
+    RemoveItemResponseMessage(const RemoveItemMessage &removeItem, const int clientID,  
+								const std::string status, std::string info = "") :
+            ResponseMessage(clientID, status, info), removeItem(removeItem) {}
 
     MessageType type() const override {
         return MessageType::REMOVE_ITEM_RESPONSE;
@@ -173,11 +178,11 @@ public:
 class SearchResponseMessage : public ResponseMessage {
 public:
     const SearchMessage search;
-    const std::string results;
+    //const std::string results;
 
-    SearchResponseMessage(const SearchMessage &search, const std::string &results,
+    SearchResponseMessage(const SearchMessage &search, const int clientID, const std::string &results,
                           const std::string &status, const std::string &info = "") :
-            ResponseMessage(status, info), search(search), results(results) {}
+            ResponseMessage(clientID, status, info), search(search) {}
 
     MessageType type() const override {
         return MessageType::SEARCH_RESPONSE;
@@ -205,11 +210,11 @@ public:
 class SearchItemResponseMessage : public ResponseMessage {
 public:
     const SearchItemMessage searchItem;
-    const std::string results;
+    //const std::string results; //--> use .info
 
-    SearchItemResponseMessage(const SearchItemMessage &searchItem, const std::string &results,
+    SearchItemResponseMessage(const SearchItemMessage &searchItem, const int clientID, const std::string &results,
                           const std::string &status, const std::string &info = "") :
-            ResponseMessage(status, info), searchItem(searchItem), results(results) {}
+            ResponseMessage(clientID, status, info), searchItem(searchItem) {}
 
     MessageType type() const override {
         return MessageType::SEARCH_ITEM_RESPONSE;

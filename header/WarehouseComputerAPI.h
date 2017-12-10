@@ -5,7 +5,7 @@
 #ifndef AMAZOOM_WAREHOUSECOMPUTERAPI_H
 #define AMAZOOM_WAREHOUSECOMPUTERAPI_H
 
-#define JSON_ID 255
+#define JSON_ID 55
 
 #include <cpen333/process/mutex.h>
 #include <cpen333/process/socket.h>
@@ -50,6 +50,11 @@ private:
         return success;
     }
 public:
+	/**
+	 * defautl constructor
+	 */
+	WarehouseComputerAPI() {}
+
     /**
      * Constructor for WarehouseComputerAPI
      * @param client
@@ -61,6 +66,14 @@ public:
      */
     void sendMessage(){}
 
+	/**
+	* send JSON string message to warehouseComputer
+	*/
+	bool sendMessage(const Message& msg) {
+		JSON jmsg = JsonConverter::toJSON(msg);
+		return sendJSON(jmsg);
+	}
+
     /**
      * send JSON string
      * @param jsonStr
@@ -68,8 +81,8 @@ public:
      */
     bool sendJSON(std::string jsonStr){
         // encode json string size
-        char buff[4];
         char jsonID = JSON_ID;
+        char buff[4];
         size_t size = jsonStr.size()+1;
 
         for (int i=4; i-->0;){
@@ -78,8 +91,7 @@ public:
             size = size >> 8;
         }
 
-        // write contents
-        bool success = socket_.write(&jsonID, 1);
+        bool success = socket_.write(&jsonID, 1); // write start byte
         if (success){
             success &= socket_.write(buff, 4); // content size
             success &= socket_.write(jsonStr); // content
@@ -97,6 +109,9 @@ public:
         return sendJSON(jsonStr);
     }
 
+
+	//TODO: 
+
     /**
      *
      * @return parsed message, nullptr if an error occurred
@@ -111,7 +126,7 @@ public:
         char id;
         char buff[4];
         size_t size = 0;
-        if (socket_.read_all(&id, 1) || id != JSON_ID){
+        if (!socket_.read_all(&id, 1) || id != JSON_ID){
             std::cout << "JSON ID does not match" << std::endl;
             return nullptr;
         }
@@ -134,6 +149,8 @@ public:
         if (!readString(str, size)) {
             return nullptr;
         }
+
+		std::cout << str << std::endl;
 
         return std::unique_ptr<std::string>(new std::string(str));
     }

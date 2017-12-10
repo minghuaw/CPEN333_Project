@@ -8,15 +8,16 @@
 
 #include <cpen333/process/mutex.h>
 #include <cpen333/process/socket.h>
+#include <cpen333/process/semaphore.h>
 #include <mutex>
 #include <string>
 #include <iostream>
-#include "../header/Amazoom.h"
+#include "Amazoom.h"
 #include "Message.h"
 #include <json.hpp>
 #include <deque>
 #include "jsonConverter.h"
-#include "../header/WarehouseComputerAPI.h"
+#include "WarehouseComputerAPI.h"
 
 using JSON = nlohmann::json;
 
@@ -35,7 +36,7 @@ void serviceClient(WarehouseComputerAPI&& api, std::deque<JSON>& msg2warehouseQu
 
     // receive message
     std::unique_ptr<std::string> jsonStrPtr = api.recvJSON();
-
+	std::cout << "[server]" << *jsonStrPtr << std::endl; // test
     while(jsonStrPtr!= nullptr){
         // convert to JSON object and append client ID
         JSON j;
@@ -47,16 +48,21 @@ void serviceClient(WarehouseComputerAPI&& api, std::deque<JSON>& msg2warehouseQu
             std::cerr << e.what();
         }
 
+		std::cout << "[CLIENT ID]" << j.dump() << std::endl;
+
         // push to msg2warehouse queue
         {
             std::lock_guard<decltype(mutex_)> lock(mutex_);
             msg2warehouseQueue.push_back(std::move(j));
         } // for thread safety
+
+		std::cout << "append to msg2warehouse queue" << std::endl;
         whSem.notify();
 
         // peek msg
         clientSem.wait();
         JSON& msg2client = msg2clientQueue.front();
+		std::cout << "pick from msg2client queue" << std::endl;
         int clientID = msg2client[MESSAGE_CLIENT_ID];
         while (clientID != id){
             clientSem.notify(); // notify other client thread if the message is for another client
@@ -97,6 +103,7 @@ void serviceWarehouse(WarehouseComputerAPI&& api, std::deque<JSON>& msg2warehous
     // pop front from msg2warehouse queue
     whSem.wait();
     JSON& msg2warehosue = msg2warehouseQueue.front();
+	std::cout << msg2warehosue.dump() << std::endl; // test
     while (msg2warehosue!= nullptr){
         {
             std::lock_guard<decltype(mutex_)> lock(mutex_); // for thread safety
@@ -145,7 +152,7 @@ void serviceWarehouse(WarehouseComputerAPI&& api, std::deque<JSON>& msg2warehous
 void listenForWarehouse(){
     whServer.open();
     int id = 0;
-    cpen333::process::socket client;
+    //cpen333::process::socket client;
     cpen333::process::socket whComputer;
 
     while(true){
@@ -168,7 +175,7 @@ void listenForWarehouse(){
 void listenForClient(){
     int id = 0;
     cpen333::process::socket client;
-    cpen333::process::socket whComputer;
+    //cpen333::process::socket whComputer;
 
     while(true){
         if(server.accept(client)) {
