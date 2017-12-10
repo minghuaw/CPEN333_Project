@@ -151,6 +151,10 @@ public:
 		return itemQuantity_[itemName];
 	}
 
+	Coordinate& findItemLocation(std::string itemName) {
+		return itemLocation_[itemName];
+	}
+
     /**
      * find the weight of an item
      * @param itemName name of an item that is in the inventory

@@ -66,6 +66,14 @@ public:
     }
    
     /**
+    * return the ID of an order
+    * @return 	ID of order in string format
+    */
+    std::string returnOrderID() {
+		return ID;
+    }
+   
+    /**
     * assign truck ID to order
     * @return 	ID of order in string format
     */
