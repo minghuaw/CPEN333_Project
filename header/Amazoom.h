@@ -18,8 +18,8 @@
 #define CLIENT_PORT 52102
 #define WAREHOUSE_PORT 51102
 
-#define LAYOUT_MEMORY_NAME "amazoom_layout"
-#define LAYOUT_MEMORY_MUTEX_NAME "amazoom_layout_mutex"
+#define WAREHOUSE_MEMORY_NAME "amazoom_layout"
+#define WAREHOUSE_MEMORY_MUTEX_NAME "amazoom_layout_mutex"
 
 #define WALL_CHAR 'X'
 #define EMPTY_CHAR ' '
@@ -31,12 +31,18 @@
 #define COL_IDX 0
 #define ROW_IDX 1
 #define SHELF_LEVEL 3 // each shelf has 3 levels
-#define CELL_CAPACITY 5 // each cell can hold 5kg items
+#define CELL_CAPACITY 7.5 // each cell can hold 7.5kg items
 
 #define MAX_LAYOUT_COL 80
 #define MAX_LAYOUT_ROW 80
 
-#define MAX_ROBOT 50
+#define MAX_ROBOTS 50
+#define MAX_TRUCKS 5
+
+#define TRUCK_ARRIVAL 'A'
+#define TRUCK_DEPARTURE 'D'
+#define TRUCK_CAP 450		// 450Kg accodring to federal regislation
+#define FULL_RATIO 0.8
 
 #define ITEM_LIST "../data/itemList.txt"
 

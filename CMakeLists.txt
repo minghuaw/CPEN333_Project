@@ -28,7 +28,7 @@ set(AMAZOOM_HEADERS
 	header/Order.h 
 	header/RestockTruck.h 
 	header/Truck.h 
-	header/WarehouseComputer.h
+	#header/WarehouseComputer.h
 	header/UserInterface.h
 	header/WarehouseComputerAPI.h
 	header/Quote.h
@@ -38,6 +38,7 @@ set(AMAZOOM_HEADERS
 	header/safe_printf.h
 	header/Robot.h
 	header/Truck.h
+	header/ManagerUI.h
 	include/json.hpp)
 
 #==============================================================

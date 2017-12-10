@@ -94,8 +94,8 @@ void connectToServer(OrderQueue& queue, InventoryDatabase& inventory,
 
 int main(){
 	// create shared memory
-	cpen333::process::shared_object<SharedData> memory(LAYOUT_MEMORY_NAME);
-	cpen333::process::mutex mutex(LAYOUT_MEMORY_MUTEX_NAME);
+	cpen333::process::shared_object<SharedData> memory(WAREHOUSE_MEMORY_NAME);
+	cpen333::process::mutex mutex(WAREHOUSE_MEMORY_MUTEX_NAME);
 	LayoutInfo linfo;
 
 	// initialize shared memory

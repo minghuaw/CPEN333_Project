@@ -9,7 +9,7 @@
 #include "Robot.h"
 #include "InventoryDatabase.h"
 #include "ManagerUI.h"
-
+#include "Truck.h"
 
 #include <cpen333/process/semaphore.h>
 #include <cpen333/process/shared_memory.h>
@@ -71,6 +71,8 @@ void print_mainmenu() {
 	std::cout << "=========================================" << std::endl;
 	std::cout << " (R) Add Robot" << std::endl;
 	std::cout << " (T) Remove Robot" << std::endl;
+	std::cout << " (D) Add Delivery Truck" << std::endl;
+	std::cout << " (S) Add Restock Truck" << std::endl;
 	std::cout << " (A) Start Restock Order" << std::endl;
 	std::cout << " (Q) Quit" << std::endl;
 	std::cout << "=========================================" << std::endl;
@@ -100,19 +102,24 @@ private:
     cpen333::process::mutex ly_mutex_;
 	int magicKey;
 
-    cpen333::thread::semaphore loadingBay;
-    cpen333::thread::semaphore unloadingBay;
+	// bays
+    cpen333::process::semaphore loadingBay;
+    cpen333::process::semaphore unloadingBay;
 
-	// inventory database
-    InventoryDatabase& inventory;
-	cpen333::process::mutex db_mutex;
-   
 	// special locations in layout
 	int loading[2];		// loading bay location
 	int unloading[2];   // loading bay location
 	int home[2];		// robot home location
 
-	// vector of robots
+	// trucks
+	std::vector<DeliveryTruck*> dTrucks; //delivery trucks
+	std::vector<RestockTruck*> rTrucks; //restock trucks
+
+	// inventory database
+    InventoryDatabase& inventory;
+	cpen333::process::mutex db_mutex;
+
+	// robots
 	std::vector<Robot*> robots;
 
 	// Queues
@@ -120,7 +127,7 @@ private:
 	OrderQueue truckOrderQueue;
 	ItemQueue loadingQueue;
 	ItemQueue unloadingQueue;
-	TruckQueue truckQueue;
+	//TruckQueue truckQueue;
 
 	// store a map of items and its weight
 	std::map<std::string, double> itemName2weight;			// map item name to weight
@@ -130,17 +137,19 @@ public:
 	*  Warehouse constructor
 	*  start the Warehouse system
 	* initialize all inter-thread communication queues
-     * Initialize magicKey to LAYOUT_MAGIC_KEY
-     */
-    Warehouse(InventoryDatabase& inventory):memory_(LAYOUT_MEMORY_NAME),ly_mutex_(LAYOUT_MEMORY_MUTEX_NAME),\
-		loadingBay(LOADING_BAY_SEM_RESOURCE),unloadingBay(LOADING_BAY_SEM_RESOURCE),\
-		magicKey(LAYOUT_MAGIC_KEY), db_mutex(DB_MUTEX_NAME),inventory(inventory) {
+    * Initialize magicKey to LAYOUT_MAGIC_KEY
+    */
+    Warehouse(InventoryDatabase& inventory):memory_(WAREHOUSE_MEMORY_NAME),ly_mutex_(WAREHOUSE_MEMORY_MUTEX_NAME),\
+		magicKey(LAYOUT_MAGIC_KEY), db_mutex(DB_MUTEX_NAME),inventory(inventory),\
+		loadingBay(LOADING_BAY_NAME, LOADING_BAY_SEM_RESOURCE),\
+		unloadingBay(UNLOADING_BAY_NAME, LOADING_BAY_SEM_RESOURCE) {
 		{
 			std::unique_lock<decltype(ly_mutex_)> lock(ly_mutex_);
 			// load layout, init robots
 			initSpecialLocations();
 			init_robots();
 		}
+		loadItemList(ITEM_LIST);
 	}
 
 	/**
@@ -201,7 +210,7 @@ public:
 		RobotInfo& rinfo = memory_->rinfo;
 		std::cout << "initialize robots" << std::endl;
 		rinfo.nrobots = 0;
-		for (size_t i = 0; i<MAX_ROBOT; ++i) {
+		for (size_t i = 0; i<MAX_ROBOTS; ++i) {
 			rinfo.rloc[i][COL_IDX] = home[COL_IDX];
 			rinfo.rloc[i][ROW_IDX] = home[ROW_IDX];
 		}
@@ -214,8 +223,8 @@ public:
 	*/
 	bool spawn_robot(int quantity) {
 		for (int i = 0; i < quantity; i++) {
-			if (robots.size() < MAX_ROBOT) {
-				Robot* r = new Robot(inventory,robotPosQueue);
+			if (robots.size() < MAX_ROBOTS) {
+				Robot* r = new Robot(inventory, robotOrderQueue);
 				robots.push_back(r);
 				r->start();
 			}
@@ -226,10 +235,42 @@ public:
 		return true;
 	}
 
+	/**
+	* spawn a new delivery truck and move to another thread
+	* @param quantity	number of delivery trucks to be spawned
+	*/
+	void spawn_dtruck(int quantity) {
+		for (int i = 0; i < quantity; i++) {
+			DeliveryTruck* d = new DeliveryTruck(loadingQueue);
+			dTrucks.push_back(d);
+			d->start();
+		}
+	}
+
     /**
      * start remote server in a separate console/process
      */
     void startRemoteServer(){}
+
+	/**
+	* load item names and weights from a txt file
+	*/
+	void loadItemList(std::string filename) {
+		std::ifstream fin(filename);
+		std::string itemName;
+		std::string weight;
+
+		// read itemlist file
+		if (fin.is_open()) {
+			while (std::getline(fin, itemName,',')) {
+				// laze way to populate item list
+				std::getline(fin, weight, '\n');
+				const char *cweight = weight.c_str();
+				itemName2weight.insert(std::pair<std::string, double>(itemName,std::atof(cweight)));
+			}
+			fin.close();
+		}
+	}
 
 	/**
 	* close warehouse
@@ -242,6 +283,13 @@ public:
 		// join all robot threads
 		for (auto& robot: robots) {
 			robot->join();
+		}
+		// join all truck threads
+		for (auto& d : dTrucks) {
+			d->join();
+		}
+		for (auto& r : rTrucks) {
+			r->join();
 		}
 	}
 
@@ -277,11 +325,7 @@ public:
 	* place an order in the robotOrderQueue or truckOrderQueue depend on the order type
 	* @param order		order to be placed
 	*/
-	//void placeOrderInQueue(Order order) {}
-	// TODO: replace this with actual order
-	void placeOrderInQueue(int col) {
-		robotPosQueue.add(col);
-	}
+	void placeOrderInQueue(Order order) {}
 
 	/**
 	* find the weight of an order
@@ -331,6 +375,13 @@ public:
 				}
 				break;
 			case REMOVE_ROBOT:
+				// remove robot
+				break;
+			case ADD_DELIVERY_TRUCK:
+				// add delivery truck
+				break;
+			case ADD_RESTOCK_TRUCK:
+				// add restock truck
 				break;
 			case ADD_ORDER:
 				// create a new order

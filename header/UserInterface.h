@@ -70,7 +70,7 @@ public:
     /**
      * default constructor, calls default constructor of superclass
      */
-    ManagerUI():UserInterface(), memory_(LAYOUT_MEMORY_NAME) {}
+    ManagerUI():UserInterface(), memory_(WAREHOUSE_MEMORY_NAME) {}
 
     /**
     * cancel an order, if not processing or shipped

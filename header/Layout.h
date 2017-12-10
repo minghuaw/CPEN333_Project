@@ -16,14 +16,24 @@ struct LayoutInfo {
 
 struct RobotInfo {
     int nrobots;      // number robots
-    int rloc[MAX_ROBOT][2];   // robot locations [col][row]
+    int rloc[MAX_ROBOTS][2];   // robot locations [col][row]
+};
+
+struct TruckInfo {
+	int ndtrucks;		// number delivery trucks
+	int nrtrucks;		// number restock trucks
+	char dtruckStatus[MAX_TRUCKS];		// status of truck, 'A' for arrival and 'D' for departure
+	char rtruckStatus[MAX_TRUCKS];
+	double dcapcity[MAX_TRUCKS];		// capacity of trucks
+	double rcapcity[MAX_TRUCKS];
 };
 
 struct SharedData {
-    LayoutInfo linfo;    // layout info
-    RobotInfo rinfo;  // robot info
-    bool quit;         // tell everyone to quit
-    int  magic = 0;        // magic number for detecting initialization
+    LayoutInfo linfo;   // layout info
+    RobotInfo rinfo;	// robot info
+	TruckInfo tinfo;	// truck info
+    bool quit;			// tell everyone to quit
+    int  magic = 0;     // magic number for detecting initialization
 };
 
 #endif /*AMAZOOM_LAYOUT_H*/

@@ -26,10 +26,10 @@ class LayoutUI {
 	cpen333::process::mutex mutex_;
 
 	// previous positions of runners
-	int lastpos_[MAX_ROBOT][2];
+	int lastpos_[MAX_ROBOTS][2];
 
 public:
-	LayoutUI() : display_(), memory_(LAYOUT_MEMORY_NAME), mutex_(LAYOUT_MEMORY_MUTEX_NAME) {
+	LayoutUI() : display_(), memory_(WAREHOUSE_MEMORY_NAME), mutex_(WAREHOUSE_MEMORY_MUTEX_NAME) {
 
 		// clear display and hide cursor
 		display_.clear_all();
@@ -150,6 +150,7 @@ public:
 	}
 
 	~LayoutUI() {
+		std::cin.get();
 		// reset console settings
 		display_.clear_all();
 		display_.reset();
@@ -158,8 +159,8 @@ public:
 
 int main() {
 	// check if main has started
-	cpen333::process::shared_object<SharedData> memory(LAYOUT_MEMORY_NAME);
-	cpen333::process::mutex mutex(LAYOUT_MEMORY_MUTEX_NAME);
+	cpen333::process::shared_object<SharedData> memory(WAREHOUSE_MEMORY_NAME);
+	cpen333::process::mutex mutex(WAREHOUSE_MEMORY_MUTEX_NAME);
 	int magic;
 	{
 		std::unique_lock<decltype(mutex)> lock(mutex);
