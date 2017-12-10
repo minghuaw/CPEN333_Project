@@ -105,8 +105,12 @@ public:
 class RemoveMessage : public Message {
 public:
     const std::string orderID;
+	const int clientID;
 
-    RemoveMessage(const std::string &orderID) : orderID(orderID) {}
+    RemoveMessage(const std::string &orderID) : orderID(orderID), clientID(-1) {}
+
+	RemoveMessage(const std::string &orderID, int& clientID) : orderID(orderID), 
+				clientID(clientID) {}
 
     MessageType type() const override {
         return MessageType::REMOVE;

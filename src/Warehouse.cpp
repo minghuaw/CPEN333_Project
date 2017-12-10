@@ -38,12 +38,13 @@ void service(WarehouseComputerAPI&& api_, OrderQueue& queue_, InventoryDatabase&
 			std::cout << "[special check] "<< "client ID " << add.clientID << std::endl;
 			// extract quote out of add message
 			Quote quote = add.quote;
+			int clientID = add.clientID; 
 			std::string orderID;
-			int clientID;
 
 			bool success = true;
 			std::string itemName;
 			int num;
+			// find if quote can be accomplished
 			for (auto& pair : quote.quote_) {
 				itemName = pair.first;
 				num = pair.second;
@@ -61,8 +62,8 @@ void service(WarehouseComputerAPI&& api_, OrderQueue& queue_, InventoryDatabase&
 			if (success) {
 				orderID = "C0" + std::to_string(orderCounter);
 				AddResponseMessage add_re(add, orderID, clientID, MESSAGE_STATUS_OK);
-				api_.sendMessage(add_re);
-				orderCounter++;
+				api_.sendMessage(add_re); // send back response message
+				orderCounter++; // increase order counter for orderID
 
 				// create client order
 				Order order = Warehouse::toOrder(std::ref(orderID), std::ref(quote), 
@@ -70,7 +71,7 @@ void service(WarehouseComputerAPI&& api_, OrderQueue& queue_, InventoryDatabase&
 
 				// push client order to order queue
 				queue_.addOrder(std::ref(order));
-				std::cout << "order added to queue" << std::endl;
+				std::cout << "New order added to orderQueue" << std::endl;
 			}
 			else {
 				orderID = "F00";
@@ -81,6 +82,11 @@ void service(WarehouseComputerAPI&& api_, OrderQueue& queue_, InventoryDatabase&
 		}
 		case MessageType::REMOVE: {
 			RemoveMessage& remove = (RemoveMessage &)(*msg);
+			std::string orderID = remove.orderID;
+			int clientID = remove.clientID;
+			std::cout << "Client " << clientID << " removing order " << orderID << std::endl;
+
+
 			break;		
 		}
 		case MessageType::REMOVE_ITEM: {
