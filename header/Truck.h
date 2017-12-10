@@ -29,7 +29,7 @@ public:
      * @brief wait until semaphore notifies it's available
      * @return true if successful, false if not successful
      */
-    virtual bool dock(){}
+	virtual bool dock() { return true; }
 
     /**
      * @brief change the status to ARRIVAL in shared memory
@@ -40,8 +40,6 @@ public:
      * @brief change the status to DEPARTURE in shared memory
      */
     virtual void notifyLeaving(){}
-
-	virtual int main() {}
 };
 
 class RestockTruck : public Truck {
@@ -78,8 +76,8 @@ public:
 			std::unique_lock<decltype(mutex_)> lock(mutex_);
 			idx_ = memory_->tinfo.nrtrucks;
 			memory_->tinfo.nrtrucks++;
+			memory_->tinfo.rtruckStatus[idx_] = TRUCK_ARRIVAL;	// signal computer about arrival
 		}
-		notifyArrival();
 	}
 
 	/**
@@ -108,7 +106,7 @@ public:
 		{
 			std::unique_lock<decltype(mutex_)> lock(mutex_);
 			memory_->tinfo.rtruckStatus[idx_] = TRUCK_DEPARTURE;	// signal computer about arrival
-		}
+		}	
 		unloadingBay.notify();
 	}
 
@@ -137,7 +135,8 @@ public:
 	}
 
 	int main() {
-
+		std::cout << " I am a restock truck" << std::endl;
+		return 0;
 	}
 };
 
@@ -174,8 +173,8 @@ public:
 			std::unique_lock<decltype(mutex_)> lock(mutex_);
 			idx_ = memory_->tinfo.ndtrucks;
 			memory_->tinfo.ndtrucks++;
+			memory_->tinfo.dtruckStatus[idx_] = TRUCK_ARRIVAL;	// signal computer about arrival
 		}
-		notifyArrival();
 	}
 
 	/**
@@ -219,6 +218,8 @@ public:
 
 	int main() {
 		std::cout << "I am a truck" << std::endl;
+		notifyLeaving();
+		return 0;
 	}
 
 };
