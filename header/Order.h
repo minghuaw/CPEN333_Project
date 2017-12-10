@@ -134,7 +134,6 @@ public:
     os << order.toString();
     return os;
   }
-
 };
 
 #endif //ORDER_H

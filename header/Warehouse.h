@@ -61,40 +61,6 @@ void loadLayoutInfo(const std::string& filename, LayoutInfo& linfo) {
 	}
 }
 
-/**
-* main menu for manager, called by showManagerUI()
-*/
-void print_mainmenu() {
-
-	std::cout << "=========================================" << std::endl;
-	std::cout << "=              MAIN  MENU               =" << std::endl;
-	std::cout << "=========================================" << std::endl;
-	std::cout << " (R) Add Robot" << std::endl;
-	std::cout << " (T) Remove Robot" << std::endl;
-	std::cout << " (D) Add Delivery Truck" << std::endl;
-	std::cout << " (S) Add Restock Truck" << std::endl;
-	std::cout << " (A) Start Restock Order" << std::endl;
-	std::cout << " (Q) Quit" << std::endl;
-	std::cout << "=========================================" << std::endl;
-	std::cout << "Enter Letter: ";
-	std::cout.flush();
-}
-
-/**
-* order menu for manager, called by showManagerUI()
-*/
-void print_ordermenu() {
-	std::cout << "=========================================" << std::endl;
-	std::cout << "=            ORDER MENU                 =" << std::endl;
-	std::cout << "=========================================" << std::endl;
-	std::cout << " (A) Add Item" << std::endl;
-	std::cout << " (C) Place Order" << std::endl;
-	std::cout << " (Q) Cancel" << std::endl;
-	std::cout << "=========================================" << std::endl;
-	std::cout << "Enter Letter: ";
-	std::cout.flush();
-}
-
 class Warehouse{
 private:
 	// shared information layout info and robot info, shared among LayoutGUI and Warehouse processes
@@ -133,14 +99,6 @@ private:
 	std::map<std::string, double> itemName2weight;			// map item name to weight
 
 public:
-	/**
-	 * default constructor
-	 */
-	Warehouse() :memory_(WAREHOUSE_MEMORY_NAME), ly_mutex_(WAREHOUSE_MEMORY_MUTEX_NAME), \
-		magicKey(LAYOUT_MAGIC_KEY), db_mutex(DB_MUTEX_NAME), inventory(inventory), \
-		loadingBay(LOADING_BAY_NAME, LOADING_BAY_SEM_RESOURCE), \
-		unloadingBay(UNLOADING_BAY_NAME, LOADING_BAY_SEM_RESOURCE) {}
-
 	/**
 	*  Warehouse constructor
 	*  start the Warehouse system
@@ -216,7 +174,6 @@ public:
 	*/
 	void init_robots() {
 		RobotInfo& rinfo = memory_->rinfo;
-		std::cout << "initialize robots" << std::endl;
 		rinfo.nrobots = 0;
 		for (size_t i = 0; i<MAX_ROBOTS; ++i) {
 			rinfo.rloc[i][COL_IDX] = home[COL_IDX];
@@ -243,6 +200,21 @@ public:
 		return true;
 	}
 
+	/**
+	* Remove robots
+	*/
+	bool remove_robot(int quantity) {
+		for (int i = 0; i < quantity; i++) {
+			if (robots.size() != 0) {
+				robotOrderQueue.add(Order(POISION_ID));
+				robots.pop_back();
+			}
+			else {
+				return false;
+			}
+		}
+		return true;
+	}
 	/**
 	* spawn a new delivery truck and move to another thread
 	* @param quantity	number of delivery trucks to be spawned
@@ -409,6 +381,9 @@ public:
 				break;
 			case REMOVE_ROBOT:
 				// remove robot
+				if (!remove_robot(1)) {
+					std::cout << "error" << std::endl;
+				}
 				break;
 			case ADD_DELIVERY_TRUCK:
 				// add delivery truck
@@ -428,9 +403,9 @@ public:
 					std::cout << "error" << std::endl;
 				}
 				break;
-			case ADD_ORDER:
+			case ADD_ORDER: {
 				// create a new order
-
+				Order o;
 				// order menu starts
 				while (order_cmd != MANAGER_QUIT && order_cmd != CONFIRM_ORDER) {
 					print_ordermenu();
@@ -458,7 +433,8 @@ public:
 						std::cout << "Invalid command number " << cmd << std::endl << std::endl;
 					}
 				}
-				break;
+				break;			
+			}
 			case MANAGER_QUIT:
 				std::cout << "Closing warehouse" << std::endl;
 				break;

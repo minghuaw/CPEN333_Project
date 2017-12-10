@@ -38,8 +38,8 @@ void service(WarehouseComputerAPI&& api_, OrderQueue& queue_, InventoryDatabase&
 			std::cout << "[special check] "<< "client ID " << add.clientID << std::endl;
 			// extract quote out of add message
 			Quote quote = add.quote;
-			int clientID = add.clientID;
 			std::string orderID;
+			int clientID;
 
 			bool success = true;
 			std::string itemName;
@@ -49,18 +49,6 @@ void service(WarehouseComputerAPI&& api_, OrderQueue& queue_, InventoryDatabase&
 				num = pair.second;
 
 				//TODO: find item & find item name
-				int quantity = inventory_.findItemQuantity(itemName);
-				// item not found in the inventory
-				if (quantity == ITEM_NOT_FOUND) {
-					success &= false;
-				}
-				else {
-					// item found in the invenotry
-					if (quantity >= num)
-						success &= true;
-					else
-						success &= false;
-				}
 			}
 
 			// send response message
@@ -166,11 +154,10 @@ int main(){
 	}
 
 	// init database
-	InventoryDatabase& inventory = InventoryDatabase(linfo);
+	InventoryDatabase inventory(linfo);
 	// initialize warehouse
 	std::cout << "Starting Warehouse" << std::endl;
-	//Warehouse warehouse(inventory);
-	Warehouse warehouse;
+	Warehouse warehouse(inventory);
 
 	// connect to server
 	OrderQueue queue;

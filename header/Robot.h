@@ -20,13 +20,14 @@ private:
 	// shared information layout info and robot info, shared among LayoutGUI and Warehouse processes
 	cpen333::process::shared_object<SharedData> memory_;
 	cpen333::process::mutex mutex_;
-    
-    char col;
-    int row;
+
     //Order& order;                       // TODO: maybe wrong? should it be order?
-    double capacity;
+
+    double capacity = ROBOT_CAPACITY;
+	double currWeight = 0;
+
     std::vector<std::pair<Item,int>> items;
-    double currWeight;
+    
     ItemQueue unloadingQueue;
     OrderQueue& robotOrderQueue;
     cpen333::process::mutex db_mutex;       // for database protection
@@ -210,21 +211,30 @@ public:
 	}
 
 	/**
+	* parse the iteminfo in an order, call go continously
+	*/
+	void parse_order() {
+		std::cout << "parse order items" << std::endl;
+	}
+
+	/**
 	* Checks if we are supposed to quit
 	* @return true if memory tells us to quit
 	*/
-	bool quit() {
+	bool check_quit() {
 		// check if we need to quit
 		std::lock_guard<decltype(mutex_)> lock(mutex_);
 		return memory_->quit;
 	}
 
 	int main() {
-		// TODO: add poision pill order
-		while (!quit()) {
+		while (!check_quit()) {
 			Order t = robotOrderQueue.get();
-			//partse order to item info, call robot go
-			//go(target, target);
+			if (t.returnOrderID() == POISION_ID)
+				break;
+			else {
+				parse_order();
+			}
 		}
 		removeMe();
 		return 0;

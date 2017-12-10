@@ -78,6 +78,7 @@ public:
 			memory_->tinfo.nrtrucks++;
 			memory_->tinfo.rtruckStatus[idx_] = TRUCK_ARRIVAL;	// signal computer about arrival
 		}
+		capacity = rand() % 30 + TRUCK_CAPACITY - 15;	// random capacity, range in 435-449
 	}
 
 	/**
@@ -165,7 +166,7 @@ public:
 	* @param truckQ truckQ for notifying computer
 	*/
 	DeliveryTruck(ItemQueue& loadingQ) : \
-		loadingQueue(loadingQ),
+		loadingQueue(loadingQ),\
 		loadingBay(LOADING_BAY_NAME, LOADING_BAY_SEM_RESOURCE), \
 		memory_(WAREHOUSE_MEMORY_NAME), mutex_(WAREHOUSE_MEMORY_MUTEX_NAME)
 	{
@@ -175,6 +176,7 @@ public:
 			memory_->tinfo.ndtrucks++;
 			memory_->tinfo.dtruckStatus[idx_] = TRUCK_ARRIVAL;	// signal computer about arrival
 		}
+		capacity = rand() % 30 + TRUCK_CAPACITY-15;	// random capacity, range in 435-449
 	}
 
 	/**

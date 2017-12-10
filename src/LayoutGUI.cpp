@@ -34,6 +34,11 @@ public:
 		// clear display and hide cursor
 		display_.clear_all();
 		display_.set_cursor_visible(false);
+
+		for (size_t i = 0; i<MAX_ROBOTS; ++i) {
+			lastpos_[i][COL_IDX] = -1;
+			lastpos_[i][ROW_IDX] = -1;
+		}
 	}
 
 	/**
@@ -92,11 +97,8 @@ public:
 			int newc = rinfo.rloc[i][COL_IDX];
 			mutex_.unlock();
 
-			if (newc == -1 && newr == -1) {
-				display_.set_cursor_position(YOFF + lastpos_[i][ROW_IDX], XOFF + lastpos_[i][COL_IDX]);
-				std::printf("%c", EMPTY_CHAR);
-			}
-			else if (newc != lastpos_[i][COL_IDX] || newr != lastpos_[i][ROW_IDX]) {
+			
+			if (newc != lastpos_[i][COL_IDX] || newr != lastpos_[i][ROW_IDX]) {
 				// zero out last spot and update known location
 				display_.set_cursor_position(YOFF + lastpos_[i][ROW_IDX], XOFF + lastpos_[i][COL_IDX]);
 				std::printf("%c", EMPTY_CHAR);
@@ -104,7 +106,15 @@ public:
 				lastpos_[i][ROW_IDX] = newr;
 				display_.set_cursor_position(YOFF + newr, XOFF + newc);
 				std::printf("%c", me);
-			}	
+			}
+			else if (newc == lastpos_[i][COL_IDX] && newr == lastpos_[i][ROW_IDX]) {
+				display_.set_cursor_position(YOFF + lastpos_[i][ROW_IDX], XOFF + lastpos_[i][COL_IDX]);
+				std::printf("%c", me);
+			}
+			else if (newc == -1 && newr == -1) {
+				display_.set_cursor_position(YOFF + lastpos_[i][ROW_IDX], XOFF + lastpos_[i][COL_IDX]);
+				std::printf("%c", EMPTY_CHAR);
+			}
 		}
 	}
 			// TODO: verify if this needs to be uncommented
@@ -188,7 +198,6 @@ public:
 	}
 
 	~LayoutUI() {
-		std::cin.get();
 		// reset console settings
 		display_.clear_all();
 		display_.reset();

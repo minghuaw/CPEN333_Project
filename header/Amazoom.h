@@ -37,12 +37,15 @@
 #define MAX_LAYOUT_ROW 80
 
 #define MAX_ROBOTS 50
-#define MAX_TRUCKS 5
+#define ROBOT_CAPACITY 15 // each robot can carry 15kg items
 
+#define MAX_TRUCKS 5
 #define TRUCK_ARRIVAL 'A'
 #define TRUCK_DEPARTURE 'D'
-#define TRUCK_CAP 450		// 450Kg accodring to federal regislation
+#define TRUCK_CAPACITY 450		// 450Kg accodring to federal regislation
 #define FULL_RATIO 0.8
+
+#define POISION_ID "-1"
 
 #define ITEM_LIST "../data/itemList.txt"
 
