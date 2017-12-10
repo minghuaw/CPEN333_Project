@@ -404,8 +404,7 @@ public:
 				}
 				break;
 			case ADD_ORDER:
-				// create a new order
-				Order o;
+				// create a new quote
 				// order menu starts
 				while (order_cmd != MANAGER_QUIT && order_cmd != CONFIRM_ORDER) {
 					print_ordermenu();
