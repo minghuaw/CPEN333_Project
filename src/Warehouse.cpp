@@ -15,6 +15,8 @@ static const char CLIENT_REMOVE_ITEM = '4';
 static const char CLIENT_SEARCH_ITEM = '5';
 static const char CLIENT_QUIT = 'Q';
 
+int orderCounter = 1;
+
 void service(WarehouseComputerAPI&& api_, OrderQueue& queue_, InventoryDatabase& inventory_){
 	std::unique_ptr<Message> msg = api_.recvMessage();
 
@@ -33,8 +35,10 @@ void service(WarehouseComputerAPI&& api_, OrderQueue& queue_, InventoryDatabase&
 			AddMessage& add = (AddMessage &)(*msg);
 			std::cout << "[special check] "<< "client ID " << add.clientID << std::endl;
 			Quote quote = add.quote;
+			int clientID = add.clientID;
+			std::string orderID;
 
-			bool success = false;
+			bool success = true;
 			std::string itemName;
 			int num;
 			for (auto& pair : quote.quote_) {
@@ -42,6 +46,33 @@ void service(WarehouseComputerAPI&& api_, OrderQueue& queue_, InventoryDatabase&
 				num = pair.second;
 
 				//TODO: find item & find item name
+				int quantity = inventory_.findItemQuantity(itemName);
+				// item not found in the inventory
+				if (quantity == ITEM_NOT_FOUND) {
+					success &= false;
+				}
+				else {
+					// item found in the invenotry
+					if (quantity >= num)
+						success &= true;
+					else
+						success &= false;
+				}
+			}
+
+			// send response message
+			if (success) {
+				orderID = "C0" + std::to_string(orderCounter);
+				AddResponseMessage add_re(add, orderID, clientID, MESSAGE_STATUS_OK);
+				api_.sendMessage(add_re);
+				orderCounter++;
+
+				// create order
+			}
+			else {
+				orderID = "F00";
+				AddResponseMessage add_re(add, orderID, clientID, MESSAGE_STATUS_ERROR);
+				api_.sendMessage(add_re);
 			}
 			break;		
 		}
@@ -111,10 +142,11 @@ int main(){
 	}
 
 	// init database
-	InventoryDatabase inventory(linfo);
+	InventoryDatabase& inventory = InventoryDatabase(linfo);
 	// initialize warehouse
 	std::cout << "Starting Warehouse" << std::endl;
-	Warehouse warehouse(inventory);
+	//Warehouse warehouse(inventory);
+	Warehouse warehouse;
 
 	// connect to server
 	OrderQueue queue;

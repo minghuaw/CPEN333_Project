@@ -5,6 +5,8 @@
 #ifndef AMAZOOM_INVENTORYDATABASE_H
 #define AMAZOOM_INVENTORYDATABASE_H
 
+#define ITEM_NOT_FOUND -1
+
 #include <iostream>
 #include <string>
 #include <map>
@@ -18,6 +20,10 @@ class InventoryDatabase{
 private:
     //TODO: supply our own comparator for ItemInfo's, as map internally is a binary tree
     std::map<ItemInfo, int> inventory;						// map of iteminfo to quantity
+	std::map<std::string, int> itemQuantity_;				// map of item name to quantity
+	std::map<std::string, int> itemWeight_;					// map of item name to weight
+	std::map<std::string, Coordinate> itemLocation_;
+	//TODO: use map instead? to simplify the problem
     std::multimap<std::string, Coordinate> itemLocation;    // multimap of itemLocations. One type of item may be store
                                                             // multiple locations
     std::mutex mutex_;										// internal mutex for thread safe operation
@@ -110,26 +116,51 @@ public:
      */
     void changeItemLocation(ItemInfo& itemInfo, Coordinate loc){}
 
+	/**/
+	ItemInfo toItemInfo(std::string itemName) {
+		double weight = itemWeight_[itemName];
+		Coordinate loc = itemLocation_[itemName];
+		
+		return ItemInfo(itemName, weight, loc);
+	}
+
     /**
      * try to find item by its name in the inventory
      * @param itemName item name, std::string
      * @return true if item is found, false if item is not found
      */
-    bool findItem(std::string itemName){}
+    bool findItem(std::string itemName){
+		if (itemQuantity_.find(itemName) == itemQuantity_.end())
+			return false;
+		if (itemWeight_.find(itemName) == itemWeight_.end())
+			return false;
+		if (itemLocation.find(itemName) == itemLocation.end())
+			return false;
+
+		return true;
+	}
 
     /**
      * find the quantity of an item
      * @param itemName name of an item that is in the inventory
-     * @return int quantity of the item
+     * @return int quantity of the item, -1 if item not found
      */
-    int returnItemQuantity(std::string itemName){}
+    int findItemQuantity(std::string itemName){
+		if (itemQuantity_.find(itemName) == itemQuantity_.end())
+			return ITEM_NOT_FOUND;
+		return itemQuantity_[itemName];
+	}
 
     /**
      * find the weight of an item
      * @param itemName name of an item that is in the inventory
      * @return double weight of the item
      */
-    double findItemWeight(std::string itemName){}
+    double findItemWeight(std::string itemName){
+		if (itemWeight_.find(itemName) == itemWeight_.end())
+			return ITEM_NOT_FOUND;
+		return itemWeight_[itemName];
+	}
 
     /**
      * convert InventoryDatabase to a string
