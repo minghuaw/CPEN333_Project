@@ -135,10 +135,6 @@ public:
     return os;
   }
 
-  static Order toOrder(Quote& quote) {
-  
-  }
-
 };
 
 #endif //ORDER_H
