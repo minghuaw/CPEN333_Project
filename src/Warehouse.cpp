@@ -148,11 +148,12 @@ int main(){
 	InventoryDatabase inventory(linfo);
 	// initialize warehouse
 	std::cout << "Starting Warehouse" << std::endl;
-	Warehouse warehouse(inventory);
+	Warehouse warehouse(std::ref(inventory));
 
 	// connect to server
-	OrderQueue queue;
-	connectToServer(std::ref(queue), std::ref(inventory));
+	/*OrderQueue queue;
+	connectToServer(std::ref(queue), std::ref(inventory));*/
+	connectToServer(std::ref(warehouse.robotOrderQueue), std::ref(inventory));
 
 	std::cout << "========================================" << std::endl;
 	cpen333::pause();
