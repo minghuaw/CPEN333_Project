@@ -42,7 +42,9 @@ public:
      * @param itemName name of item
      * @param quantity quantity of item
      */
-    void addItemQuote(std::string itemName, int quantity){}
+    void addItemQuote(std::string itemName, int quantity){
+		quote_.push_back(std::pair<std::string, int>(itemName, quantity));
+	}
 
     /**
      * get an item quote from the quotes and remove pair from the vector from the back

@@ -11,17 +11,19 @@
 #include <string>
 #include <map>
 #include <mutex>
+#include <fstream>
 #include "Coordinate.h"
 #include "Item.h"
 #include "Cell.h"
 #include "Layout.h"
+
 
 class InventoryDatabase{
 private:
     //TODO: supply our own comparator for ItemInfo's, as map internally is a binary tree
     std::map<ItemInfo, int> inventory;						// map of iteminfo to quantity
 	std::map<std::string, int> itemQuantity_;				// map of item name to quantity
-	std::map<std::string, int> itemWeight_;					// map of item name to weight
+	std::map<std::string, double> itemWeight_;					// map of item name to weight
 	std::map<std::string, Coordinate> itemLocation_;
 	//TODO: use map instead? to simplify the problem
     std::multimap<std::string, Coordinate> itemLocation;    // multimap of itemLocations. One type of item may be store
@@ -43,6 +45,7 @@ public:
 	InventoryDatabase(LayoutInfo& linfo) : linfo(linfo) {
 		initCoordinates();
 		initCells();
+		loadItemList(ITEM_LIST);
 	}
 
 	/**
@@ -75,6 +78,26 @@ public:
 			cells.push_back(c);
 			std::string coor_string = coor.toString();
 			coordinate2cell.insert(std::pair<std::string,Cell>(coor_string,c));
+		}
+	}
+
+	/**
+	* load item names and weights from a txt file
+	*/
+	void loadItemList(std::string filename) {
+		std::ifstream fin(filename);
+		std::string itemName;
+		std::string weight;
+
+		// read itemlist file
+		if (fin.is_open()) {
+			while (std::getline(fin, itemName, ',')) {
+				// laze way to populate item list
+				std::getline(fin, weight, '\n');
+				const char *cweight = weight.c_str();
+				itemWeight_.insert(std::pair<std::string, double>(itemName, std::atof(cweight)));
+			}
+			fin.close();
 		}
 	}
 

@@ -109,8 +109,6 @@ static Order& toOrder(Quote& quote, InventoryDatabase& inventory) {
 		name = pair.first;
 		num = pair.second;
 		weight = inventory.findItemWeight(std::ref(name));
-		
-
 	}
 }
 
