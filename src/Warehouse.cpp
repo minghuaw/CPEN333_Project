@@ -116,54 +116,11 @@ int main(){
 	std::cout << "Starting Warehouse" << std::endl;
 	Warehouse warehouse(inventory);
 
-	// connect to server
-	OrderQueue queue;
-	connectToServer(std::ref(queue), std::ref(inventory));
+	// show manager UI
+	warehouse.showManagerUI();
 
-	std::cout << "========================================" << std::endl;
-	cpen333::pause();
-
-	// keep reading commands until the user quits
-	char cmd = 0;
-	while (cmd != CLIENT_QUIT) {
-		print_menu();
-
-		// get menu entry
-		std::cin >> cmd;
-		// gobble newline
-		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-		switch (cmd) {
-		case CLIENT_ADD:
-			//do_add(api);
-			break;
-		case CLIENT_REMOVE:
-			//do_remove(api);
-			break;
-		case CLIENT_SEARCH:
-			//do_search(api);
-			break;
-		case CLIENT_QUIT:
-			//do_goodbye(api);
-			break;
-		default:
-			std::cout << "Invalid command number " << cmd << std::endl << std::endl;
-		}
-
-		cpen333::pause();
-	}
-
-	// wait for user to create robot
-	// spawn robots
-	std::cin.get();
-	if (!warehouse.spawn_robot(1)) {
-		std::cout << "error" << std::endl;
-	}
-
-	// wait for user to quit
-	std::cout << "Press ENTER to quit" << std::endl;
-	std::cin.get();
-	std::cout << "Closing warehouse" << std::endl;
+	//quit
+	warehouse.close();
 
     return 0;
 }

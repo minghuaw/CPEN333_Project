@@ -10,20 +10,25 @@
 
 class Item {
 private:
-    std::string ID;                                // item ID
+    std::string ID;                      // item ID, 'ABC'
     double weight;                                // total weight of the item
 
 public:
-    // TODO: how to construct the item????
-    Item(const std::string ID, const double weight) :
-            ID(ID), weight(weight) {}
+    /**
+	* constructor of item
+	*/
+    Item(std::string ID, const double weight) :weight(weight),ID(ID) {
+	}
 
-    // TODO: what form?
     /**
      * Convert an item to string format
      * @return 	string "[ItemName][ItemWeight]"
      */
-    std::string toString() const {
+    std::string toString() {
+		std::string s;
+		s += ID;
+		s += std::to_string(weight);
+		return s;
     }
 
 
@@ -53,14 +58,14 @@ public:
         return !(a == b);
     }
 
-    /**
-     * overloaded stream operator for printing, std::cout << Item
-     * @return 	item in string format
-     */
-    friend std::ostream &operator<<(std::ostream &os, const Item &item) {
-        os << item.toString();
-        return os;
-    }
+    ///**
+    // * overloaded stream operator for printing, std::cout << Item
+    // * @return 	item in string format
+    // */
+    //friend std::ostream &operator<<(std::ostream &os, const Item &item) {
+    //    os << item.toString();
+    //    return os;
+    //}
 
 };
 
@@ -75,19 +80,23 @@ public:
      * @param weight weight of the item, double
      * @param location location of the item, Coordinate
      */
-    ItemInfo(std::string ID, const double weight, Coordinate location) : Item(ID, weight) {}
+    ItemInfo(std::string ID, const double weight, Coordinate location) : Item(ID, weight), location(location) {}
 
     /**
      * returns the location of the item
      * @return Coordinate
      */
-    Coordinate getLocation() {}
+    Coordinate getLocation() {
+		return location;
+	}
 
     /**
      * set the location of the ItemInfo to loc
      * @param loc coordinate to set the ItemInfo location into
      */
-    void setLocation(Coordinate loc){}
+    void setLocation(Coordinate loc){
+		location = loc;
+	}
 };
 
 

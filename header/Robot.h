@@ -36,12 +36,15 @@ private:
 	int loc_[2];   // current location
 	Robot();	// prevent default constructor
 
+	DynamicQueue<int>& robotPosQueue;
+
 public:
 	int idx_;
 
-    Robot(InventoryDatabase& database): \
+    Robot(InventoryDatabase& database, DynamicQueue<int>& q): \
 		database(database),db_mutex(DB_MUTEX_NAME),\
-		ly_mutex_(LAYOUT_MEMORY_MUTEX_NAME),memory_(LAYOUT_MEMORY_NAME) {
+		ly_mutex_(LAYOUT_MEMORY_MUTEX_NAME),memory_(LAYOUT_MEMORY_NAME),\
+		robotPosQueue(q){
 		{
 			std::unique_lock<decltype(ly_mutex_)> lock(ly_mutex_);
 			linfo_ = memory_->linfo;
@@ -194,8 +197,28 @@ public:
      */
     void updateOrderFinished(){}
 
+	/**
+	* set position to -1,-1 to signal layout to remove me
+	*/
+	void removeMe() {
+		loc_[COL_IDX] = -1;
+		loc_[ROW_IDX] = -1;
+		{
+			// update position
+			std::unique_lock<decltype(ly_mutex_)> lock(ly_mutex_);
+			memory_->rinfo.rloc[idx_][COL_IDX] = loc_[COL_IDX];
+			memory_->rinfo.rloc[idx_][ROW_IDX] = loc_[ROW_IDX];
+		}
+	}
+
 	int main() {
-		go(1, 1);
+		size_t target = 0;
+		// TODO: replace -1 with poision pill
+		while (target != -1) {
+			target = robotPosQueue.get();
+			go(target, target);
+		}
+		removeMe();
 		return 0;
 	}
 };

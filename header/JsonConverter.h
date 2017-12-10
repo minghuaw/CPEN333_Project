@@ -272,6 +272,94 @@ public:
 		}
 	}
 
+	static std::pair<std::string, int> parsePair(const JSON& jmsg) {
+		std::string itemName = jmsg[MESSAGE_ITEM_NAME];
+		int num = jmsg[MESSAGE_ITEM_QUANTITY];
+
+		return std::pair< std::string, int>(itemName, num);
+	}
+
+	static std::vector<std::pair<std::string, int>> parseVector(JSON& jmsg) {
+		std::vector<std::pair<std::string, int>> items;
+
+		for (JSON& j_item : jmsg) {
+			items.push_back(parsePair(j_item));
+		}
+		
+		return items;
+	}
+
+	/**/
+	static AddMessage parseAdd(JSON& jmsg) {
+		std::cout << "client id" << jmsg[MESSAGE_CLIENT_ID] << std::endl;
+		int cliendID = jmsg[MESSAGE_CLIENT_ID];
+		Quote quote(parseVector(jmsg[MESSAGE_ORDER]));
+		AddMessage add(quote, cliendID);
+		
+		return add;
+	}
+
+	/**
+	* Detects the message type from a JSON object
+	* @param jmsg JSON object
+	* @return message type
+	*/
+	static MessageType parseType(const JSON& jmsg) {
+		std::string type = jmsg[MESSAGE_TYPE];
+
+		if (type == MESSAGE_ADD) { return MessageType::ADD; }
+		else if (type == MESSAGE_ADD_RESPONSE) { return MessageType::ADD_RESPONSE; }
+		else if (type == MESSAGE_REMOVE) { return MessageType::REMOVE; }
+		else if (type == MESSAGE_REMOVE_RESPONSE) { return MessageType::REMOVE_RESPONSE; }
+		else if (type == MESSAGE_SEARCH) { return MessageType::SEARCH; }
+		else if (type == MESSAGE_SEARCH_RESPONSE) { return MessageType::SEARCH_RESPONSE; }
+		else if (type == MESSAGE_REMOVE_ITEM) { return MessageType::REMOVE_ITEM; }
+		else if (type == MESSAGE_REMOVE_ITEM_RESPONSE) { return MessageType::REMOVE_ITEM_RESPONSE; }
+		else if (type == MESSAGE_SEARCH_ITEM) { return MessageType::SEARCH_ITEM; }
+		else if (type == MESSAGE_SEARCH_ITEM_RESPONSE) { return MessageType::SEARCH_ITEM_RESPONSE; }
+		else { return MessageType::GOODBYE; }
+	}
+
+	static std::unique_ptr<Message> parseMessage(JSON& jmsg) {
+		std::cout << "[parser]" << jmsg.dump() << std::endl;
+		MessageType type = parseType(jmsg);
+
+		switch (type)
+		{
+		case ADD:
+			return std::unique_ptr<Message>(new AddMessage(parseAdd(jmsg)));
+			break;
+		case ADD_RESPONSE:
+			break;
+		case REMOVE:
+			break;
+		case REMOVE_RESPONSE:
+			break;
+		case REMOVE_ITEM:
+			break;
+		case REMOVE_ITEM_RESPONSE:
+			break;
+		case SEARCH:
+			break;
+		case SEARCH_RESPONSE:
+			break;
+		case SEARCH_ITEM:
+			break;
+		case SEARCH_ITEM_RESPONSE:
+			break;
+		case GOODBYE:
+			break;
+		default:
+			break;
+		}
+	}
+
+	static std::unique_ptr<Message> parseMessage(const std::string& jstr) {
+		JSON j;
+		j = JSON::parse(jstr);
+		return parseMessage(j);
+	}
+
 private:
 
 };
