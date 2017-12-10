@@ -92,15 +92,19 @@ public:
 			int newc = rinfo.rloc[i][COL_IDX];
 			mutex_.unlock();
 
-			if (newc != lastpos_[i][COL_IDX] || newr != lastpos_[i][ROW_IDX]) {
+			if (newc == -1 && newr == -1) {
+				display_.set_cursor_position(YOFF + lastpos_[i][ROW_IDX], XOFF + lastpos_[i][COL_IDX]);
+				std::printf("%c", EMPTY_CHAR);
+			}
+			else if (newc != lastpos_[i][COL_IDX] || newr != lastpos_[i][ROW_IDX]) {
 				// zero out last spot and update known location
 				display_.set_cursor_position(YOFF + lastpos_[i][ROW_IDX], XOFF + lastpos_[i][COL_IDX]);
 				std::printf("%c", EMPTY_CHAR);
 				lastpos_[i][COL_IDX] = newc;
 				lastpos_[i][ROW_IDX] = newr;
-			}
-			display_.set_cursor_position(YOFF + newr, XOFF + newc);
-			std::printf("%c", me);
+				display_.set_cursor_position(YOFF + newr, XOFF + newc);
+				std::printf("%c", me);
+			}	
 		}
 	}
 			// TODO: verify if this needs to be uncommented

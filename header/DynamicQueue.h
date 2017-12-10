@@ -25,7 +25,7 @@ class DynamicQueue{
 		/**
 		* Creates the dynamic queue
 		*/
-		DynamicQueue() {}
+		DynamicQueue():buff_(), mutex_(), cv_() {}
 			
 		/**
 		* Adds an template obj to the queue
@@ -54,7 +54,6 @@ class DynamicQueue{
 				out = buff_.front();
 				buff_.pop_front();
 			}
-
 			return out;
 		}
 

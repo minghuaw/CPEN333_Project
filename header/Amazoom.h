@@ -30,13 +30,14 @@
 
 #define COL_IDX 0
 #define ROW_IDX 1
-
-#define ROBOT_HOME_COL = A
-#define ROBOT_HOME_ROW = 1
+#define SHELF_LEVEL 3 // each shelf has 3 levels
+#define CELL_CAPACITY 5 // each cell can hold 5kg items
 
 #define MAX_LAYOUT_COL 80
 #define MAX_LAYOUT_ROW 80
 
 #define MAX_ROBOT 50
+
+#define ITEM_LIST "../data/itemList.txt"
 
 #endif // AMAZOOM_H

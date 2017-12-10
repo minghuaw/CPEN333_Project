@@ -8,6 +8,8 @@
 #include "Amazoom.h"
 #include "Robot.h"
 #include "InventoryDatabase.h"
+#include "ManagerUI.h"
+
 
 #include <cpen333/process/semaphore.h>
 #include <cpen333/process/shared_memory.h>
@@ -23,6 +25,73 @@
 #include <string>
 #include <random>
 #include <ctime>
+
+/**
+* Reads layoutinfo from a filename and populates the layoutinfo
+* Create the Layout object that contains the cell information
+* @param filename file to load layout from
+* @param linfo layout info to populate
+*/
+void loadLayoutInfo(const std::string& filename, LayoutInfo& linfo) {
+	// initialize number of rows and columns
+	linfo.rows = 0;
+	linfo.cols = 0;
+
+	std::ifstream fin(filename);
+	std::string line;
+
+	// read layout file
+	if (fin.is_open()) {
+		int row = 0;  // zeroeth row
+		while (std::getline(fin, line)) {
+			int cols = line.length();
+			if (cols > 0) {
+				// longest row defines columns
+				if (cols > linfo.cols) {
+					linfo.cols = cols;
+				}
+				for (size_t col = 0; col<cols; ++col) {
+					linfo.layout[col][row] = line[col];
+				}
+				++row;
+			}
+		}
+		linfo.rows = row;
+		fin.close();
+	}
+}
+
+/**
+* main menu for manager, called by showManagerUI()
+*/
+void print_mainmenu() {
+
+	std::cout << "=========================================" << std::endl;
+	std::cout << "=              MAIN  MENU               =" << std::endl;
+	std::cout << "=========================================" << std::endl;
+	std::cout << " (R) Add Robot" << std::endl;
+	std::cout << " (T) Remove Robot" << std::endl;
+	std::cout << " (A) Start Restock Order" << std::endl;
+	std::cout << " (Q) Quit" << std::endl;
+	std::cout << "=========================================" << std::endl;
+	std::cout << "Enter Letter: ";
+	std::cout.flush();
+}
+
+/**
+* order menu for manager, called by showManagerUI()
+*/
+void print_ordermenu() {
+	std::cout << "=========================================" << std::endl;
+	std::cout << "=            ORDER MENU                 =" << std::endl;
+	std::cout << "=========================================" << std::endl;
+	std::cout << " (A) Add Item" << std::endl;
+	std::cout << " (C) Place Order" << std::endl;
+	std::cout << " (Q) Cancel" << std::endl;
+	std::cout << "=========================================" << std::endl;
+	std::cout << "Enter Letter: ";
+	std::cout.flush();
+}
 
 class Warehouse{
 private:
@@ -46,8 +115,15 @@ private:
 	// vector of robots
 	std::vector<Robot*> robots;
 
-	// TODO: temporary order queue
-	DynamicQueue<std::pair<int,int>> robotOrderQueue;
+	// Queues
+	OrderQueue robotOrderQueue;
+	OrderQueue truckOrderQueue;
+	ItemQueue loadingQueue;
+	ItemQueue unloadingQueue;
+	TruckQueue truckQueue;
+
+	// store a map of items and its weight
+	std::map<std::string, double> itemName2weight;			// map item name to weight
 
 public:
 	/**
@@ -139,7 +215,7 @@ public:
 	bool spawn_robot(int quantity) {
 		for (int i = 0; i < quantity; i++) {
 			if (robots.size() < MAX_ROBOT) {
-				Robot* r = new Robot(inventory);
+				Robot* r = new Robot(inventory,robotPosQueue);
 				robots.push_back(r);
 				r->start();
 			}
@@ -149,11 +225,6 @@ public:
 		}
 		return true;
 	}
-
-    /**
-     * start warehouse computer in a separate thread
-     */
-    void startWarehouseComputer(){}
 
     /**
      * start remote server in a separate console/process
@@ -206,7 +277,11 @@ public:
 	* place an order in the robotOrderQueue or truckOrderQueue depend on the order type
 	* @param order		order to be placed
 	*/
-	void placeOrderInQueue(Order order) {}
+	//void placeOrderInQueue(Order order) {}
+	// TODO: replace this with actual order
+	void placeOrderInQueue(int col) {
+		robotPosQueue.add(col);
+	}
 
 	/**
 	* find the weight of an order
@@ -228,55 +303,76 @@ public:
 	* @return true if order is removed, false otherwise
 	*/
 	bool removeOrder(Order& order) {}
-};
 
-/**
-* Reads layoutinfo from a filename and populates the layoutinfo
-* Create the Layout object that contains the cell information
-* @param filename file to load layout from
-* @param linfo layout info to populate
-*/
-void loadLayoutInfo(const std::string& filename, LayoutInfo& linfo) {
-	// initialize number of rows and columns
-	linfo.rows = 0;
-	linfo.cols = 0;
+	/**
+	* show manager UI, loop until user quits
+	*/
+	void showManagerUI() {
+		// keep reading commands until the user quits
+		char cmd = 0;
+		char order_cmd = 0;
+		int quantity = 0;
+		std::string s = "";
+		while (cmd != MANAGER_QUIT) {
+			print_mainmenu();
 
-	std::ifstream fin(filename);
-	std::string line;
+			// get menu entry
+			std::cin >> cmd;
+			// gobble newline
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-	// read layout file
-	if (fin.is_open()) {
-		int row = 0;  // zeroeth row
-		while (std::getline(fin, line)) {
-			int cols = line.length();
-			if (cols > 0) {
-				// longest row defines columns
-				if (cols > linfo.cols) {
-					linfo.cols = cols;
+			switch (cmd) {
+			case ADD_ROBOT:
+				std::cout << "Enter number of robots to be added" << std::endl;
+				std::cin >> quantity;
+				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+				if (!spawn_robot(quantity)) {
+					std::cout << "error" << std::endl;
 				}
-				for (size_t col = 0; col<cols; ++col) {
-					linfo.layout[col][row] = line[col];
+				break;
+			case REMOVE_ROBOT:
+				break;
+			case ADD_ORDER:
+				// create a new order
+
+				// order menu starts
+				while (order_cmd != MANAGER_QUIT && order_cmd != CONFIRM_ORDER) {
+					print_ordermenu();
+					// get menu entry
+					std::cin >> order_cmd;
+					// gobble newline
+					std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+					switch (order_cmd) {
+					case ADD_ITEM:
+						// add iteminfo to order
+						std::cout << "Enter ID of item to be added" << std::endl;
+						std::cin >> s;
+						std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+						std::cout << "Enter number of items to be added" << std::endl;
+						std::cin >> quantity;
+						std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+						break;
+					case CONFIRM_ORDER:
+						// place order in queue
+						break;
+					case MANAGER_QUIT:
+						break;
+					default:
+						std::cout << "Invalid command number " << cmd << std::endl << std::endl;
+					}
 				}
-				++row;
+				break;
+			case MANAGER_QUIT:
+				std::cout << "Closing warehouse" << std::endl;
+				break;
+			default:
+				std::cout << "Invalid command number " << cmd << std::endl << std::endl;
 			}
+
+			cpen333::pause();
 		}
-		linfo.rows = row;
-		fin.close();
 	}
-}
-
-void print_menu() {
-
-	std::cout << "=========================================" << std::endl;
-	std::cout << "=                  MENU                 =" << std::endl;
-	std::cout << "=========================================" << std::endl;
-	std::cout << " (1) Add Robot" << std::endl;
-	std::cout << " (2) Remove Robot" << std::endl;
-	std::cout << " (3) Search Order" << std::endl;
-	std::cout << " (10) Quit" << std::endl;
-	std::cout << "=========================================" << std::endl;
-	std::cout << "Enter number: ";
-	std::cout.flush();
-}
+};
 
 #endif //AMAZOOM_WAREHOUSE_H

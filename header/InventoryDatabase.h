@@ -23,26 +23,54 @@ private:
     std::mutex mutex_;										// internal mutex for thread safe operation
 	std::map<std::string, Cell> coordinate2cell;			// map coordinate to storage cells
 
-public:
 	LayoutInfo linfo;										// layout information from text file
 
+	std::vector<Cell> cells;								// list of cells
+	std::vector<Coordinate> coors;							// list of coors
+
+	InventoryDatabase();	// prevent default
+
+public:
     /**
      * default constructor, creates an empty inventory
      */
-    InventoryDatabase(LayoutInfo& linfo): linfo(linfo){}
-
-    //TODO: Add another constructor
-
-	/**
-	* init a vector of coordinates objects based on layout info and map it to coordinate
-	*/
-	void initCoordinates() {
+	InventoryDatabase(LayoutInfo& linfo) : linfo(linfo) {
+		initCoordinates();
+		initCells();
 	}
 
 	/**
-	* init a vector of cell objects and map it to coordinate
+	* init a vector of coordinates objects based on layout info
 	*/
-	void initCells() {}
+	void initCoordinates() {
+		for (int r = 0; r < linfo.rows; ++r) {
+			for (int c = 0; c < linfo.cols; ++c) {
+				char ch = linfo.layout[c][r];
+				if (ch == SHELF_CHAR) {
+					for (int level = 0; level < SHELF_LEVEL; level++) {
+						char side = 'L';
+						coors.push_back(Coordinate(c, r, side, level));
+					}
+					for (int level = 0; level < SHELF_LEVEL; level++) {
+						char side = 'R';
+						coors.push_back(Coordinate(c, r, side, level));
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	* init a vector of cells and map cells to coordinate
+	*/
+	void initCells() {
+		for (auto coor : coors) {
+			Cell c;
+			cells.push_back(c);
+			std::string coor_string = coor.toString();
+			coordinate2cell.insert(std::pair<std::string,Cell>(coor_string,c));
+		}
+	}
 
     /**
      * add additional entry with quantity if ItemInfo is not in inventory
