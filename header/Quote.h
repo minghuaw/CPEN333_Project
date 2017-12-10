@@ -9,8 +9,9 @@
 
 class Quote {
 private:
-    std::vector<std::pair<std::string,int>> quotes;
 public:
+    std::vector<std::pair<std::string,int>> quote_;
+
     /**
      * default constructor
      */
@@ -22,6 +23,13 @@ public:
      * @param quantity item wanted wanted
      */
     Quote(std::string itemName, int quantity){}
+
+	/**
+	* constructor
+	* @param itemName single item name
+	* @param quantity item wanted wanted
+	*/
+	Quote(std::vector<std::pair<std::string, int>>&& quote): quote_(quote) {}
 
     /**
      * constructor
