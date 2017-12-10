@@ -11,21 +11,38 @@
 #include <mutex>
 #include "Coordinate.h"
 #include "Item.h"
+#include "Cell.h"
+#include "Layout.h"
 
 class InventoryDatabase{
 private:
     //TODO: supply our own comparator for ItemInfo's, as map internally is a binary tree
-    std::map<ItemInfo, int> inventory;              // map of iteminfo to quantity
+    std::map<ItemInfo, int> inventory;						// map of iteminfo to quantity
     std::multimap<std::string, Coordinate> itemLocation;    // multimap of itemLocations. One type of item may be store
                                                             // multiple locations
-    std::mutex mutex_;              // internal mutex for thread safe operation
+    std::mutex mutex_;										// internal mutex for thread safe operation
+	std::map<std::string, Cell> coordinate2cell;			// map coordinate to storage cells
+
 public:
+	LayoutInfo linfo;										// layout information from text file
+
     /**
      * default constructor, creates an empty inventory
      */
-    InventoryDatabase(){}
+    InventoryDatabase(LayoutInfo& linfo): linfo(linfo){}
 
     //TODO: Add another constructor
+
+	/**
+	* init a vector of coordinates objects based on layout info and map it to coordinate
+	*/
+	void initCoordinates() {
+	}
+
+	/**
+	* init a vector of cell objects and map it to coordinate
+	*/
+	void initCells() {}
 
     /**
      * add additional entry with quantity if ItemInfo is not in inventory

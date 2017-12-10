@@ -11,28 +11,27 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <cpen333\process\mutex.h>
 
 #include "InventoryDatabase.h"
 #include "DynamicQueue.h"
-#include "Layout.h"
 #include "Coordinate.h"
 
 class WarehouseComputer{
     private:
-		InventoryDatabase database;
 		OrderQueue robotOrderQueue;
 		OrderQueue truckOrderQueue;
 		ItemQueue loadingQueue;
 		ItemQueue unloadingQueue;
 		TruckQueue truckQueue;
-		Layout warehouseLayout;
-		std::mutex db_mutex_;			// synchronization of database
+		InventoryDatabase& inventory;
+		cpen333::process::mutex db_mutex_;			// synchronization of database
 	
     public:
 		/**
 		 * Constructor for Coordinate class
 		 */
-		WarehouseComputer(){}
+		WarehouseComputer(InventoryDatabase& inventory): inventory(inventory), db_mutex_(DB_MUTEX_NAME){}
 		
 		/**
 		 * return the coordinate and the corresponding quantity of item by finding item name. Executed after a quote is received.

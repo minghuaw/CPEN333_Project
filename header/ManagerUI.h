@@ -1,0 +1,6 @@
+#ifndef AMAZOOM_MANAGERUI_H
+#define AMAZOOM_MANAGERUI_H
+
+#define QUIT '10'
+
+#endif //AMAZOOM_MANAGERUI_H

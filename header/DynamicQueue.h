@@ -15,7 +15,6 @@
 #include <deque>
 
 template <class T>
-
 class DynamicQueue{
 	private:
 		std::deque<T> buff_;
@@ -26,8 +25,7 @@ class DynamicQueue{
 		/**
 		* Creates the dynamic queue
 		*/
-		DynamicQueue() :
-			buff_(), mutex_(), cv_(){}
+		DynamicQueue() {}
 			
 		/**
 		* Adds an template obj to the queue
@@ -62,46 +60,46 @@ class DynamicQueue{
 
 };
 
-class ItemQueue: public DynamicQueue{
+class ItemQueue: public DynamicQueue<Item>{
 	public:
 		/**
 		* Creates the dynamic item queue
 		*/
-		ItemQueue(): DynamicQueue() {}
+		ItemQueue() {}
 };
 
-class QuoteQueue: public DynamicQueue{
+class QuoteQueue: public DynamicQueue<Quote>{
 	public:
 		/**
 		* Creates the dynamic quote queue
 		*/
-		QuoteQueue(): DynamicQueue() {}
+		QuoteQueue(){}
 };
 
-class TruckQueue: public DynamicQueue{
+class TruckQueue: public DynamicQueue<TruckInfo>{
 	public:
 		/**
 		* Creates the dynamic truck queue
 		*/
-		TruckQueue(): DynamicQueue() {}
+		TruckQueue(){}
 };
 
-class MessageQueue: public DynamicQueue{
+class MessageQueue: public DynamicQueue<std::string>{
 	public:
 		/**
 		* Creates the dynamic message queue
 		*/
-		MessageQueue(): DynamicQueue() {}
+		MessageQueue() {}
 };
 
-class OrderQueue: public DynamicQueue{
+class OrderQueue: public DynamicQueue<Order>{
 	private:
 		int processIndex;
 	public:
 		/**
 		* Creates the dynamic order queue
 		*/
-		OrderQueue(): DynamicQueue() {}
+		OrderQueue() {}
 		
 		/**
 		* Try to get an order that weighs less than or equal to the specified weight

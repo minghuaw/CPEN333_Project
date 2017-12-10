@@ -7,9 +7,6 @@
 #define AMAZOOM_LAYOUT_H
 
 #include "Amazoom.h"
-#include "Cell.h"
-#include "Coordinate.h"
-#include <map>
 
 struct LayoutInfo {
     int rows;           // rows in warehouse
@@ -19,19 +16,14 @@ struct LayoutInfo {
 
 struct RobotInfo {
     int nrobots;      // number robots
-    int rloc[MAX_ROBOTS][2];   // robot locations [col][row]
+    int rloc[MAX_ROBOT][2];   // robot locations [col][row]
 };
 
 struct SharedData {
     LayoutInfo linfo;    // layout info
     RobotInfo rinfo;  // robot info
     bool quit;         // tell everyone to quit
-    int  magic;        // magic number for detecting initialization
+    int  magic = 0;        // magic number for detecting initialization
 };
 
-class Layout{
-    protected:
-        std::map<std::string, Cell> coordinate2cell;        // map coordinate to storage cells
-};
-
-#endif //AMAZOOM_LAYOUT_H
+#endif /*AMAZOOM_LAYOUT_H*/
