@@ -208,7 +208,6 @@ public:
 	*/
 	void init_robots() {
 		RobotInfo& rinfo = memory_->rinfo;
-		std::cout << "initialize robots" << std::endl;
 		rinfo.nrobots = 0;
 		for (size_t i = 0; i<MAX_ROBOTS; ++i) {
 			rinfo.rloc[i][COL_IDX] = home[COL_IDX];
