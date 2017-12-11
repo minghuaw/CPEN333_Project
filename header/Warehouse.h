@@ -199,7 +199,7 @@ public:
 	bool spawn_robot(int quantity) {
 		for (int i = 0; i < quantity; i++) {
 			if (robots.size() < MAX_ROBOTS) {
-				Robot* r = new Robot(inventory, robotOrderQueue);
+				Robot* r = new Robot(std::ref(inventory), std::ref(robotOrderQueue),std::ref(unloadingQueue));
 				robots.push_back(r);
 				r->start();
 			}
@@ -234,7 +234,7 @@ public:
 	bool spawn_dtruck(int quantity) {
 		for (int i = 0; i < quantity; i++) {
 			if (dTrucks.size() < MAX_TRUCKS) {
-				DeliveryTruck* d = new DeliveryTruck(loadingQueue);
+				DeliveryTruck* d = new DeliveryTruck(std::ref(loadingQueue));
 				dTrucks.push_back(d);
 				d->start();
 			}
@@ -252,7 +252,7 @@ public:
 	bool spawn_rtruck(int quantity) {
 		for (int i = 0; i < quantity; i++) {
 			if (rTrucks.size() < MAX_TRUCKS) {
-				RestockTruck* r = new RestockTruck(truckOrderQueue, unloadingQueue);
+				RestockTruck* r = new RestockTruck(std::ref(truckOrderQueue), std::ref(unloadingQueue));
 				rTrucks.push_back(r);
 				r->start();
 			}

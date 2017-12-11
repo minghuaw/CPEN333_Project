@@ -139,14 +139,15 @@ public:
 
 	int main() {
 		while (!check_quit()) {
-			if (dock()) {
-				Order o = truckOrderQueue.getOrder();
-				if (o.returnOrderID() == POISION_ID)
-					break;
-				else {
+			Order o = truckOrderQueue.getOrder();
+			if (o.returnOrderID() == POISION_ID)
+				break;
+			else {
+				if (dock()) {
 					waitTillEmpty(o);
+					std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 					notifyLeaving();
-				}
+				}	
 			}
 		}
 		return 0;

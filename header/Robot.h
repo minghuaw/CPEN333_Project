@@ -28,7 +28,7 @@ private:
 
     std::vector<std::pair<Item,int>> items;
     
-    ItemQueue unloadingQueue;
+    ItemQueue& unloadingQueue;
     OrderQueue& robotOrderQueue;
     cpen333::process::mutex db_mutex;       // for database protection
     InventoryDatabase& database;			// shared database
@@ -40,10 +40,10 @@ private:
 public:
 	int idx_;
 
-    Robot(InventoryDatabase& database, OrderQueue& q): \
+    Robot(InventoryDatabase& database, OrderQueue& q, ItemQueue& unloadingq): \
 		database(database),db_mutex(DB_MUTEX_NAME),\
 		mutex_(WAREHOUSE_MEMORY_MUTEX_NAME),memory_(WAREHOUSE_MEMORY_NAME),\
-		robotOrderQueue(q){
+		robotOrderQueue(q),unloadingQueue(unloadingq){
 		{
 			std::unique_lock<decltype(mutex_)> lock(mutex_);
 			linfo_ = memory_->linfo;
@@ -154,6 +154,7 @@ public:
 			loc_[ROW_IDX] = r + 1;
 			int success = go(col,row);
 			if (success != 0) {
+				linfo_ = memory_->linfo;		// renew the local copy to get rid off the virutal walls
 				return success;
 			}
 		}
@@ -177,10 +178,19 @@ public:
 
 	/**
 	* let the robot go to coordinate, call go
+	* convert letter column to int
 	* @param coor	coordinate of item
 	*/
 	void goToCoordinate(Coordinate coor) {
-		std::cout << coor.toString() << std::endl;
+		char col_c = coor.getCol();
+		int col = col_c - 'A';
+		int row = coor.getRow();
+		char side = coor.getSide();
+		if (side == 'L')
+			col--;
+		else
+			col++;
+		go(col, row);
 	}
 
     /**
@@ -213,19 +223,40 @@ public:
 	}
 
 	/**
+	* let robot go home
+	*/
+	void homeRobot() {
+		if (go(linfo_.home[COL_IDX], linfo_.home[ROW_IDX] - 1)) {
+			loc_[COL_IDX] = linfo_.home[COL_IDX];
+			loc_[ROW_IDX] = linfo_.home[ROW_IDX];
+			{
+				// update position
+				std::unique_lock<decltype(mutex_)> lock(mutex_);
+				memory_->rinfo.rloc[idx_][COL_IDX] = loc_[COL_IDX];
+				memory_->rinfo.rloc[idx_][ROW_IDX] = loc_[ROW_IDX];
+			}
+		}
+
+	}
+
+	/**
 	* parse the iteminfo in an order, call go continously
 	*/
 	void parse_order(Order& o) {
+		// if the order is from manager
 		if (o.returnOrderType() == OrderType::MANAGER) {
+			// go to unloading bay
 			if (go(linfo_.unloading[COL_IDX], linfo_.unloading[ROW_IDX]-1)) {
-				std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+				std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // hold on there for a bit
 				while (true) {
+					// continously get iteminfo from queue
 					ItemInfo i = unloadingQueue.get();
 					if (i.getID() == POISION_ID)
 						break;
 					else {
 						goToCoordinate(i.getLocation());
-						std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+						database.addItemInfo(i);
+						std::this_thread::sleep_for(std::chrono::milliseconds(1000)); // hold on there for a bit
 					}
 				}
 			}
@@ -252,6 +283,7 @@ public:
 				break;
 			else {
 				parse_order(o);
+				homeRobot();
 			}
 		}
 		removeMe();

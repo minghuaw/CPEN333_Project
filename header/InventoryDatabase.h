@@ -141,7 +141,11 @@ public:
      * @param quantity quantity of the itemiInfo to add into inventory
      * @return true if addition is successful/warehouse not full, false if warehouse full
      */
-    bool addItemInfo(ItemInfo& itemInfo, int quantity){}
+    void addItemInfo(ItemInfo& itemInfo){
+		std::string itemName = itemInfo.getID();
+		std::lock_guard<decltype(mutex_)> lock(mutex_);
+		itemQuantity_[itemName] ++;
+	}
 
     /**
      * reduce quantity of an ItemInfo
