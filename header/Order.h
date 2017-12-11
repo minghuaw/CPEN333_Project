@@ -56,6 +56,7 @@ public:
     * @return 	status of order
     */
     OrderStatus returnOrderStatus() {
+		return status;
     }
    
     /**
@@ -63,6 +64,7 @@ public:
     * @param newStatus	status of an order to be changed
     */
     void changeOrderStatus(OrderStatus newStatus) {
+		status = newStatus;
     }
    
     /**

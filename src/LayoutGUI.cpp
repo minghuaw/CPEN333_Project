@@ -181,7 +181,7 @@ public:
 			double cap;
 			mutex_.lock();
 			s = tinfo.rtruckStatus[i];
-			cap = tinfo.dcapcity[i];
+			cap = tinfo.rcapcity[i];
 			mutex_.unlock();
 			// set print location and increase count
 			display_.set_cursor_position(YOFF + print_count, XOFF + colwidth + 2);
