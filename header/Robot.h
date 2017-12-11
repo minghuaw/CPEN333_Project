@@ -245,7 +245,7 @@ public:
 	/**
 	* parse the iteminfo in an order, call go continously
 	*/
-	void parse_order(Order& o) {
+	void process_order(Order& o) {
 		// change order status
 		robotOrderQueue.updateOrderStatus(o.returnOrderID(), OrderStatus::PROCESSING);
 
@@ -268,7 +268,7 @@ public:
 			}
 		}
 		else {
-			std::cout << "client order" << std::endl;
+			//std::cout << "client order" << std::endl;
 			std::pair<ItemInfo, int> itemInfo;
 			while (o.getItemInfo(itemInfo)) {
 				Coordinate coor = database.findItemLocation(itemInfo.first.getID());
@@ -278,6 +278,7 @@ public:
 				for (int i = 0; i < itemInfo.second; i++)
 					loadingQueue.add(itemInfo.first);
 			}
+			go(linfo_.loading[COL_IDX], linfo_.loading[ROW_IDX]-1);
 			loadingQueue.add(ItemInfo(POISION_ID));		// signal truck for finish
 		}
 
@@ -306,6 +307,8 @@ public:
 			return t_info.dcapcity[i];
 	}
 
+	void process_manager_order(){}
+
 	/**
 	* Checks if we are supposed to quit
 	* @return true if memory tells us to quit
@@ -323,7 +326,7 @@ public:
 			if (o.returnOrderID() == POISION_ID)
 				break;
 			else {
-				parse_order(std::ref(o));
+				process_order(std::ref(o));
 				homeRobot();
 			}
 		}

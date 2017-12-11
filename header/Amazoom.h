@@ -44,6 +44,7 @@
 #define TRUCK_DEPARTURE 'D'
 #define NO_DTRUCK_DOCKED '-1'
 #define TRUCK_CAPACITY 450		// 450Kg accodring to federal regislation
+#define TRUCK_CAPACITY_VARIATION 50	// 100 kg variation
 #define FULL_RATIO 0.8
 
 #define POISION_ID "-1"

@@ -110,6 +110,7 @@ public:
     * @return 	order in string format
     */
     std::string toString() const {
+		return "";
     }
 
     /**
@@ -143,45 +144,45 @@ public:
 	}
    
 
-    /**
-    * less-than operator for comparisons, sort by order ID
-    * @param a	order to be compared
-    * @param b	order to be compared
-    * @return 	true if order a smaller than order b, false otherwise
-    */
-    friend bool operator<(const Order& a, const Order& b) {
-    if (a.ID < b.ID) {
-        return true;
-    }
-    else {
-        return false;
-    }
-    }
+  //  /**
+  //  * less-than operator for comparisons, sort by order ID
+  //  * @param a	order to be compared
+  //  * @param b	order to be compared
+  //  * @return 	true if order a smaller than order b, false otherwise
+  //  */
+  //  friend bool operator<(const Order& a, const Order& b) {
+  //  if (a.ID < b.ID) {
+  //      return true;
+  //  }
+  //  else {
+  //      return false;
+  //  }
+  //  }
 
-   /**
-   * equal-to operator for comparisons, ID must match 
-   * @return 	true if order IDs are the same, false otherwise
-   */
-  friend bool operator==(const Order& a, const Order& b) {
-    return (a.ID == b.ID);
-  }
+  // /**
+  // * equal-to operator for comparisons, ID must match 
+  // * @return 	true if order IDs are the same, false otherwise
+  // */
+  //friend bool operator==(const Order& a, const Order& b) {
+  //  return (a.ID == b.ID);
+  //}
 
-  /**
-   * not-equal-to operator for comparisons
-   * @return 	true if order IDs are not the same, false otherwise
-   */
-  friend bool operator!=(const Order& a, const Order& b) {
-    return !(a == b);
-  }
+  ///**
+  // * not-equal-to operator for comparisons
+  // * @return 	true if order IDs are not the same, false otherwise
+  // */
+  //friend bool operator!=(const Order& a, const Order& b) {
+  //  return !(a == b);
+  //}
 
-  /**
-   * overloaded stream operator for printing, std::cout << Order
-   * @return 	order in string format
-   */
-  friend std::ostream& operator<<(std::ostream& os, const Order& order) {
-    os << order.toString();
-    return os;
-  }
+  ///**
+  // * overloaded stream operator for printing, std::cout << Order
+  // * @return 	order in string format
+  // */
+  //friend std::ostream& operator<<(std::ostream& os, const Order& order) {
+  //  os << order.toString();
+  //  return os;
+  //}
 };
 
 #endif //ORDER_H

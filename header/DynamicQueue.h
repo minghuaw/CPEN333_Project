@@ -163,11 +163,10 @@ class OrderQueue: public DynamicQueue<Order>{
 				while (buff_.size() <= processIndex) {
 					cv_.wait(lock);
 				}
-				// get first item in queue
-				outorder = buff_.at(processIndex);
 				processIndex++;
+				// get first item in queue
+				return buff_.at(processIndex);
 			}
-			return outorder;
 		}
 
 		/**
@@ -231,7 +230,6 @@ class OrderQueue: public DynamicQueue<Order>{
 				if (orderID == od.returnOrderID()) {
 					outorder = od;
 					return true;			
-						
 				}
 			}
 			return false;

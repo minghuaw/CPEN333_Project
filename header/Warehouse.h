@@ -306,26 +306,29 @@ public:
 	* so that robots know to go to trucks
 	* @param quote		restocking quote to be confirmed by warehouse
 	* @param outorder	output order
-	* @return always return true
+	* @return return true if there is a truck can hold
 	*/
 	bool confirmRestockingQuote(Quote quote, Order& outorder) {
-		std::string itemName;
-		int num;
-		std::string orderID;
+		std::string orderID = "M0" + std::to_string(orderCounter);
+		Order order = Warehouse::toOrder(std::ref(orderID), std::ref(quote),
+			std::ref(database), OrderType::MANAGER);
 
-		for (auto& pair : quote.quote_) {
-			itemName = pair.first;
-			num = pair.second;
-
-			// find item
-			std::string orderID = "M0" + std::to_string(orderCounter);
-			Order order = Warehouse::toOrder(std::ref(orderID), std::ref(quote),
-				std::ref(database), OrderType::MANAGER);
+		if (order.getOrderWeight() < TRUCK_CAPACITY - TRUCK_CAPACITY_VARIATION / 2) {		// if order is for sure smaller than lowest capacity
 			outorder = order;
 			orderCounter++;		// increase order index
+			return true;
 		}
-
-		return true;
+		else {
+			for (auto& t : rTrucks) {
+				if (order.getOrderWeight() <= t->returnCapacity()) {	// if order is smaller than any of the truck capacity
+					outorder = order;
+					orderCounter++;		// increase order index
+					return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 
 	/**
@@ -489,12 +492,16 @@ public:
 					case CONFIRM_ORDER:
 					{
 						Order restockOrder;
-						confirmRestockingQuote(quote, restockOrder);
-						// push manager order to robot order queue
-						robotOrderQueue.addOrder(restockOrder);
-						// push manager order to truck order queue
-						truckOrderQueue.addOrder(restockOrder);
-						std::cout << "Restock order added to queue" << std::endl;
+						if (confirmRestockingQuote(quote, restockOrder)) {
+							// push manager order to robot order queue
+							robotOrderQueue.addOrder(restockOrder);
+							// push manager order to truck order queue
+							truckOrderQueue.addOrder(restockOrder);
+							std::cout << "Restock order added to queue" << std::endl;
+						}
+						else {
+							std::cout << "Restock order too heavy! Try to break it down." << std::endl;
+						}
 					}
 						break;
 					case MANAGER_QUIT:
@@ -520,8 +527,36 @@ public:
 
 			case CHECK_ORDER_STATUS:
 			{
+				std::string orderID;
+				std::cout << "Enter the ID of item" << std::endl;
+				std::cin >> orderID;
+				// search order
+				Order outorder;
+				bool success = robotOrderQueue.searchOrderID(orderID, std::ref(outorder));
+				if (success) {
+					std::cout << "Order " << orderID << " found" << std::endl;
 
+					switch (outorder.returnOrderStatus())
+					{
+					case OrderStatus::PROCESSING: {
+						std::cout << "Order " << orderID << " is processing" << std::endl;
+						break;
+					}
+					case OrderStatus::RECEIVED: {
+						std::cout << "Order " << orderID << " is received" << std::endl;
+						break;
+					}
+					case OrderStatus::SHIPPED: {
+						std::cout << "Order " << orderID << " is shipped" << std::endl;
+						break;
+					}
+					}
+				}
+				else {
+					std::cout << "Order " << orderID << " NOT found" << std::endl;
+				}
 			}
+				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 				break;
 
 			case MANAGER_QUIT:

@@ -17,7 +17,7 @@
 class Truck: public cpen333::thread::thread_object{
 protected:
 	int idx_;                     // truck ID
-	double capacity;                    // loading capacity of the truck
+	double capacity = rand() % TRUCK_CAPACITY_VARIATION + TRUCK_CAPACITY - TRUCK_CAPACITY_VARIATION / 2;	// random capacity
 	double currWeight = 0;
 
 public:
@@ -73,13 +73,13 @@ public:
 		unloadingQueue(unloadingQ), truckOrderQueue(truckOrderQ),\
 		memory_(WAREHOUSE_MEMORY_NAME), mutex_(WAREHOUSE_MEMORY_MUTEX_NAME)	
 	{
-		capacity = rand() % 30 + TRUCK_CAPACITY - 15;	// random capacity, range in 435-449
 		{
 			std::unique_lock<decltype(mutex_)> lock(mutex_);
 			idx_ = memory_->tinfo.nrtrucks;
 			memory_->tinfo.nrtrucks++;
 			memory_->tinfo.rtruckStatus[idx_] = TRUCK_DEPARTURE;	// signal computer about arrival
 			memory_->tinfo.rcapcity[idx_] = capacity;
+			memory_->tinfo.rweight[idx_] = currWeight;
 		}
 	}
 
@@ -122,9 +122,20 @@ public:
 		while (o.getItemInfo(itemInfo)) {
 			for (int i = 0; i < itemInfo.second; i++) {
 				unloadingQueue.add(itemInfo.first);
+				currWeight -= itemInfo.first.getWeight();
+				updateCurrWeight();
+				std::this_thread::sleep_for(std::chrono::milliseconds(1000)); // hold on there for a bit
 			}
 		}
 		unloadingQueue.add(ItemInfo(POISION_ID));		// signal robot for finish
+	}
+
+	/**
+	* upload curre weight to shared memory
+	*/
+	void updateCurrWeight() {
+		std::unique_lock<decltype(mutex_)> lock(mutex_);
+		memory_->tinfo.rweight[idx_] = currWeight;
 	}
 
 	/**
@@ -137,12 +148,25 @@ public:
 		return memory_->quit;
 	}
 
+	/**
+	* return capacity of truck
+	*/
+	double returnCapacity() {
+		return capacity;
+	}
+
 	int main() {
 		while (!check_quit()) {
-			Order o = truckOrderQueue.getOrder();
+			Order o;
+			truckOrderQueue.getOrder(o);
 			if (o.returnOrderID() == POISION_ID)
 				break;
 			else {
+				// update current weight
+				currWeight = o.getOrderWeight();
+				updateCurrWeight();
+				std::this_thread::sleep_for(std::chrono::milliseconds(5000)); // hold on there for a bit
+
 				if (dock()) {
 					waitTillEmpty(o);
 					std::this_thread::sleep_for(std::chrono::milliseconds(5000));
@@ -183,13 +207,13 @@ public:
 		loadingBay(LOADING_BAY_NAME, LOADING_BAY_SEM_RESOURCE), \
 		memory_(WAREHOUSE_MEMORY_NAME), mutex_(WAREHOUSE_MEMORY_MUTEX_NAME)
 	{
-		capacity = rand() % 30 + TRUCK_CAPACITY - 15;	// random capacity, range in 435-449
 		{
 			std::unique_lock<decltype(mutex_)> lock(mutex_);
 			idx_ = memory_->tinfo.ndtrucks;
 			memory_->tinfo.ndtrucks++;
 			memory_->tinfo.dtruckStatus[idx_] = TRUCK_DEPARTURE;	// signal computer about arrival
 			memory_->tinfo.dcapcity[idx_] = capacity;
+			memory_->tinfo.dweight[idx_] = currWeight;
 		}
 	}
 
@@ -234,6 +258,14 @@ public:
 			ItemInfo item = loadingQueue.get();
 			currWeight += item.getWeight();
 		}
+	}
+
+	/**
+	* upload curre weight to shared memory
+	*/
+	void updateCurrWeight() {
+		std::unique_lock<decltype(mutex_)> lock(mutex_);
+		memory_->tinfo.dweight[idx_] = currWeight;
 	}
 
 	/**
