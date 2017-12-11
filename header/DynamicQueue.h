@@ -92,7 +92,7 @@ class MessageQueue: public DynamicQueue<std::string>{
 
 class OrderQueue: public DynamicQueue<Order>{
 	private:
-		int processIndex;
+		int processIndex = 0;
 	public:
 		/**
 		* Creates the dynamic order queue
@@ -114,20 +114,23 @@ class OrderQueue: public DynamicQueue<Order>{
 			}
 		}
 
-		bool addOrder(Order& od) {
+		/**
+		* add order, notify cv_ to wake up consumers
+		* @param order	reference to order
+		*/
+		void addOrder(Order& od) {
 			try {
 					{
 						std::lock_guard<decltype(mutex_)> lock(mutex_);
 						buff_.push_back(od);
 					}
-				return true;
+					cv_.notify_all();
 			}
 			catch (std::exception &e) {
 				std::cerr << e.what();
-				return false;
 			}
 		}
-
+		
 		/**
 		 * get reference to order at processIndex
 		 * get is NOT destructive
@@ -136,10 +139,10 @@ class OrderQueue: public DynamicQueue<Order>{
 		 * @return true if success, false if failed
 		 */
 		bool getOrder(Order& outorder) {
-			if (buff_.size() > 0) {
-				outorder = buff_.at(processIndex);
+			if (buff_.size() > processIndex) {
 				{
 					std::lock_guard<decltype(mutex_)> lock(mutex_);
+					outorder = buff_.at(processIndex);
 					processIndex++;
 				}
 				return true;
@@ -147,6 +150,26 @@ class OrderQueue: public DynamicQueue<Order>{
 			else {
 				return false;
 			}
+		}
+
+		/**
+		* get order at processIndex
+		* get is NOT destructive
+		* processIndex++ after a successful get
+		* @return order
+		*/
+		Order getOrder() {
+			Order outorder;
+			{
+				std::unique_lock<std::mutex> lock(mutex_);
+				while (buff_.size() <= processIndex) {
+					cv_.wait(lock);
+				}
+				// get first item in queue
+				outorder = buff_.at(processIndex);
+				processIndex++;
+			}
+			return outorder;
 		}
 
 		/**
