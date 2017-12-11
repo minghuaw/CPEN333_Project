@@ -172,13 +172,13 @@ public:
 	* show alert for low
 	*/
 	void alert_low_stock(std::string itemName, int quantity) {
-		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		std::cout << "\n";
 		std::cout << "=========================================" << std::endl;
 		std::cout << "=               WARNING                 =" << std::endl;
 		std::cout << "=========================================" << std::endl;
 		std::cout << itemName << " is low in stock! Currently has " << quantity<< " !" << std::endl;
 		std::cout << '\a';
-		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		std::cout << "\n";
 	}
 
     /**

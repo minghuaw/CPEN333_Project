@@ -293,7 +293,7 @@ public:
 			std::cout << "Item " << jmsg[MESSAGE_REMOVE_ITEM][MESSAGE_ITEM_NAME] << " is successfully removed" << std::endl;
 		}
 		else {
-			std::cout << "Item " << jmsg[MESSAGE_REMOVE_ITEM][MESSAGE_ITEM_NAME] << " is NOT found" << std::endl;
+			std::cout << "Item " << jmsg[MESSAGE_REMOVE_ITEM][MESSAGE_ITEM_NAME] << " removal FAILED" << std::endl;
 		}
 		cpen333::pause();
 	}

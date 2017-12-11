@@ -291,7 +291,6 @@ public:
 
 	/**/
 	static AddMessage parseAdd(JSON& jmsg) {
-		std::cout << "client id" << jmsg[MESSAGE_CLIENT_ID] << std::endl;
 		int cliendID = jmsg[MESSAGE_CLIENT_ID];
 		Quote quote(parseVector(jmsg[MESSAGE_ORDER]));
 		AddMessage add(quote, cliendID);
@@ -300,7 +299,6 @@ public:
 	}
 
 	static RemoveMessage parseRemove(JSON& jmsg) {
-		std::cout << "client id--> " << jmsg[MESSAGE_CLIENT_ID] << std::endl;
 		std::string orderID = jmsg[MESSAGE_ORDER_ID];
 		int cliendID = jmsg[MESSAGE_CLIENT_ID];
 		RemoveMessage remove(orderID, cliendID);
@@ -309,7 +307,6 @@ public:
 	}
 
 	static SearchMessage parseSearch(JSON& jmsg) {
-		std::cout << "client id--> " << jmsg[MESSAGE_CLIENT_ID] << std::endl;
 		std::string orderID = jmsg[MESSAGE_ORDER_ID];
 		int cliendID = jmsg[MESSAGE_CLIENT_ID];
 		SearchMessage search(orderID, cliendID);
@@ -318,7 +315,6 @@ public:
 	}
 
 	static RemoveItemMessage parseRemoveItem(JSON& jmsg) {
-		std::cout << "client id--> " << jmsg[MESSAGE_CLIENT_ID] << std::endl;
 		std::string orderID = jmsg[MESSAGE_ORDER_ID];
 		std::string itemName = jmsg[MESSAGE_ITEM_NAME];
 		int cliendID = jmsg[MESSAGE_CLIENT_ID];
@@ -328,7 +324,6 @@ public:
 	}
 
 	static SearchItemMessage parseSearchItem(JSON& jmsg) {
-		std::cout << "client id--> " << jmsg[MESSAGE_CLIENT_ID] << std::endl;
 		std::string itemName = jmsg[MESSAGE_ITEM_NAME];
 		int cliendID = jmsg[MESSAGE_CLIENT_ID];
 		SearchItemMessage searchItem(itemName, cliendID);
@@ -364,7 +359,6 @@ public:
 	}
 
 	static std::unique_ptr<Message> parseMessage(JSON& jmsg) {
-		std::cout << "[parser]" << jmsg.dump() << std::endl;
 		MessageType type = parseType(jmsg);
 
 		switch (type)
