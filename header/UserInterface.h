@@ -22,7 +22,7 @@
 #define ADD_END "N"
 #define ADD_YES "Y"
 #define ADD_N0 "N"
-#define NOT_SELECTED 0
+#define NOT_SELECTED "0"
 
 class UserInterface{
 private:
@@ -125,7 +125,7 @@ class ClientUI: public UserInterface {
 private:
     cpen333::process::socket socket_;
 	WarehouseComputerAPI api_;
-	int warehouse_id = 0;
+	std::string warehouse_id = NOT_SELECTED;
 
 public:
     /**
@@ -184,7 +184,7 @@ public:
 			// if user order is complete
 			// create quote and send to server
 			Quote quote(std::move(items));
-			AddMessage add(quote);
+			AddMessage add(quote, warehouse_id);
 			api_.sendMessage(add);
 
 			// wait for response
@@ -220,7 +220,7 @@ public:
 		std::cout << "Please enter order id: ";
 		std::getline(std::cin, orderID);
 
-		RemoveMessage remove(orderID);
+		RemoveMessage remove(orderID, warehouse_id);
 		api_.sendMessage(remove);
 
 		// wait for response
@@ -245,7 +245,7 @@ public:
 		std::cout << "Please enter order id: ";
 		std::getline(std::cin, orderID);
 
-		SearchMessage search(orderID);
+		SearchMessage search(orderID, warehouse_id);
 		api_.sendMessage(search);
 
 		// wait for response
@@ -283,7 +283,7 @@ public:
 		std::getline(std::cin, itemName);
 
 		// create remove message and send message
-		RemoveItemMessage remove_item(orderID, itemName);
+		RemoveItemMessage remove_item(orderID, itemName, warehouse_id);
 		api_.sendMessage(remove_item);
 
 		// wait for response
@@ -310,7 +310,7 @@ public:
 		std::getline(std::cin, itemName);
 
 		// create search item message and send message
-		SearchItemMessage search_item(itemName);
+		SearchItemMessage search_item(itemName, warehouse_id);
 		api_.sendMessage(search_item);
 
 		// wait for response
@@ -329,7 +329,7 @@ public:
 	}
 
 	void do_goodbye() {
-		GoodbyeMessage goodbye;
+		GoodbyeMessage goodbye(warehouse_id);
 		if (api_.sendMessage(goodbye)) {
 			std::cout << "Goodbye!" << std::endl;
 		}
@@ -388,14 +388,14 @@ public:
 		std::cout << "=========================================" << std::endl;
 		std::cout << "=          SELECT WAREHOSUE             =" << std::endl;
 		std::cout << "=========================================" << std::endl;
+		std::cout << " (0) Any Warehouse" << std::endl;
 		std::cout << " (1) Warehouse 1" << std::endl;
 		std::cout << " (2) Warehouse 2" << std::endl;
 		std::cout << "=========================================" << std::endl;
 		std::cout << "Enter number: ";
 		std::cout.flush();
 
-		std::getline(std::cin, int_str);
-		warehouse_id = std::stoi(int_str);
+		std::getline(std::cin, warehouse_id);
 	}
 };
 

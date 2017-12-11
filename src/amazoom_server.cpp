@@ -21,7 +21,8 @@
 
 using JSON = nlohmann::json;
 
-std::mutex mutex_;              // mutex for multi client connection
+cpen333::process::mutex mutex_(SERVER_MUTEX_NAME);
+//std::mutex mutex_(SERVER_MUTEX_NAME);              // mutex for multi client connection
 std::deque<JSON> msg2warehouseQueue;
 std::deque<JSON> msg2clientQueue;
 cpen333::process::socket_server server(CLIENT_PORT);
@@ -48,7 +49,7 @@ void serviceClient(WarehouseComputerAPI&& api, std::deque<JSON>& msg2warehouseQu
             std::cerr << e.what();
         }
 
-		std::cout << "[CLIENT ID]" << j.dump() << std::endl;
+		//std::cout << "[CLIENT ID]" << j.dump() << std::endl;
 
         // push to msg2warehouse queue
         {
@@ -61,19 +62,27 @@ void serviceClient(WarehouseComputerAPI&& api, std::deque<JSON>& msg2warehouseQu
 
         // peek msg
         clientSem.wait();
-        JSON msg2client = msg2clientQueue.front();
+		JSON msg2client;
+		{
+			std::lock_guard<decltype(mutex_)> lock(mutex_); // for thread safety
+			if (msg2clientQueue.size() > 0)
+				msg2client = msg2clientQueue.front();
+		}
 		std::cout << "pick from msg2client queue" << std::endl;
-        int clientID = msg2client[MESSAGE_CLIENT_ID];
-        while (clientID != id){
+        while (msg2client[MESSAGE_CLIENT_ID] != id){
             clientSem.notify(); // notify other client thread if the message is for another client
 
             std::this_thread::sleep_for(std::chrono::seconds(1)); // sleep one second to allow other thread retrieve the msg
-            msg2client = msg2clientQueue.front();
-            clientID = msg2client[MESSAGE_CLIENT_ID];
-        }
+			{
+				std::lock_guard<decltype(mutex_)> lock(mutex_); // for thread safety
+				if (msg2clientQueue.size() > 0)
+					msg2client = msg2clientQueue.front();
+			}
+		}
         {
             std::lock_guard<decltype(mutex_)> lock(mutex_); // thread safety
-            msg2clientQueue.pop_front();
+            if (msg2clientQueue.size() > 0)
+				msg2clientQueue.pop_front();
         }
         std::string jStr = msg2client.dump();
         api.sendJSON(jStr);
@@ -98,15 +107,35 @@ void serviceWarehouse(WarehouseComputerAPI&& api, std::deque<JSON>& msg2warehous
     cpen333::process::semaphore whSem(WAREHOUSE_SEM_NAME, 0);
     cpen333::process::semaphore clientSem(CLIENT_SEM_NAME, 0);
 
-    std::cout << "Warehouse " << id << " is connected" << std::endl;
+	std::string id_str = std::to_string(id);
+
+    std::cout << "Warehouse " << id_str << " is connected" << std::endl;
 
     // pop front from msg2warehouse queue
     whSem.wait();
-    JSON msg2warehosue = msg2warehouseQueue.front();
+	JSON msg2warehosue;
+	{
+		std::lock_guard<decltype(mutex_)> lock(mutex_); // for thread safety
+		if (msg2warehouseQueue.size() > 0)
+			msg2warehosue = msg2warehouseQueue.front();
+	}
+	//std::cout << "[Server]" << msg2warehosue.dump() << std::endl;
     while (msg2warehosue!= nullptr){
+		while (msg2warehosue[MESSAGE_WAREHOUSE] != id_str && msg2warehosue[MESSAGE_WAREHOUSE] != "0") {
+			std::this_thread::sleep_for(std::chrono::seconds(1)); // sleep one second to allow other thread retrieve the msg
+			{
+				std::lock_guard<decltype(mutex_)> lock(mutex_); // for thread safety
+				if (msg2warehouseQueue.size() > 0) {
+					whSem.notify();
+					msg2warehosue = msg2warehouseQueue.front();				
+				}
+			}
+		}
+
         {
             std::lock_guard<decltype(mutex_)> lock(mutex_); // for thread safety
-            msg2warehouseQueue.pop_front();
+            if (msg2warehouseQueue.size() > 0)
+				msg2warehouseQueue.pop_front();
         }
         // remove front from queue
 
@@ -124,6 +153,10 @@ void serviceWarehouse(WarehouseComputerAPI&& api, std::deque<JSON>& msg2warehous
 
         // receive response message from warehouse computer
         std::unique_ptr<std::string> jsonStrPtr = api.recvJSON();
+		 
+		while (jsonStrPtr == nullptr) {
+			jsonStrPtr = api.recvJSON();
+		}
 
 		std::cout << "Resposne message received from warehouse" << std::endl;
 		std::cout << "[Response] " << *jsonStrPtr << std::endl;
@@ -148,7 +181,8 @@ void serviceWarehouse(WarehouseComputerAPI&& api, std::deque<JSON>& msg2warehous
         whSem.wait();
         {
             std::lock_guard<decltype(mutex_)> lock(mutex_); // for thread safety
-            msg2warehosue = msg2warehouseQueue.front();
+			if (msg2warehouseQueue.size() > 0)
+				msg2warehosue = msg2warehouseQueue.front();
         }
     }
 }

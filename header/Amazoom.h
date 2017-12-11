@@ -13,7 +13,7 @@
 #define LOADING_BAY_NAME "loading"
 #define UNLOADING_BAY_NAME "unloading"
 #define WAREHOUSE_NUM 2
-#define TR_SEM_NAME "tr_sem"
+#define SERVER_MUTEX_NAME "server_mu"
 
 #define LOCAL_HOST "127.0.0.1"
 #define CLIENT_PORT 52102

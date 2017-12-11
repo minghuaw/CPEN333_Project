@@ -71,11 +71,13 @@ class AddMessage : public Message {
 public:
     const Quote quote;
 	const int clientID;
+	std::string w_id = "0";
 
-    explicit AddMessage(const Quote &quote) : quote(quote), clientID(-1) {}
+    explicit AddMessage(const Quote &quote, std::string w_id="0") : quote(quote), clientID(-1), w_id(w_id) {}
 
 	explicit AddMessage(const Quote &quote, int& clientID) : 
 		quote(quote), clientID(clientID) {}
+	
 
     MessageType type() const override {
         return MessageType::ADD;
@@ -106,8 +108,10 @@ class RemoveMessage : public Message {
 public:
 	const std::string orderID;
 	const int clientID;
+	std::string w_id = "0";
 
-	RemoveMessage(const std::string &orderID) : orderID(orderID), clientID(-1) {}
+	RemoveMessage(const std::string &orderID, std::string w_id="0") : 
+		orderID(orderID), clientID(-1), w_id(w_id) {}
 
 	RemoveMessage(const std::string &orderID, int& clientID) : orderID(orderID),
 		clientID(clientID) {}
@@ -141,9 +145,10 @@ public:
 	const std::string orderID;
 	const std::string itemName;
 	const int clientID;
+	std::string w_id = "0";
 
-	RemoveItemMessage(const std::string &orderID, const std::string &itemName)
-		: orderID(orderID), itemName(itemName), clientID(-1) {}
+	RemoveItemMessage(const std::string &orderID, const std::string &itemName, std::string w_id="0")
+		: orderID(orderID), itemName(itemName), clientID(-1), w_id(w_id) {}
 
 	RemoveItemMessage(const std::string &orderID, const std::string &itemName, int& clientID)
 		: orderID(orderID), itemName(itemName), clientID(clientID) {}
@@ -176,12 +181,13 @@ class SearchMessage : public Message {
 public:
 	const std::string orderID;
 	const int clientID;
+	std::string w_id = "0";
 
-	SearchMessage(const std::string &orderID) :
-		orderID(orderID), clientID(-1) {}
+	SearchMessage(const std::string &orderID, std::string w_id = "0") :
+		orderID(orderID), clientID(-1), w_id(w_id) {}
 
-	SearchMessage(const std::string &orderID, int& clientID) :
-		orderID(orderID), clientID(clientID) {}
+	SearchMessage(const std::string &orderID, int& clientID, std::string w_id="0") :
+		orderID(orderID), clientID(clientID), w_id(w_id) {}
 
 	MessageType type() const override {
 		return MessageType::SEARCH;
@@ -212,9 +218,10 @@ class SearchItemMessage : public Message {
 public:
 	const std::string itemName;
 	const int clientID;
+	std::string w_id = "0";
 
-	SearchItemMessage(const std::string &itemName) :
-		itemName(itemName), clientID(-1) {}
+	SearchItemMessage(const std::string &itemName, std::string w_id = "0") :
+		itemName(itemName), clientID(-1), w_id(w_id) {}
 
 	SearchItemMessage(const std::string &itemName, int& clientID) :
 		itemName(itemName), clientID(clientID) {}
@@ -247,8 +254,9 @@ public:
 class GoodbyeMessage : public Message {
 public:
 	const int clientID;
+	std::string w_id = "0";
 
-	GoodbyeMessage() : clientID(-1) {}
+	GoodbyeMessage(std::string w_id = "0") : clientID(-1), w_id(w_id) {}
 
 	GoodbyeMessage(const int clientID) : clientID(clientID) {}
 
