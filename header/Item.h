@@ -116,6 +116,10 @@ public:
 	std::string getID() {
 		return ID;
 	}
+
+	double getWeight() {
+		return weight;
+	}
 };
 
 #endif //PROJECT_ITEM_H

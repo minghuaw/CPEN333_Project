@@ -145,6 +145,9 @@ public:
 		std::string itemName = itemInfo.getID();
 		std::lock_guard<decltype(mutex_)> lock(mutex_);
 		itemQuantity_[itemName] ++;
+		if (itemQuantity_[itemName] < LOW_STOCK_ALERT) {
+			alert_low_stock(itemName, itemQuantity_[itemName]);
+		}
 	}
 
     /**
@@ -153,7 +156,26 @@ public:
      * @param quantity quantity of the itemiInfo to add into inventory
      * @return true if reduction is successful, false if reduction is unsuccessful
      */
-    bool reduceItemInfoQuantity(ItemInfo& itemInfo, int quantity){}
+    bool reduceItemInfoQuantity(ItemInfo& itemInfo, int quantity){
+		std::string itemName = itemInfo.getID();
+		std::lock_guard<decltype(mutex_)> lock(mutex_);
+		itemQuantity_[itemName] -= quantity;
+		if (itemQuantity_[itemName] < LOW_STOCK_ALERT) {
+			alert_low_stock(itemName, itemQuantity_[itemName]);
+		}
+		return true;
+	}
+
+	/**
+	* show alert for low
+	*/
+	void alert_low_stock(std::string itemName, int quantity) {
+		std::cout << "=========================================" << std::endl;
+		std::cout << "=               WARNING                 =" << std::endl;
+		std::cout << "=========================================" << std::endl;
+		std::cout << itemName << " is low in stock! Currently has " << quantity<< " !" << std::endl;
+		std::cout << '\a';
+	}
 
     /**
      * remove the current location of the ItemInfos

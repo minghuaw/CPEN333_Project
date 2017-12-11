@@ -29,6 +29,8 @@ private:
     std::vector<std::pair<Item,int>> items;
     
     ItemQueue& unloadingQueue;
+	ItemQueue& loadingQueue;
+
     OrderQueue& robotOrderQueue;
     cpen333::process::mutex db_mutex;       // for database protection
     InventoryDatabase& database;			// shared database
@@ -40,10 +42,10 @@ private:
 public:
 	int idx_;
 
-    Robot(InventoryDatabase& database, OrderQueue& q, ItemQueue& unloadingq): \
+    Robot(InventoryDatabase& database, OrderQueue& q, ItemQueue& unloadingQ, ItemQueue& loadingQ): \
 		database(database),db_mutex(DB_MUTEX_NAME),\
 		mutex_(WAREHOUSE_MEMORY_MUTEX_NAME),memory_(WAREHOUSE_MEMORY_NAME),\
-		robotOrderQueue(q),unloadingQueue(unloadingq){
+		robotOrderQueue(q),unloadingQueue(unloadingQ), loadingQueue(loadingQ){
 		{
 			std::unique_lock<decltype(mutex_)> lock(mutex_);
 			linfo_ = memory_->linfo;
@@ -243,13 +245,16 @@ public:
 	* parse the iteminfo in an order, call go continously
 	*/
 	void parse_order(Order& o) {
+		// change order status
+		o.changeOrderStatus(OrderStatus::PROCESSING);
+
 		// if the order is from manager
 		if (o.returnOrderType() == OrderType::MANAGER) {
 			// go to unloading bay
 			if (go(linfo_.unloading[COL_IDX], linfo_.unloading[ROW_IDX]-1)) {
 				std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // hold on there for a bit
-				while (true) {
-					// continously get iteminfo from queue
+			    // continously get iteminfo from queue
+				while (true) {	
 					ItemInfo i = unloadingQueue.get();
 					if (i.getID() == POISION_ID)
 						break;
@@ -263,7 +268,20 @@ public:
 		}
 		else {
 			std::cout << "client order" << std::endl;
+			std::pair<ItemInfo, int> itemInfo;
+			while (o.getItemInfo(itemInfo)) {
+				Coordinate coor = database.findItemLocation(itemInfo.first.getID());
+				goToCoordinate(coor);
+				// TODO: check if there is enough
+				database.reduceItemInfoQuantity(itemInfo.first,itemInfo.second);
+				for (int i = 0; i < itemInfo.second; i++)
+					loadingQueue.add(itemInfo.first);
+			}
+			loadingQueue.add(ItemInfo(POISION_ID));		// signal truck for finish
 		}
+
+		// change order status
+		o.changeOrderStatus(OrderStatus::SHIPPED);
 	}
 
 	/**

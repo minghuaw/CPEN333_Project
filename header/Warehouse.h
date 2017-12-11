@@ -81,7 +81,7 @@ private:
 	std::vector<RestockTruck*> rTrucks; //restock trucks
 
 	// inventory database
-    InventoryDatabase& inventory;
+    InventoryDatabase& database;
 	cpen333::process::mutex db_mutex;
 
 	// robots
@@ -107,7 +107,7 @@ public:
     * Initialize magicKey to LAYOUT_MAGIC_KEY
     */
     Warehouse(InventoryDatabase& inventory):memory_(WAREHOUSE_MEMORY_NAME),ly_mutex_(WAREHOUSE_MEMORY_MUTEX_NAME),\
-		magicKey(LAYOUT_MAGIC_KEY), db_mutex(DB_MUTEX_NAME),inventory(inventory),\
+		magicKey(LAYOUT_MAGIC_KEY), db_mutex(DB_MUTEX_NAME),database(inventory),\
 		loadingBay(LOADING_BAY_NAME, LOADING_BAY_SEM_RESOURCE),\
 		unloadingBay(UNLOADING_BAY_NAME, LOADING_BAY_SEM_RESOURCE) {
 		{
@@ -199,7 +199,7 @@ public:
 	bool spawn_robot(int quantity) {
 		for (int i = 0; i < quantity; i++) {
 			if (robots.size() < MAX_ROBOTS) {
-				Robot* r = new Robot(std::ref(inventory), std::ref(robotOrderQueue),std::ref(unloadingQueue));
+				Robot* r = new Robot(std::ref(database), std::ref(robotOrderQueue),std::ref(unloadingQueue),std::ref(loadingQueue));
 				robots.push_back(r);
 				r->start();
 			}
@@ -269,7 +269,7 @@ public:
     void startRemoteServer(){}
 
 	/**
-	* close warehouse
+	* close warehouse, send posion pills and join all threads
 	*/
 	void close() {
 		{	// close all other processes
@@ -320,7 +320,7 @@ public:
 			// find item
 			std::string orderID = "M0" + std::to_string(orderCounter);
 			Order order = Warehouse::toOrder(std::ref(orderID), std::ref(quote),
-				std::ref(inventory), OrderType::MANAGER);
+				std::ref(database), OrderType::MANAGER);
 			outorder = order;
 			orderCounter++;		// increase order index
 		}
@@ -454,7 +454,7 @@ public:
 				}
 			}
 				break;
-			case ADD_ORDER:
+			case PLACE_ORDER:
 			{
 				// create a new quote
 				Quote quote;
@@ -476,7 +476,7 @@ public:
 						std::cout << "Enter ID of item to be added" << std::endl;
 						std::cin >> s;
 						std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-						if (inventory.findItemWeight(s) == ITEM_NOT_FOUND) {		// check if there is weight associated with item
+						if (database.findItemWeight(s) == ITEM_NOT_FOUND) {		// check if there is weight associated with item
 							std::cout << "Item does not exist" << std::endl;
 						}
 						else {
@@ -490,11 +490,6 @@ public:
 					{
 						Order restockOrder;
 						confirmRestockingQuote(quote, restockOrder);
-						/*	std::string orderID = "M0" + std::to_string(orderCounter);
-							Order order = Warehouse::toOrder(std::ref(orderID), std::ref(quote),
-								std::ref(inventory), OrderType::MANAGER);
-							orderCounter++;*/
-
 						// push manager order to robot order queue
 						robotOrderQueue.addOrder(restockOrder);
 						// push manager order to truck order queue
@@ -511,9 +506,22 @@ public:
 
 			}
 				break;
+
+			case CHECK_STATUS:
+			{
+				std::string ID;
+				std::cout << "Enter the ID of item" << std::endl;
+				std::cin >> ID;
+				int quantity = database.findItemQuantity(ID);
+				std::cout << "The current stock of item " << ID << " is " << quantity << std::endl;
+				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			}
+			break;
+
 			case MANAGER_QUIT:
 				std::cout << "Closing warehouse" << std::endl;
 				break;
+
 			default:
 				std::cout << "Invalid command number " << cmd << std::endl << std::endl;
 			}

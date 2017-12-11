@@ -18,7 +18,8 @@ class Truck: public cpen333::thread::thread_object{
 protected:
 	int idx_;                     // truck ID
 	double capacity;                    // loading capacity of the truck
-	
+	double currWeight = 0;
+
 public:
 	/**
 	* default constructor
@@ -117,7 +118,6 @@ public:
 	* truck will empty all items on truck, push into unloading queue until there is not items left
 	*/
 	void waitTillEmpty(Order& o) {
-		std::cout << "Truck has order" << std::endl;
 		std::pair<ItemInfo,int> itemInfo;
 		while (o.getItemInfo(itemInfo)) {
 			for (int i = 0; i < itemInfo.second; i++) {
@@ -230,6 +230,10 @@ public:
 	* 2. truck has weight >80% of its capacity
 	*/
 	void waitTillFull() {
+		while (!check_quit() && (currWeight < capacity * FULL_RATIO)) {
+			ItemInfo item = loadingQueue.get();
+			currWeight += item.getWeight();
+		}
 	}
 
 	/**
