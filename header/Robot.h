@@ -272,7 +272,7 @@ public:
 			while (o.getItemInfo(itemInfo)) {
 				Coordinate coor = database.findItemLocation(itemInfo.first.getID());
 				goToCoordinate(coor);
-				// TODO: check if there is enough
+				std::this_thread::sleep_for(std::chrono::milliseconds(1000)); // hold on there for a bit
 				database.reduceItemInfoQuantity(itemInfo.first,itemInfo.second);
 				for (int i = 0; i < itemInfo.second; i++)
 					loadingQueue.add(itemInfo.first);
@@ -296,7 +296,8 @@ public:
 
 	int main() {
 		while (!check_quit()) {
-			Order o = robotOrderQueue.getOrder();
+			Order o;
+			robotOrderQueue.getOrder(std::ref(o));
 			if (o.returnOrderID() == POISION_ID)
 				break;
 			else {
