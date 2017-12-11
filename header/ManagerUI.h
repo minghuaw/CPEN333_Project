@@ -7,7 +7,8 @@
 #define ADD_DELIVERY_TRUCK 'D'
 #define ADD_RESTOCK_TRUCK 'R'
 #define PLACE_ORDER 'P'
-#define CHECK_STATUS 'C'
+#define CHECK_ITEM_STATUS 'I'
+#define CHECK_ORDER_STATUS 'O'
 
 #define ADD_ITEM 'A'
 #define CONFIRM_ORDER 'C'
@@ -25,7 +26,8 @@ void print_mainmenu() {
 	std::cout << " (D) Add Delivery Truck" << std::endl;
 	std::cout << " (R) Add Restock Truck" << std::endl;
 	std::cout << " (P) Place Restock Order" << std::endl;
-	std::cout << " (C) Check Item Status" << std::endl;
+	std::cout << " (I) Check Item Status" << std::endl;
+	std::cout << " (O) Check Order Status" << std::endl;
 	std::cout << " (Q) Quit" << std::endl;
 	std::cout << "=========================================" << std::endl;
 	std::cout << "Enter Letter: ";

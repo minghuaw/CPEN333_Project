@@ -138,17 +138,15 @@ class OrderQueue: public DynamicQueue<Order>{
 		 * @param outorder reference to outorder
 		 * @return true if success, false if failed
 		 */
-		bool getOrder(Order& outorder) {
-			if (buff_.size() > processIndex) {
-				{
-					std::lock_guard<decltype(mutex_)> lock(mutex_);
-					outorder = buff_.at(processIndex);
-					processIndex++;
+		void getOrder(Order& outorder) {
+			{
+				std::unique_lock<std::mutex> lock(mutex_);
+				while (buff_.size() <= processIndex) {
+					cv_.wait(lock);
 				}
-				return true;
-			}
-			else {
-				return false;
+				// get first item in queue
+				outorder = buff_.at(processIndex);
+				processIndex++;
 			}
 		}
 

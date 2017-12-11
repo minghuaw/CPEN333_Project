@@ -29,11 +29,11 @@ private:
     //std::multimap<std::string, Coordinate> itemLocation;    // multimap of itemLocations. One type of item may be store
                                                             // multiple locations
     std::mutex mutex_;										// internal mutex for thread safe operation
-	std::map<std::string, Cell> coordinate2cell;			// map coordinate to storage cells
+	//std::map<std::string, Cell> coordinate2cell;			// map coordinate to storage cells
 
 	LayoutInfo linfo;										// layout information from text file
 
-	std::vector<Cell> cells;								// list of cells
+	//std::vector<Cell> cells;								// list of cells
 	std::vector<Coordinate> coors;							// list of coors
 
 	InventoryDatabase();	// prevent default
@@ -44,7 +44,7 @@ public:
      */
 	InventoryDatabase(LayoutInfo& linfo) : linfo(linfo) {
 		initCoordinates();
-		initCells();
+		//initCells();
 		loadItemList(ITEM_LIST);
 		initItemQuantity();
 		initItemLocation();
@@ -74,14 +74,14 @@ public:
 	/**
 	* init a vector of cells and map cells to coordinate
 	*/
-	void initCells() {
-		for (auto coor : coors) {
-			Cell c;
-			cells.push_back(c);
-			std::string coor_string = coor.toString();
-			coordinate2cell.insert(std::pair<std::string,Cell>(coor_string,c));
-		}
-	}
+	//void initCells() {
+	//	for (auto coor : coors) {
+	//		Cell c;
+	//		cells.push_back(c);
+	//		std::string coor_string = coor.toString();
+	//		coordinate2cell.insert(std::pair<std::string,Cell>(coor_string,c));
+	//	}
+	//}
 
 	/**
 	* load item names and weights from a txt file
@@ -145,6 +145,7 @@ public:
 		std::string itemName = itemInfo.getID();
 		std::lock_guard<decltype(mutex_)> lock(mutex_);
 		itemQuantity_[itemName] ++;
+		itemLocation_[itemName].addWeight(itemInfo.getWeight());
 		if (itemQuantity_[itemName] < LOW_STOCK_ALERT) {
 			alert_low_stock(itemName, itemQuantity_[itemName]);
 		}
@@ -160,6 +161,7 @@ public:
 		std::string itemName = itemInfo.getID();
 		std::lock_guard<decltype(mutex_)> lock(mutex_);
 		itemQuantity_[itemName] -= quantity;
+		itemLocation_[itemName].reduceWeight(itemInfo.getWeight()*quantity);
 		if (itemQuantity_[itemName] < LOW_STOCK_ALERT) {
 			alert_low_stock(itemName, itemQuantity_[itemName]);
 		}
@@ -170,11 +172,13 @@ public:
 	* show alert for low
 	*/
 	void alert_low_stock(std::string itemName, int quantity) {
+		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 		std::cout << "=========================================" << std::endl;
 		std::cout << "=               WARNING                 =" << std::endl;
 		std::cout << "=========================================" << std::endl;
 		std::cout << itemName << " is low in stock! Currently has " << quantity<< " !" << std::endl;
 		std::cout << '\a';
+		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 	}
 
     /**

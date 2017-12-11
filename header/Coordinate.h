@@ -9,7 +9,8 @@ private:
     int row;                // row number "0, 1, 2 ....."
     char side;              // side on the shelf "L, R"
     int shelf;              // shelf level "0, 1, 2..."
-
+	double capacity = CELL_CAPACITY;
+	double currWeight = 0;
 	
 public:
 	
@@ -17,6 +18,7 @@ public:
 	* default constructor
 	*/
 	Coordinate() {};
+
     /**
      * Constructor for Coordinate class
      * @param col column number, captitalized char from 'A' to 'Z'
@@ -58,6 +60,22 @@ public:
      */
     int getShelf(){
 		return shelf;
+	}
+
+	/**
+	* add weight to coordinate
+	* @param w weight to add
+	*/
+	void addWeight(double w) {
+		currWeight += w;
+	}
+
+	/**
+	* reduce weight to coordinate
+	* @param w weight to reduce
+	*/
+	void reduceWeight(double w) {
+		currWeight -= w;
 	}
 
     /**

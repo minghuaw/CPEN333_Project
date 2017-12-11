@@ -507,7 +507,7 @@ public:
 			}
 				break;
 
-			case CHECK_STATUS:
+			case CHECK_ITEM_STATUS:
 			{
 				std::string ID;
 				std::cout << "Enter the ID of item" << std::endl;
@@ -516,7 +516,13 @@ public:
 				std::cout << "The current stock of item " << ID << " is " << quantity << std::endl;
 				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 			}
-			break;
+				break;
+
+			case CHECK_ORDER_STATUS:
+			{
+
+			}
+				break;
 
 			case MANAGER_QUIT:
 				std::cout << "Closing warehouse" << std::endl;
