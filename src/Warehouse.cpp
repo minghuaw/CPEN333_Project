@@ -50,11 +50,17 @@ void service(WarehouseComputerAPI&& api_, OrderQueue& queue_, InventoryDatabase&
 				num = pair.second;
 
 				// find item
-				if (inventory_.findItem(itemName)) {
-					success &= true;
+				int quantity = inventory_.findItemQuantity(itemName);
+				if (quantity == ITEM_NOT_FOUND) {
+					success &= false;
 				}
 				else {
-					success &= false;
+					if (quantity >= num) {
+						success &= true;
+					}
+					else {
+						success &= false;
+					}
 				}
 			}
 
@@ -66,7 +72,7 @@ void service(WarehouseComputerAPI&& api_, OrderQueue& queue_, InventoryDatabase&
 				orderCounter++; // increase order counter for orderID
 
 				// create client order
-				Order order = Warehouse::toOrder(std::ref(orderID), std::ref(quote), 
+				Order& order = Warehouse::toOrder(std::ref(orderID), std::ref(quote), 
 							std::ref(inventory_), OrderType::CLIENT);		
 
 				// push client order to order queue
@@ -86,7 +92,18 @@ void service(WarehouseComputerAPI&& api_, OrderQueue& queue_, InventoryDatabase&
 			int clientID = remove.clientID;
 			std::cout << "Client " << clientID << " removing order " << orderID << std::endl;
 
-
+			// try to remove the orderID
+			bool success = queue_.removeOrder(std::ref(orderID));
+			if (success) {
+				std::cout << "Order " << orderID << " cancelled succesfully" << std::endl;
+				RemoveResponseMessage remove_re(std::ref(remove), clientID, MESSAGE_STATUS_OK);
+				api_.sendMessage(remove_re);
+			}
+			else {
+				std::cout << "Order " << orderID << " cancellation failed" << std::endl;
+				RemoveResponseMessage remove_re(std::ref(remove), clientID, MESSAGE_STATUS_ERROR);
+				api_.sendMessage(remove_re);
+			}
 			break;		
 		}
 		case MessageType::REMOVE_ITEM: {

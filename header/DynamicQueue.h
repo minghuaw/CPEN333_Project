@@ -136,7 +136,7 @@ class OrderQueue: public DynamicQueue<Order>{
 		 * @return true if success, false if failed
 		 */
 		bool getOrder(Order& outorder) {
-			if (buff_.size() > 0) {
+			if (buff_.size() > processIndex) {
 				outorder = buff_.at(processIndex);
 				{
 					std::lock_guard<decltype(mutex_)> lock(mutex_);
@@ -172,7 +172,7 @@ class OrderQueue: public DynamicQueue<Order>{
 		* @param outorder	the ordre found to match the ID
 		* @return True if an order if found, false otherwise
 		*/
-		bool searchOrderID(std::string orderID, Order& outorder){
+		bool searchOrderID(std::string& orderID, Order& outorder){
 			for (Order& od : buff_) {
 				if (orderID == od.returnOrderID()) {
 					outorder = od;
@@ -180,6 +180,19 @@ class OrderQueue: public DynamicQueue<Order>{
 						
 				}
 			}
+			return false;
+		}
+
+		bool removeOrder(std::string& orderID) {
+			int size = buff_.size();
+
+			for (int i = 0; i < size; i++) {
+				if (buff_[i].returnOrderID() == orderID) {
+					buff_.erase(buff_.begin()+i);
+					return true;
+				}
+			}
+
 			return false;
 		}
 };
