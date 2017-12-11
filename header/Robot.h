@@ -246,7 +246,7 @@ public:
 	*/
 	void parse_order(Order& o) {
 		// change order status
-		o.changeOrderStatus(OrderStatus::PROCESSING);
+		robotOrderQueue.updateOrderStatus(o.returnOrderID(), OrderStatus::PROCESSING);
 
 		// if the order is from manager
 		if (o.returnOrderType() == OrderType::MANAGER) {
@@ -281,7 +281,8 @@ public:
 		}
 
 		// change order status
-		o.changeOrderStatus(OrderStatus::SHIPPED);
+		robotOrderQueue.updateOrderStatus(o.returnOrderID(), OrderStatus::SHIPPED);
+
 	}
 
 	/**
@@ -297,13 +298,11 @@ public:
 	int main() {
 		while (!check_quit()) {
 			Order o;
-			//robotOrderQueue.getOrder(&o);
-			o = robotOrderQueue.getOrder();
+			robotOrderQueue.getOrder(std::ref(o));
 			if (o.returnOrderID() == POISION_ID)
 				break;
 			else {
-				parse_order(o);
-				std::cout << o.returnOrderStatus() << std::endl;
+				parse_order(std::ref(o));
 				homeRobot();
 			}
 		}

@@ -185,6 +185,14 @@ class OrderQueue: public DynamicQueue<Order>{
 		*/
 		bool swapOrder(int ind1, int ind2){
 		}
+
+		void updateOrderStatus(std::string id,OrderStatus status) {
+			for (Order& od : buff_) {
+				if (id == od.returnOrderID()) {
+					od.changeOrderStatus(status);
+				}
+			}
+		}
 		
 		/**
 		* search order with ID
@@ -206,7 +214,8 @@ class OrderQueue: public DynamicQueue<Order>{
 			int size = buff_.size();
 
 			for (int i = 0; i < size; i++) {
-				if (buff_[i].returnOrderID() == orderID) {
+				if (buff_[i].returnOrderID() == orderID && 
+					buff_[i].returnOrderStatus() == OrderStatus::RECEIVED) {
 					buff_.erase(buff_.begin()+i);
 					return true;
 				}

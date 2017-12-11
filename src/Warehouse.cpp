@@ -55,10 +55,6 @@ void service(WarehouseComputerAPI&& api_, OrderQueue& queue_, InventoryDatabase&
 				api_.sendMessage(add_re); // send back response message
 				orderCounter++; // increase order counter for orderID
 
-				// create client order
-			/*	Order order = Warehouse::toOrder(std::ref(orderID), std::ref(quote), 
-							std::ref(inventory_), OrderType::CLIENT);	*/	
-
 				// push client order to order queue
 				queue_.addOrder(std::ref(od));
 				std::cout << "New order added to orderQueue" << std::endl;
