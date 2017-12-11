@@ -80,7 +80,7 @@ public:
      * @return
      */
     bool sendJSON(std::string jsonStr){
-		std::cout << "Sending JSON string" << std::endl; // test
+		//std::cout << "Sending JSON string" << std::endl; // test
 
         // encode json string size
         char jsonID = JSON_ID;
@@ -99,7 +99,7 @@ public:
             success &= socket_.write(jsonStr); // content
         }
 
-		std::cout << "JSON string is sent" << std::endl; // test
+		//std::cout << "JSON string is sent" << std::endl; // test
         return success;
     }
 
@@ -158,7 +158,7 @@ public:
             return nullptr;
         }
 
-		std::cout << str << std::endl;
+		//std::cout << str << std::endl;
 
         return std::unique_ptr<std::string>(new std::string(str));
     }

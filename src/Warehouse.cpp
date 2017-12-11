@@ -34,8 +34,6 @@ void service(WarehouseComputerAPI&& api_, OrderQueue& queue_, InventoryDatabase&
 		case MessageType::ADD: {
 			// cast message to add type
 			AddMessage& add = (AddMessage &)(*msg);
-			// testing
-			std::cout << "[special check] "<< "client ID " << add.clientID << std::endl;
 			// extract quote out of add message
 			Quote quote = add.quote;
 			Order od;
@@ -145,8 +143,32 @@ void service(WarehouseComputerAPI&& api_, OrderQueue& queue_, InventoryDatabase&
 			bool success = queue_.searchOrderID(orderID, std::ref(outorder));
 			if (success) {
 				std::cout << "Order " << orderID << " found" << std::endl;
-				SearchResponseMessage search_re(search, std::ref(clientID), MESSAGE_STATUS_OK);
-				api_.sendMessage(search_re);
+			/*	SearchResponseMessage search_re(search, std::ref(clientID), MESSAGE_STATUS_OK);
+				api_.sendMessage(search_re);*/
+
+				switch (outorder.returnOrderStatus())
+				{
+				case OrderStatus::PROCESSING: {
+					SearchResponseMessage search_re(search, std::ref(clientID), MESSAGE_STATUS_PROCESSING);
+					api_.sendMessage(search_re);
+					break;
+				}
+				case OrderStatus::RECEIVED: {
+					SearchResponseMessage search_re(search, std::ref(clientID), MESSAGE_STATUS_RECEIVED);
+					api_.sendMessage(search_re);
+					break;
+				}
+				case OrderStatus::SHIPPED: {
+					SearchResponseMessage search_re(search, std::ref(clientID), MESSAGE_STATUS_SHIPPED);
+					api_.sendMessage(search_re);
+					break;
+				}
+				default: {
+					SearchResponseMessage search_re(search, std::ref(clientID), MESSAGE_STATUS_OK);
+					api_.sendMessage(search_re);
+					break;
+				}
+				}
 			}
 			else {
 				std::cout << "Order " << orderID << " NOT found" << std::endl;

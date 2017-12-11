@@ -158,7 +158,7 @@ class OrderQueue: public DynamicQueue<Order>{
 		* processIndex++ after a successful get
 		* @return order
 		*/
-		Order getOrder() {
+		Order& getOrder() {
 			Order outorder;
 			{
 				std::unique_lock<std::mutex> lock(mutex_);

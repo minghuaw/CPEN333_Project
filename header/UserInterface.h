@@ -254,6 +254,15 @@ public:
 		if (jmsg[MESSAGE_STATUS] == MESSAGE_STATUS_OK) {
 			std::cout << "Order " << jmsg[MESSAGE_SEARCH][MESSAGE_ORDER_ID] << " is successfully found" << std::endl;
 		}
+		else if (jmsg[MESSAGE_STATUS] == MESSAGE_STATUS_RECEIVED) {
+			std::cout << "Order " << jmsg[MESSAGE_SEARCH][MESSAGE_ORDER_ID] << " is RECEIVED" << std::endl;
+		}
+		else if (jmsg[MESSAGE_STATUS] == MESSAGE_STATUS_PROCESSING) {
+			std::cout << "We are PROCESSING order " << jmsg[MESSAGE_SEARCH][MESSAGE_ORDER_ID] << std::endl;
+		}
+		else if (jmsg[MESSAGE_STATUS] == MESSAGE_STATUS_SHIPPED) {
+			std::cout << "Order " << jmsg[MESSAGE_SEARCH][MESSAGE_ORDER_ID] << " is SHIPPED" << std::endl;
+		}
 		else {
 			std::cout << "Order " << jmsg[MESSAGE_SEARCH][MESSAGE_ORDER_ID] << " is NOT found" << std::endl;
 		}
@@ -356,8 +365,8 @@ public:
 		std::cout << "=                  MENU                 =" << std::endl;
 		std::cout << "=========================================" << std::endl;
 		std::cout << " (1) Add Quote" << std::endl;
-		std::cout << " (2) Remove Quote" << std::endl;
-		std::cout << " (3) Search Quote" << std::endl;
+		std::cout << " (2) Remove Order" << std::endl;
+		std::cout << " (3) Search Order" << std::endl;
 		std::cout << " (4) Remove Item" << std::endl;
 		std::cout << " (5) Search Item" << std::endl;
 		std::cout << " (Q) Quit" << std::endl;
