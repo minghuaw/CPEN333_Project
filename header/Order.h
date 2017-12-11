@@ -81,6 +81,22 @@ public:
 	OrderType returnOrderType() {
 		return type;
 	}
+
+	double getOrderWeight() {
+		ItemInfo info;
+		int num;
+		double w;
+		double total_weight=0;
+
+		for (auto& pair : items) {
+			info = pair.first;
+			num = pair.second;
+			w = info.getWeight();
+			total_weight += w*num;
+		}
+		
+		return total_weight;
+	}
    
     ///**
     //* assign truck ID to order
