@@ -11,6 +11,7 @@ static const char CLIENT_REMOVE = '2';
 static const char CLIENT_SEARCH = '3';
 static const char CLIENT_REMOVE_ITEM = '4';
 static const char CLIENT_SEARCH_ITEM = '5';
+static const char CLIENT_SELECT_WAREHOUSE = '6';
 static const char CLIENT_QUIT = 'Q';
 
 int main(){
@@ -40,6 +41,9 @@ int main(){
 				break;
 			case CLIENT_SEARCH_ITEM:
 				client.do_search_item();
+				break;
+			case CLIENT_SELECT_WAREHOUSE:
+				client.selectWarehouse();
 				break;
 			case CLIENT_QUIT:
 				client.do_goodbye();

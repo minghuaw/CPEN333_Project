@@ -22,6 +22,7 @@
 #define ADD_END "N"
 #define ADD_YES "Y"
 #define ADD_N0 "N"
+#define NOT_SELECTED 0
 
 class UserInterface{
 private:
@@ -124,6 +125,8 @@ class ClientUI: public UserInterface {
 private:
     cpen333::process::socket socket_;
 	WarehouseComputerAPI api_;
+	int warehouse_id = 0;
+
 public:
     /**
      * default constructor
@@ -361,6 +364,9 @@ public:
 	void addQuote() {};
 
 	void displayUI() {
+		if (warehouse_id == NOT_SELECTED)
+			selectWarehouse();
+
 		std::cout << "=========================================" << std::endl;
 		std::cout << "=                  MENU                 =" << std::endl;
 		std::cout << "=========================================" << std::endl;
@@ -369,10 +375,27 @@ public:
 		std::cout << " (3) Search Order" << std::endl;
 		std::cout << " (4) Remove Item" << std::endl;
 		std::cout << " (5) Search Item" << std::endl;
+		std::cout << " (6) Select Warehouse" << std::endl;
 		std::cout << " (Q) Quit" << std::endl;
 		std::cout << "=========================================" << std::endl;
 		std::cout << "Enter number: ";
 		std::cout.flush();
+	}
+
+	void selectWarehouse() {
+		std::string int_str;
+
+		std::cout << "=========================================" << std::endl;
+		std::cout << "=          SELECT WAREHOSUE             =" << std::endl;
+		std::cout << "=========================================" << std::endl;
+		std::cout << " (1) Warehouse 1" << std::endl;
+		std::cout << " (2) Warehouse 2" << std::endl;
+		std::cout << "=========================================" << std::endl;
+		std::cout << "Enter number: ";
+		std::cout.flush();
+
+		std::getline(std::cin, int_str);
+		warehouse_id = std::stoi(int_str);
 	}
 };
 

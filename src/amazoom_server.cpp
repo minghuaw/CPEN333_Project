@@ -159,7 +159,7 @@ void serviceWarehouse(WarehouseComputerAPI&& api, std::deque<JSON>& msg2warehous
  */
 void listenForWarehouse(){
     whServer.open();
-    int id = 0;
+    int id = 1;
     //cpen333::process::socket client;
     cpen333::process::socket whComputer;
 
@@ -181,7 +181,7 @@ void listenForWarehouse(){
  * @param server client server, already open
  */
 void listenForClient(){
-    int id = 0;
+    int id = 1;
     cpen333::process::socket client;
     //cpen333::process::socket whComputer;
 
