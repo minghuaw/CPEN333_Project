@@ -338,6 +338,19 @@ public:
 						updateCurrWeight();
 					}
 				}
+				if (items.size() > 0) {
+					if (go(linfo_.loading[COL_IDX], linfo_.loading[ROW_IDX] - 1)) {
+						std::this_thread::sleep_for(std::chrono::milliseconds(1000)); // hold on there for a bit
+																					  // load items to loading bay
+						for (auto& i : items) {
+							loadingQueue.add(i);
+						}
+						// clear items
+						items.clear();
+						currWeight = 0;
+						updateCurrWeight();
+					}
+				}
 			}
 			else {
 				finish = true;
