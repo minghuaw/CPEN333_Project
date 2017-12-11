@@ -139,7 +139,8 @@ public:
 
 	int main() {
 		while (!check_quit()) {
-			Order o = truckOrderQueue.getOrder();
+			Order o;
+			truckOrderQueue.getOrder(&o);
 			if (o.returnOrderID() == POISION_ID)
 				break;
 			else {

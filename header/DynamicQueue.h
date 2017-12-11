@@ -138,14 +138,14 @@ class OrderQueue: public DynamicQueue<Order>{
 		 * @param outorder reference to outorder
 		 * @return true if success, false if failed
 		 */
-		void getOrder(Order& outorder) {
+		void getOrder(Order* outorder) {
 			{
 				std::unique_lock<std::mutex> lock(mutex_);
 				while (buff_.size() <= processIndex) {
 					cv_.wait(lock);
 				}
 				// get first item in queue
-				outorder = buff_.at(processIndex);
+				outorder = &buff_.at(processIndex);
 				processIndex++;
 			}
 		}
@@ -163,11 +163,10 @@ class OrderQueue: public DynamicQueue<Order>{
 				while (buff_.size() <= processIndex) {
 					cv_.wait(lock);
 				}
-				// get first item in queue
-				outorder = buff_.at(processIndex);
 				processIndex++;
+				// get first item in queue
+				return buff_.at(processIndex);
 			}
-			return outorder;
 		}
 
 		/**
@@ -198,7 +197,6 @@ class OrderQueue: public DynamicQueue<Order>{
 				if (orderID == od.returnOrderID()) {
 					outorder = od;
 					return true;			
-						
 				}
 			}
 			return false;

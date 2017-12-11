@@ -520,8 +520,36 @@ public:
 
 			case CHECK_ORDER_STATUS:
 			{
+				std::string orderID;
+				std::cout << "Enter the ID of item" << std::endl;
+				std::cin >> orderID;
+				// search order
+				Order outorder;
+				bool success = robotOrderQueue.searchOrderID(orderID, std::ref(outorder));
+				if (success) {
+					std::cout << "Order " << orderID << " found" << std::endl;
 
+					switch (outorder.returnOrderStatus())
+					{
+					case OrderStatus::PROCESSING: {
+						std::cout << "Order " << orderID << " is processing" << std::endl;
+						break;
+					}
+					case OrderStatus::RECEIVED: {
+						std::cout << "Order " << orderID << " is received" << std::endl;
+						break;
+					}
+					case OrderStatus::SHIPPED: {
+						std::cout << "Order " << orderID << " is shipped" << std::endl;
+						break;
+					}
+					}
+				}
+				else {
+					std::cout << "Order " << orderID << " NOT found" << std::endl;
+				}
 			}
+				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 				break;
 
 			case MANAGER_QUIT:

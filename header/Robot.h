@@ -297,11 +297,13 @@ public:
 	int main() {
 		while (!check_quit()) {
 			Order o;
-			robotOrderQueue.getOrder(std::ref(o));
+			//robotOrderQueue.getOrder(&o);
+			o = robotOrderQueue.getOrder();
 			if (o.returnOrderID() == POISION_ID)
 				break;
 			else {
 				parse_order(o);
+				std::cout << o.returnOrderStatus() << std::endl;
 				homeRobot();
 			}
 		}
