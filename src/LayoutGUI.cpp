@@ -85,19 +85,20 @@ public:
 		RobotInfo& rinfo = memory_->rinfo;
 
 		// draw all runner locations
-		int nrunners;
+		int nrobots, print_count = 0, rowheight;;
 		{
 			std::lock_guard<decltype(mutex_)> lock(mutex_);
-			nrunners = rinfo.nrobots;
+			nrobots = rinfo.nrobots;
+			rowheight = memory_->linfo.rows;
 		}
-		for (size_t i = 0; i < nrunners; ++i) {
+		for (size_t i = 0; i < nrobots; ++i) {
 			char me = 'A' + i;
 			mutex_.lock();
 			int newr = rinfo.rloc[i][ROW_IDX];
 			int newc = rinfo.rloc[i][COL_IDX];
 			mutex_.unlock();
 
-			
+			// print location
 			if (newc != lastpos_[i][COL_IDX] || newr != lastpos_[i][ROW_IDX]) {
 				// zero out last spot and update known location
 				display_.set_cursor_position(YOFF + lastpos_[i][ROW_IDX], XOFF + lastpos_[i][COL_IDX]);
@@ -115,39 +116,16 @@ public:
 				display_.set_cursor_position(YOFF + lastpos_[i][ROW_IDX], XOFF + lastpos_[i][COL_IDX]);
 				std::printf("%c", EMPTY_CHAR);
 			}
+
+			// print weight info
+			mutex_.lock();
+			double weight = rinfo.rweight[i];
+			mutex_.unlock();
+			display_.set_cursor_position(YOFF + rowheight + 2 + print_count, XOFF + 2);
+			print_count++;
+			std::printf("Robot %c: current load %5.2f kg", me, weight);
 		}
 	}
-			// TODO: verify if this needs to be uncommented
-			//// if not already at the exit...
-			//if (newc != loading_[COL_IDX] || newr != loading_[ROW_IDX]) {
-			//	if (newc != lastpos_[i][COL_IDX]
-			//		|| newr != lastpos_[i][ROW_IDX]) {
-
-			//		// zero out last spot and update known location
-			//		display_.set_cursor_position(YOFF + lastpos_[i][ROW_IDX], XOFF + lastpos_[i][COL_IDX]);
-			//		std::printf("%c", EMPTY_CHAR);
-			//		lastpos_[i][COL_IDX] = newc;
-			//		lastpos_[i][ROW_IDX] = newr;
-			//	}
-
-			//	// print runner at new location
-			//	display_.set_cursor_position(YOFF + newr, XOFF + newc);
-			//	std::printf("%c", me);
-			//}
-			//else {
-
-			//	// erase old position if now finished
-			//	if (lastpos_[i][COL_IDX] != loading_[COL_IDX] || lastpos_[i][ROW_IDX] != loading_[ROW_IDX]) {
-			//		display_.set_cursor_position(YOFF + lastpos_[i][ROW_IDX], XOFF + lastpos_[i][COL_IDX]);
-			//		std::printf("%c", EMPTY_CHAR);
-			//		lastpos_[i][COL_IDX] = newc;
-			//		lastpos_[i][ROW_IDX] = newr;
-
-			//		// display a completion message
-			//		display_.set_cursor_position(YOFF, XOFF + memory_->linfo.cols + 2);
-			//		std::printf("runner %c escaped!!", me);
-			//	}
-			//}
 
 	/**
 	* draw status of all trucks
@@ -175,7 +153,7 @@ public:
 			// set print location and increase count
 			display_.set_cursor_position(YOFF + print_count, XOFF + colwidth + 2);
 			print_count++;
-			std::printf("Delivery Truck %c: status %c, capcity %3.2f kg, current load %3.2f kg", me, s, cap, weight);
+			std::printf("Delivery Truck %c: status %c, capcity %5.2f kg, current load %5.2f kg", me, s, cap, weight);
 		}
 		for (size_t i = 0; i < nrtrucks; ++i) {
 			char me = 'A' + i;
@@ -190,7 +168,7 @@ public:
 			// set print location and increase count
 			display_.set_cursor_position(YOFF + print_count, XOFF + colwidth + 2);
 			print_count++;
-			std::printf("Restock Truck %c: status %c, capcity %3.2f kg, current load %3.2f kg", me, s, cap, weight);
+			std::printf("Restock Truck %c: status %c, capcity %5.2f kg, current load %5.2f kg", me, s, cap, weight);
 		}
 		
 	}

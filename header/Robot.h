@@ -282,7 +282,9 @@ public:
 					std::this_thread::sleep_for(std::chrono::milliseconds(500)); // hold on there for a bit
 					currWeight += i.getWeight();
 					items.push_back(i);
+					updateCurrWeight();
 				}
+				
 				// unload each item
 				for (auto& i : items) {
 					goToCoordinate(i.getLocation());
@@ -292,6 +294,7 @@ public:
 				// clear items after unloading
 				items.clear();
 				currWeight = 0;
+				updateCurrWeight();
 			}
 		}
 		homeRobot();
@@ -320,6 +323,7 @@ public:
 						std::this_thread::sleep_for(std::chrono::milliseconds(500)); // hold on there for a bit
 						database.reduceItemInfoQuantity(item, 1);
 						i++;
+						updateCurrWeight();
 					}
 					// robot full, go to loading bay
 					else if (go(linfo_.loading[COL_IDX], linfo_.loading[ROW_IDX] - 1)) {
@@ -331,6 +335,7 @@ public:
 						// clear items
 						items.clear();
 						currWeight = 0;
+						updateCurrWeight();
 					}
 				}
 			}
@@ -364,6 +369,13 @@ public:
 			return t_info.dcapcity[i]-t_info.dweight[i];
 	}
 
+	/**
+	* upload curre weight to shared memory
+	*/
+	void updateCurrWeight() {
+		std::unique_lock<decltype(mutex_)> lock(mutex_);
+		memory_->rinfo.rweight[idx_] = currWeight;
+	}
 
 	/**
 	* Checks if we are supposed to quit
@@ -376,6 +388,8 @@ public:
 	}
 
 	int main() {
+		updateCurrWeight();
+
 		while (!check_quit()) {
 			Order o;
 			//robotOrderQueue.getOrder(std::ref(o), &memory_->tinfo.ndocked);

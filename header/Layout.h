@@ -20,6 +20,7 @@ struct LayoutInfo {
 struct RobotInfo {
     int nrobots;      // number robots
     int rloc[MAX_ROBOTS][2];   // robot locations [col][row]
+	double rweight[MAX_ROBOTS];		// robot weight
 };
 
 struct TruckInfo {

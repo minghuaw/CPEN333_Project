@@ -492,7 +492,9 @@ public:
 					case CONFIRM_ORDER:
 					{
 						Order restockOrder;
-						if (confirmRestockingQuote(quote, restockOrder)) {
+						if (quote.getLength() <= 0)
+							std::cout << "No items have been selected. Please retry." << std::endl;
+						else if (confirmRestockingQuote(quote, restockOrder)) {
 							// push manager order to robot order queue
 							robotOrderQueue.addOrder(restockOrder);
 							// push manager order to truck order queue

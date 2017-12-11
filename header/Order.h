@@ -41,10 +41,9 @@ public:
     Order(){}
 
     /**
-     *
-     * @param ID order id in string format
+     * poison pill, initialize type to be MANAGER since robot always take manager order
      */
-    Order(std::string ID) : ID(ID) {}
+    Order(std::string ID) : ID(ID),type(OrderType::MANAGER) {}
 
 	Order(std::string ID, std::vector<std::pair<ItemInfo, int>> items, OrderType type=CLIENT): 
 		ID(ID), items(items), type(type){

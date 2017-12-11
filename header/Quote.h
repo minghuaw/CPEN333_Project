@@ -37,6 +37,13 @@ public:
      */
     Quote(std::vector<std::pair<std::string, int >> &itemVector){}
 
+	/**
+	* get length of quote
+	*/
+	int getLength() {
+		return quote_.size();
+	}
+
     /**
      * add a quote of item to the quote
      * @param itemName name of item

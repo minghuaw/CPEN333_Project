@@ -262,9 +262,18 @@ public:
 	* 2. truck has weight >80% of its capacity
 	*/
 	void waitTillFull() {
-		while (!check_quit() && (currWeight < capacity * FULL_RATIO)) {
-			ItemInfo item = loadingQueue.get();
-			currWeight += item.getWeight();
+		bool finish = false;
+		while (!check_quit() && !finish) {
+			while (currWeight < capacity * FULL_RATIO || !finish) {
+				ItemInfo i = loadingQueue.get();
+				if (i.getID() == POISION_ID) {
+					finish = true;
+					break;
+				}
+				std::this_thread::sleep_for(std::chrono::milliseconds(500)); // hold on there for a bit
+				currWeight += i.getWeight();
+				updateCurrWeight();
+			}
 		}
 	}
 
