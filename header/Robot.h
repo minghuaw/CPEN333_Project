@@ -288,6 +288,7 @@ public:
 
 	int findTruckOnDock() {
 		TruckInfo& t_info = memory_->tinfo;
+		
 		int ndtrucks = t_info.ndtrucks;
 
 		for (int i = 0; i < ndtrucks; i++) {
@@ -297,14 +298,14 @@ public:
 		return NO_DTRUCK_DOCKED;
 	}
 
-	double getTruckRemainingCapacity(int i) {
+	double getTruckRemainingCapacity() {
 		TruckInfo& t_info = memory_->tinfo;
-		int itruck = findTruckOnDock();
+		int i = findTruckOnDock();
 		
-		if (itruck == NO_DTRUCK_DOCKED)
+		if (i == NO_DTRUCK_DOCKED)
 			return NO_DTRUCK_DOCKED;
 		else
-			return t_info.dcapcity[i];
+			return t_info.dcapcity[i]-t_info.dweight[i];
 	}
 
 	void process_manager_order(){}
@@ -322,7 +323,13 @@ public:
 	int main() {
 		while (!check_quit()) {
 			Order o;
-			robotOrderQueue.getOrder(std::ref(o));
+			//robotOrderQueue.getOrder(std::ref(o), &memory_->tinfo.ndocked);
+			double weight = getTruckRemainingCapacity();
+			bool success = robotOrderQueue.getOrder(weight, std::ref(o));
+			while (!success) {
+				weight = getTruckRemainingCapacity();
+				success = robotOrderQueue.getOrder(weight, std::ref(o));
+			}
 			if (o.returnOrderID() == POISION_ID)
 				break;
 			else {

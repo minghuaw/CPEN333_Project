@@ -11,8 +11,12 @@
 #include "Item.h"
 #include "DynamicQueue.h"
 #include "Amazoom.h"
+#include "Layout.h"
 
-#include<cpen333\process\semaphore.h>
+#include <cpen333\process\mutex.h>
+#include <cpen333\process\semaphore.h>
+#include <cpen333\process\shared_memory.h>
+#include <cpen333\thread\thread_object.h>
 
 class Truck: public cpen333::thread::thread_object{
 protected:
@@ -100,6 +104,7 @@ public:
 		{
 			std::unique_lock<decltype(mutex_)> lock(mutex_);
 			memory_->tinfo.rtruckStatus[idx_] = TRUCK_ARRIVAL;	// signal computer about arrival
+			memory_->tinfo.ndocked++;
 		}
 	}
 
@@ -110,6 +115,7 @@ public:
 		{
 			std::unique_lock<decltype(mutex_)> lock(mutex_);
 			memory_->tinfo.rtruckStatus[idx_] = TRUCK_DEPARTURE;	// signal computer about arrival
+			memory_->tinfo.ndocked--;
 		}	
 		unloadingBay.notify();
 	}
@@ -234,6 +240,7 @@ public:
 		{
 			std::unique_lock<decltype(mutex_)> lock(mutex_);
 			memory_->tinfo.dtruckStatus[idx_] = TRUCK_ARRIVAL;	// signal computer about arrival
+			memory_->tinfo.ndocked++;
 		}
 	}
 
@@ -244,6 +251,7 @@ public:
 		{
 			std::unique_lock<decltype(mutex_)> lock(mutex_);
 			memory_->tinfo.dtruckStatus[idx_] = TRUCK_DEPARTURE;	// signal computer about arrival
+			memory_->tinfo.ndocked--;
 		}
 		loadingBay.notify();
 	}

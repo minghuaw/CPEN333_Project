@@ -31,6 +31,7 @@ struct TruckInfo {
 	double rcapcity[MAX_TRUCKS];
 	double dweight[MAX_TRUCKS];			// current load of trucks
 	double rweight[MAX_TRUCKS];
+	size_t ndocked = 0;
 };
 
 struct SharedData {

@@ -138,6 +138,26 @@ class OrderQueue: public DynamicQueue<Order>{
 		 * @param outorder reference to outorder
 		 * @return true if success, false if failed
 		 */
+		void getOrder(Order& outorder, size_t* docked) {
+			while (*docked < 1) {}
+			{
+				std::unique_lock<std::mutex> lock(mutex_);
+				while (buff_.size() <= processIndex) {
+					cv_.wait(lock);
+				}
+				// get first item in queue
+				outorder = buff_.at(processIndex);
+				processIndex++;
+			}
+		}
+
+		/**
+		* get reference to order at processIndex
+		* get is NOT destructive
+		* processIndex++ after a successful get
+		* @param outorder reference to outorder
+		* @return true if success, false if failed
+		*/
 		void getOrder(Order& outorder) {
 			{
 				std::unique_lock<std::mutex> lock(mutex_);
@@ -170,37 +190,32 @@ class OrderQueue: public DynamicQueue<Order>{
 		}
 
 		/**
-		* Try to get an order that weighs less than or equal to the specified weight
+		* Try to get an order that weighs less than or equal to the specified weight, will always get the managers order no matter the given weight
 		* @param weight		maximum weight of order
 		* @param outorder	the order found that meets the requirement
 		* @return			true if an order less than or equal to specified weight can be found, false otherwise
 		*/
-		bool tryGetClientOrder(double weight, Order& outorder){
+		bool getOrder(double weight, Order& outorder){			
 			int size = buff_.size();
-
-			for (int i = processIndex; i < size; i++) {
-				{
-					std::lock_guard<decltype(mutex_)> lock(mutex_);
-					if (buff_[i].getOrderWeight() <= weight && 
-						buff_[i].returnOrderType() == OrderType::CLIENT) {
-						if (i > processIndex) {
-							swapOrder(processIndex, i);
-						}					
-						getOrder(sd::ref(outorder));
-						return true;
+			for (int i = processIndex; i < size; i++) {					
+				if (buff_[i].returnOrderType() == OrderType::MANAGER) {
+					if (i > processIndex) {
+						swapOrder(processIndex, i);
 					}
+					getOrder(outorder);
+					return true;
 				}
-			}
+				else if(buff_[i].getOrderWeight() <= weight && 
+					buff_[i].returnOrderType() == OrderType::CLIENT) {
+					if (i > processIndex) {
+						swapOrder(processIndex, i);
+					}					
+					getOrder(outorder);
+					return true;
+				}					
+			}		
 
 			return false;
-		}
-
-		void swapOrder(int a, int b) {
-			Order temp_a = buff_.at(a);
-			Order temp_b = buff_.at(b);
-
-			buff_.insert(buff_.begin() + a, std::move(temp_b));
-			buff_.insert(buff_.begin() + b, std::move(temp_a));
 		}
 		
 		/**
@@ -208,8 +223,13 @@ class OrderQueue: public DynamicQueue<Order>{
 		* @param ind1		index of first order
 		* @param ind2		index of second order
 		*/
-		bool swapOrder(int ind1, int ind2){
-		}
+		void swapOrder(int a, int b) {
+			Order temp_a = buff_.at(a);
+			Order temp_b = buff_.at(b);
+
+			buff_.insert(buff_.begin() + a, std::move(temp_b));
+			buff_.insert(buff_.begin() + b, std::move(temp_a));
+		}		
 
 		void updateOrderStatus(std::string id,OrderStatus status) {
 			for (Order& od : buff_) {

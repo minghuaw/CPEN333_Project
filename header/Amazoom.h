@@ -13,6 +13,7 @@
 #define LOADING_BAY_NAME "loading"
 #define UNLOADING_BAY_NAME "unloading"
 #define WAREHOUSE_NUM 2
+#define TR_SEM_NAME "tr_sem"
 
 #define LOCAL_HOST "127.0.0.1"
 #define CLIENT_PORT 52102
@@ -42,7 +43,7 @@
 #define MAX_TRUCKS 5
 #define TRUCK_ARRIVAL 'A'
 #define TRUCK_DEPARTURE 'D'
-#define NO_DTRUCK_DOCKED '-1'
+#define NO_DTRUCK_DOCKED -1
 #define TRUCK_CAPACITY 450		// 450Kg accodring to federal regislation
 #define TRUCK_CAPACITY_VARIATION 50	// 100 kg variation
 #define FULL_RATIO 0.8
