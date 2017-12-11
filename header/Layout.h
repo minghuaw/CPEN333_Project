@@ -12,6 +12,9 @@ struct LayoutInfo {
     int rows;           // rows in warehouse
     int cols;           // columns in warehouse
     char layout[MAX_LAYOUT_COL][MAX_LAYOUT_ROW];  // warehouse storage
+	int loading[2];		// loading bay location
+	int unloading[2];   // loading bay location
+	int home[2];		// robot home location
 };
 
 struct RobotInfo {

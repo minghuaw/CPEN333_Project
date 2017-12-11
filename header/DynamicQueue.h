@@ -58,7 +58,7 @@ class DynamicQueue{
 
 };
 
-class ItemQueue: public DynamicQueue<Item>{
+class ItemQueue: public DynamicQueue<ItemInfo>{
 	public:
 		/**
 		* Creates the dynamic item queue

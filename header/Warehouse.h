@@ -166,6 +166,16 @@ public:
 				}
 			}
 		}
+
+		{
+			std::lock_guard<decltype(ly_mutex_)> lock(ly_mutex_);
+			memory_->linfo.home[0] = home[0];
+			memory_->linfo.home[1] = home[1];
+			memory_->linfo.loading[0] = loading[0];
+			memory_->linfo.loading[1] = loading[1];
+			memory_->linfo.unloading[0] = unloading[0];
+			memory_->linfo.unloading[1] = unloading[1];
+		}
 	}
 
 	/**
@@ -215,6 +225,7 @@ public:
 		}
 		return true;
 	}
+
 	/**
 	* spawn a new delivery truck and move to another thread
 	* @param quantity	number of delivery trucks to be spawned
@@ -267,6 +278,7 @@ public:
 		}
 		// join all robot threads
 		for (auto& robot: robots) {
+			robotOrderQueue.addOrder(Order(POISION_ID));
 			robot->join();
 		}
 		// join all truck threads
@@ -274,17 +286,19 @@ public:
 			d->join();
 		}
 		for (auto& r : rTrucks) {
+			truckOrderQueue.addOrder(Order(POISION_ID));
 			r->join();
 		}
 	}
 
-	/**
-	* return the coordinate and the corresponding quantity of item by finding item name. Executed after a quote is received.
-	* @param itemName	name of item to be found
-	* @param quantity	number of items needed
-	* @return a vector of coordinate and quantity pairs
-	*/
-	std::vector<std::pair<Coordinate, int>> findLocation(std::pair<std::string, int> itemQuan) {}
+	///**
+	//* return the coordinate and the corresponding quantity of item by finding item name. Executed after a quote is received.
+	//* @param itemName	name of item to be found
+	//* @param quantity	number of items needed
+	//* @return a vector of coordinate and quantity pairs
+	//*/
+	//std::vector<std::pair<Coordinate, int>> findLocation(std::pair<std::string, int> itemQuan) {
+	//}
 
 	/**
 	* confirm a restocking quote and convert it to an order (toOrder()), the central computer will then
@@ -294,7 +308,25 @@ public:
 	* @param outorder	output order
 	* @return always return true
 	*/
-	bool confirmRestockingQuote(Quote quote, Order& outorder) {}
+	bool confirmRestockingQuote(Quote quote, Order& outorder) {
+		std::string itemName;
+		int num;
+		std::string orderID;
+
+		for (auto& pair : quote.quote_) {
+			itemName = pair.first;
+			num = pair.second;
+
+			// find item
+			std::string orderID = "M0" + std::to_string(orderCounter);
+			Order order = Warehouse::toOrder(std::ref(orderID), std::ref(quote),
+				std::ref(inventory), OrderType::MANAGER);
+			outorder = order;
+			orderCounter++;		// increase order index
+		}
+
+		return true;
+	}
 
 	/**
 	* confirm if a client quote can be processed after checking stock, if confirmed, convert quote to an order
@@ -343,7 +375,7 @@ public:
 	* place an order in the robotOrderQueue or truckOrderQueue depend on the order type
 	* @param order		order to be placed
 	*/
-	void placeOrderInQueue(Order order) {}
+	//void placeOrderInQueue(Order order) {}
 
 	/**
 	* find the weight of an order
@@ -455,15 +487,20 @@ public:
 						}
 						break;
 					case CONFIRM_ORDER:
-						{
-							std::string orderID = "M0" + std::to_string(orderCounter);
+					{
+						Order restockOrder;
+						confirmRestockingQuote(quote, restockOrder);
+						/*	std::string orderID = "M0" + std::to_string(orderCounter);
 							Order order = Warehouse::toOrder(std::ref(orderID), std::ref(quote),
 								std::ref(inventory), OrderType::MANAGER);
-							orderCounter++;
-							// push manager order to order queue
-							robotOrderQueue.addOrder(order);
-							std::cout << "order added to queue" << std::endl;
-						}
+							orderCounter++;*/
+
+						// push manager order to robot order queue
+						robotOrderQueue.addOrder(restockOrder);
+						// push manager order to truck order queue
+						truckOrderQueue.addOrder(restockOrder);
+						std::cout << "Restock order added to queue" << std::endl;
+					}
 						break;
 					case MANAGER_QUIT:
 						break;

@@ -21,12 +21,12 @@
 class InventoryDatabase{
 private:
     //TODO: supply our own comparator for ItemInfo's, as map internally is a binary tree
-    std::map<ItemInfo, int> inventory;						// map of iteminfo to quantity
+    //std::map<ItemInfo, int> inventory;						// map of iteminfo to quantity
 	std::map<std::string, int> itemQuantity_;				// map of item name to quantity
 	std::map<std::string, double> itemWeight_;					// map of item name to weight
-	std::map<std::string, Coordinate> itemLocation_;
+	std::map<std::string, Coordinate> itemLocation_;			// map of itemLocations
 	//TODO: use map instead? to simplify the problem
-    std::multimap<std::string, Coordinate> itemLocation;    // multimap of itemLocations. One type of item may be store
+    //std::multimap<std::string, Coordinate> itemLocation;    // multimap of itemLocations. One type of item may be store
                                                             // multiple locations
     std::mutex mutex_;										// internal mutex for thread safe operation
 	std::map<std::string, Cell> coordinate2cell;			// map coordinate to storage cells
@@ -46,6 +46,8 @@ public:
 		initCoordinates();
 		initCells();
 		loadItemList(ITEM_LIST);
+		initItemQuantity();
+		initItemLocation();
 	}
 
 	/**
@@ -101,6 +103,37 @@ public:
 		}
 	}
 
+	/**
+	* randomly init items quantity
+	*/
+	void initItemQuantity() {
+		int quantity;
+		for (auto item : itemWeight_) {
+			quantity = rand() % 5 + LOW_STOCK_ALERT;	// random quantity
+			itemQuantity_.insert(std::pair<std::string, int>(item.first, quantity));
+		}
+	}
+
+	/**
+	* randomly place items on shelf
+	*/
+	void initItemLocation() {
+		int idx;
+		for (auto item : itemQuantity_) {
+			idx = rand() % coors.size();
+			itemLocation_.insert(std::pair<std::string, Coordinate>(item.first, coors.at(idx)));
+		}
+	}
+
+	/**
+	* Assign a new location to an item
+	* @param itemName  name of item
+	*/
+	Coordinate assignItemLocation(std::string itemName) {
+		auto result = itemLocation_.find(itemName);
+		// TODO: return coordinate
+	}
+
     /**
      * add additional entry with quantity if ItemInfo is not in inventory
      * add up the quantity if the ItemInfo is found in the inventory
@@ -117,13 +150,6 @@ public:
      * @return true if reduction is successful, false if reduction is unsuccessful
      */
     bool reduceItemInfoQuantity(ItemInfo& itemInfo, int quantity){}
-
-    /**
-     * Assign a new location to an ItemInfo
-     * @param itemInfo itemInfo ItemInfo object of the target item
-     * @param loc Coordinate of the new location
-     */
-    void assignItemLocation(ItemInfo& itemInfo, Coordinate loc){}
 
     /**
      * remove the current location of the ItemInfos
@@ -157,7 +183,7 @@ public:
 			return false;
 		if (itemWeight_.find(itemName) == itemWeight_.end())
 			return false;
-		if (itemLocation.find(itemName) == itemLocation.end())
+		if (itemLocation_.find(itemName) == itemLocation_.end())
 			return false;
 
 		return true;
@@ -174,7 +200,7 @@ public:
 		return itemQuantity_[itemName];
 	}
 
-	Coordinate& findItemLocation(std::string& itemName) {
+	Coordinate findItemLocation(std::string& itemName) {
 		try {
 			return itemLocation_[itemName];
 		}

@@ -179,7 +179,9 @@ public:
 	* let the robot go to coordinate, call go
 	* @param coor	coordinate of item
 	*/
-	void goToCoordinate(Coordinate coor) {}
+	void goToCoordinate(Coordinate coor) {
+		std::cout << coor.toString() << std::endl;
+	}
 
     /**
      * robot returns to the home location
@@ -213,8 +215,24 @@ public:
 	/**
 	* parse the iteminfo in an order, call go continously
 	*/
-	void parse_order() {
-		std::cout << "parse order items" << std::endl;
+	void parse_order(Order& o) {
+		if (o.returnOrderType() == OrderType::MANAGER) {
+			if (go(linfo_.unloading[COL_IDX], linfo_.unloading[ROW_IDX]-1)) {
+				std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+				while (true) {
+					ItemInfo i = unloadingQueue.get();
+					if (i.getID() == POISION_ID)
+						break;
+					else {
+						goToCoordinate(i.getLocation());
+						std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+					}
+				}
+			}
+		}
+		else {
+			std::cout << "client order" << std::endl;
+		}
 	}
 
 	/**
@@ -233,7 +251,7 @@ public:
 			if (o.returnOrderID() == POISION_ID)
 				break;
 			else {
-				parse_order();
+				parse_order(o);
 			}
 		}
 		removeMe();

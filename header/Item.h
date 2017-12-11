@@ -81,6 +81,11 @@ public:
 
 	ItemInfo():Item() {}
 
+	/**
+	* constructor of item
+	*/
+	ItemInfo(std::string ID) :Item(ID,0){}
+
     /**
      * Constructor for ItemInfo class, calls Item constructor
      * @param ID item ID, string
@@ -104,7 +109,13 @@ public:
     void setLocation(Coordinate loc){
 		location = loc;
 	}
-};
 
+	/**
+	* return the ID of Item
+	*/
+	std::string getID() {
+		return ID;
+	}
+};
 
 #endif //PROJECT_ITEM_H

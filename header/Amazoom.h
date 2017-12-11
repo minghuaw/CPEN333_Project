@@ -31,7 +31,7 @@
 #define COL_IDX 0
 #define ROW_IDX 1
 #define SHELF_LEVEL 3 // each shelf has 3 levels
-#define CELL_CAPACITY 7.5 // each cell can hold 7.5kg items
+#define CELL_CAPACITY 100000 // each cell can hold 75kg items
 
 #define MAX_LAYOUT_COL 80
 #define MAX_LAYOUT_ROW 80
@@ -46,6 +46,7 @@
 #define FULL_RATIO 0.8
 
 #define POISION_ID "-1"
+#define LOW_STOCK_ALERT 5
 
 #define ITEM_LIST "../data/itemList.txt"
 

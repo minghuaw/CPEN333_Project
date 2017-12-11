@@ -72,13 +72,14 @@ public:
 		unloadingQueue(unloadingQ), truckOrderQueue(truckOrderQ),\
 		memory_(WAREHOUSE_MEMORY_NAME), mutex_(WAREHOUSE_MEMORY_MUTEX_NAME)	
 	{
+		capacity = rand() % 30 + TRUCK_CAPACITY - 15;	// random capacity, range in 435-449
 		{
 			std::unique_lock<decltype(mutex_)> lock(mutex_);
 			idx_ = memory_->tinfo.nrtrucks;
 			memory_->tinfo.nrtrucks++;
-			memory_->tinfo.rtruckStatus[idx_] = TRUCK_ARRIVAL;	// signal computer about arrival
+			memory_->tinfo.rtruckStatus[idx_] = TRUCK_DEPARTURE;	// signal computer about arrival
+			memory_->tinfo.rcapcity[idx_] = capacity;
 		}
-		capacity = rand() % 30 + TRUCK_CAPACITY - 15;	// random capacity, range in 435-449
 	}
 
 	/**
@@ -87,6 +88,7 @@ public:
 	*/
 	bool dock() {
 		unloadingBay.wait();
+		notifyArrival();
 		return true;
 	}
 
@@ -112,31 +114,41 @@ public:
 	}
 
 	/**
-	* collect order, constantly called by int main in a loop, try to dequeue truckOrderQueue 
-	* after getting an order, also generate LIST OF ITEMS
-	* @param outOrder	order to output
-	*/
-	void collectOrder(Order& outOrder) {
-
-	}
-
-	/**
 	* truck will empty all items on truck, push into unloading queue until there is not items left
-	* continouously call empty() in a loop
 	*/
-	void waitTillEmpty() {
-
+	void waitTillEmpty(Order& o) {
+		std::cout << "Truck has order" << std::endl;
+		std::pair<ItemInfo,int> itemInfo;
+		while (o.getItemInfo(itemInfo)) {
+			for (int i = 0; i < itemInfo.second; i++) {
+				unloadingQueue.add(itemInfo.first);
+			}
+		}
+		unloadingQueue.add(ItemInfo(POISION_ID));		// signal robot for finish
 	}
 
 	/**
-	* truck will empty one item to unloading queue
+	* Checks if we are supposed to quit
+	* @return true if memory tells us to quit
 	*/
-	void empty() {
-
+	bool check_quit() {
+		// check if we need to quit
+		std::lock_guard<decltype(mutex_)> lock(mutex_);
+		return memory_->quit;
 	}
 
 	int main() {
-		std::cout << " I am a restock truck" << std::endl;
+		while (!check_quit()) {
+			if (dock()) {
+				Order o = truckOrderQueue.getOrder();
+				if (o.returnOrderID() == POISION_ID)
+					break;
+				else {
+					waitTillEmpty(o);
+					notifyLeaving();
+				}
+			}
+		}
 		return 0;
 	}
 };
@@ -170,13 +182,14 @@ public:
 		loadingBay(LOADING_BAY_NAME, LOADING_BAY_SEM_RESOURCE), \
 		memory_(WAREHOUSE_MEMORY_NAME), mutex_(WAREHOUSE_MEMORY_MUTEX_NAME)
 	{
+		capacity = rand() % 30 + TRUCK_CAPACITY - 15;	// random capacity, range in 435-449
 		{
 			std::unique_lock<decltype(mutex_)> lock(mutex_);
 			idx_ = memory_->tinfo.ndtrucks;
 			memory_->tinfo.ndtrucks++;
-			memory_->tinfo.dtruckStatus[idx_] = TRUCK_ARRIVAL;	// signal computer about arrival
+			memory_->tinfo.dtruckStatus[idx_] = TRUCK_DEPARTURE;	// signal computer about arrival
+			memory_->tinfo.dcapcity[idx_] = capacity;
 		}
-		capacity = rand() % 30 + TRUCK_CAPACITY-15;	// random capacity, range in 435-449
 	}
 
 	/**
@@ -185,6 +198,7 @@ public:
 	*/
 	bool dock() {
 		loadingBay.wait();
+		notifyArrival();
 		return true;
 	}
 
@@ -215,12 +229,25 @@ public:
 	* 2. truck has weight >80% of its capacity
 	*/
 	void waitTillFull() {
+	}
 
+	/**
+	* Checks if we are supposed to quit
+	* @return true if memory tells us to quit
+	*/
+	bool check_quit() {
+		// check if we need to quit
+		std::lock_guard<decltype(mutex_)> lock(mutex_);
+		return memory_->quit;
 	}
 
 	int main() {
-		std::cout << "I am a truck" << std::endl;
-		notifyLeaving();
+		while (!check_quit()) {
+			if (dock()) {
+				waitTillFull();
+				notifyLeaving();
+			}
+		}
 		return 0;
 	}
 

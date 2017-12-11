@@ -72,13 +72,20 @@ public:
     std::string returnOrderID() {
 		return ID;
     }
+
+	/**
+	* return order type
+	*/
+	OrderType returnOrderType() {
+		return type;
+	}
    
-    /**
-    * assign truck ID to order
-    * @return 	ID of order in string format
-    */
-    void assignTruckID(std::string truckID) {
-    }
+    ///**
+    //* assign truck ID to order
+    //* @return 	ID of order in string format
+    //*/
+    //void assignTruckID(std::string truckID) {
+    //}
 
     /**
     * Convert an order to string format
@@ -92,7 +99,15 @@ public:
      * @param outItemInfo  output with item info and quantity
      * @return true if there are still pairs in the vector
      */
-    bool getItemInfo(std::pair<ItemInfo,int>& outItemInfo) {}
+    bool getItemInfo(std::pair<ItemInfo,int>& outItemInfo) {
+		if (items.size() > 0) {
+			outItemInfo = items.back();
+			items.pop_back();
+			return true;
+		}
+		else
+			return false;
+	}
    
 
     /**
