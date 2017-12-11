@@ -80,6 +80,7 @@ public:
 			memory_->tinfo.nrtrucks++;
 			memory_->tinfo.rtruckStatus[idx_] = TRUCK_DEPARTURE;	// signal computer about arrival
 			memory_->tinfo.rcapcity[idx_] = capacity;
+			memory_->tinfo.rweight[idx_] = currWeight;
 		}
 	}
 
@@ -118,13 +119,27 @@ public:
 	* truck will empty all items on truck, push into unloading queue until there is not items left
 	*/
 	void waitTillEmpty(Order& o) {
+		// TODO: get order weight
+		//currWeight =;
+		// update current weight
+		updateCurrWeight();
 		std::pair<ItemInfo,int> itemInfo;
 		while (o.getItemInfo(itemInfo)) {
 			for (int i = 0; i < itemInfo.second; i++) {
 				unloadingQueue.add(itemInfo.first);
+				currWeight -= itemInfo.first.getWeight();
+				updateCurrWeight();
 			}
 		}
 		unloadingQueue.add(ItemInfo(POISION_ID));		// signal robot for finish
+	}
+
+	/**
+	* upload curre weight to shared memory
+	*/
+	void updateCurrWeight() {
+		std::unique_lock<decltype(mutex_)> lock(mutex_);
+		memory_->tinfo.rweight[idx_] = currWeight;
 	}
 
 	/**
@@ -140,7 +155,7 @@ public:
 	int main() {
 		while (!check_quit()) {
 			Order o;
-			truckOrderQueue.getOrder(&o);
+			truckOrderQueue.getOrder(o);
 			if (o.returnOrderID() == POISION_ID)
 				break;
 			else {
@@ -191,6 +206,7 @@ public:
 			memory_->tinfo.ndtrucks++;
 			memory_->tinfo.dtruckStatus[idx_] = TRUCK_DEPARTURE;	// signal computer about arrival
 			memory_->tinfo.dcapcity[idx_] = capacity;
+			memory_->tinfo.dweight[idx_] = currWeight;
 		}
 	}
 
@@ -235,6 +251,14 @@ public:
 			ItemInfo item = loadingQueue.get();
 			currWeight += item.getWeight();
 		}
+	}
+
+	/**
+	* upload curre weight to shared memory
+	*/
+	void updateCurrWeight() {
+		std::unique_lock<decltype(mutex_)> lock(mutex_);
+		memory_->tinfo.dweight[idx_] = currWeight;
 	}
 
 	/**
