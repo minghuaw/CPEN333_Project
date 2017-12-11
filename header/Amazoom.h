@@ -43,6 +43,7 @@
 #define TRUCK_ARRIVAL 'A'
 #define TRUCK_DEPARTURE 'D'
 #define TRUCK_CAPACITY 450		// 450Kg accodring to federal regislation
+#define TRUCK_CAPACITY_VARIATION 50	// 100 kg variation
 #define FULL_RATIO 0.8
 
 #define POISION_ID "-1"

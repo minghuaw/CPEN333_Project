@@ -29,7 +29,7 @@ struct TruckInfo {
 	char rtruckStatus[MAX_TRUCKS];
 	double dcapcity[MAX_TRUCKS];		// capacity of trucks
 	double rcapcity[MAX_TRUCKS];
-	double dweight[MAX_TRUCKS];			// weight of trucks
+	double dweight[MAX_TRUCKS];			// current load of trucks
 	double rweight[MAX_TRUCKS];
 };
 

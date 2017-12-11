@@ -166,27 +166,31 @@ public:
 			char me = 'A' + i;
 			char s; // status of trucks
 			double cap;
+			double weight;
 			mutex_.lock();
 			s = tinfo.dtruckStatus[i];
 			cap = tinfo.dcapcity[i];
+			weight = tinfo.dweight[i];
 			mutex_.unlock();
 			// set print location and increase count
 			display_.set_cursor_position(YOFF + print_count, XOFF + colwidth + 2);
 			print_count++;
-			std::printf("Delivery Truck %c with capcity %f kg has status: %c ", me, cap, s);
+			std::printf("Delivery Truck %c: status %c, capcity %.2f kg, current load %.2f kg", me, s, cap, weight);
 		}
 		for (size_t i = 0; i < nrtrucks; ++i) {
 			char me = 'A' + i;
 			char s; // status of trucks
 			double cap;
+			double weight;
 			mutex_.lock();
 			s = tinfo.rtruckStatus[i];
 			cap = tinfo.rcapcity[i];
+			weight = tinfo.rweight[i];
 			mutex_.unlock();
 			// set print location and increase count
 			display_.set_cursor_position(YOFF + print_count, XOFF + colwidth + 2);
 			print_count++;
-			std::printf("Restock Truck %c with capcity %f kg has status: %c ", me, cap, s);
+			std::printf("Restock Truck %c: status %c, capcity %.2f kg, current load %.2f kg", me, s, cap, weight);
 		}
 		
 	}
