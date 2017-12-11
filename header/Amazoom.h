@@ -42,6 +42,7 @@
 #define MAX_TRUCKS 5
 #define TRUCK_ARRIVAL 'A'
 #define TRUCK_DEPARTURE 'D'
+#define NO_DTRUCK_DOCKED '-1'
 #define TRUCK_CAPACITY 450		// 450Kg accodring to federal regislation
 #define FULL_RATIO 0.8
 

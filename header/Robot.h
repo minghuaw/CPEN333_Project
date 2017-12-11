@@ -8,6 +8,7 @@
 #include "Order.h"
 #include "Item.h"
 #include "DynamicQueue.h"
+#include "Truck.h"
 #include "InventoryDatabase.h"
 #include "Layout.h"
 #include <cpen333\process\shared_memory.h>
@@ -282,7 +283,27 @@ public:
 
 		// change order status
 		robotOrderQueue.updateOrderStatus(o.returnOrderID(), OrderStatus::SHIPPED);
+	}
 
+	int findTruckOnDock() {
+		TruckInfo& t_info = memory_->tinfo;
+		int ndtrucks = t_info.ndtrucks;
+
+		for (int i = 0; i < ndtrucks; i++) {
+			if (t_info.dtruckStatus[i] == TRUCK_ARRIVAL)
+				return i;
+		}
+		return NO_DTRUCK_DOCKED;
+	}
+
+	double getTruckRemainingCapacity(int i) {
+		TruckInfo& t_info = memory_->tinfo;
+		int itruck = findTruckOnDock();
+		
+		if (itruck == NO_DTRUCK_DOCKED)
+			return NO_DTRUCK_DOCKED;
+		else
+			return t_info.dcapcity[i];
 	}
 
 	/**

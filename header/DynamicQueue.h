@@ -176,9 +176,32 @@ class OrderQueue: public DynamicQueue<Order>{
 		* @param outorder	the order found that meets the requirement
 		* @return			true if an order less than or equal to specified weight can be found, false otherwise
 		*/
-		bool tryGet(double weight, Order& outorder){
+		bool tryGetClientOrder(double weight, Order& outorder){
+			int size = buff_.size();
 
+			for (int i = processIndex; i < size; i++) {
+				{
+					std::lock_guard<decltype(mutex_)> lock(mutex_);
+					if (buff_[i].getOrderWeight() <= weight && 
+						buff_[i].returnOrderType() == OrderType::CLIENT) {
+						if (i > processIndex) {
+							swapOrder(processIndex, i);
+						}					
+						getOrder(sd::ref(outorder));
+						return true;
+					}
+				}
+			}
 
+			return false;
+		}
+
+		void swapOrder(int a, int b) {
+			Order temp_a = buff_.at(a);
+			Order temp_b = buff_.at(b);
+
+			buff_.insert(buff_.begin() + a, std::move(temp_b));
+			buff_.insert(buff_.begin() + b, std::move(temp_a));
 		}
 		
 		/**
