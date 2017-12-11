@@ -36,6 +36,10 @@ public:
 		return s;
     }
 
+	double getWeight() {
+		return weight;
+	}
+
 
     /**
     * less-than operator for comparisons, sort by item ID

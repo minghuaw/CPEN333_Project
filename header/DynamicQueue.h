@@ -176,6 +176,8 @@ class OrderQueue: public DynamicQueue<Order>{
 		* @return			true if an order less than or equal to specified weight can be found, false otherwise
 		*/
 		bool tryGet(double weight, Order& outorder){
+
+
 		}
 		
 		/**
