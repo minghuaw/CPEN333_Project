@@ -38,6 +38,8 @@ using JSON = nlohmann::json;
 #define MESSAGE_ORDER_ID "orderID"
 #define MESSAGE_ITEM_NAME "itemName"
 #define MESSAGE_ORDER_ITEM "item"
+#define MESSAGE_WAREHOUSE "warehouse"
+
 
 class JsonConverter
 {
@@ -89,6 +91,7 @@ public:
 		JSON j;
 		j[MESSAGE_TYPE] = MESSAGE_ADD;
 		//j[MESSAGE_CLIENT_ID] = 
+		j[MESSAGE_WAREHOUSE] = add.w_id;
 		j[MESSAGE_ORDER] = toJSON(add.quote);
 		return j;
 	}
@@ -118,6 +121,7 @@ public:
 	static JSON toJSON(const RemoveMessage& remove) {
 		JSON j;
 		j[MESSAGE_TYPE] = MESSAGE_REMOVE;
+		j[MESSAGE_WAREHOUSE] = remove.w_id;
 		j[MESSAGE_ORDER_ID] = remove.orderID;
 		return j;
 	}
@@ -148,6 +152,7 @@ public:
 		j[MESSAGE_TYPE] = MESSAGE_REMOVE_ITEM;
 		j[MESSAGE_ORDER_ID] = removeItem.orderID;
 		j[MESSAGE_ITEM_NAME] = removeItem.itemName;
+		j[MESSAGE_WAREHOUSE] = removeItem.w_id;
 		return j;
 	}
 
@@ -176,6 +181,7 @@ public:
 		JSON j;
 		j[MESSAGE_TYPE] = MESSAGE_SEARCH;
 		j[MESSAGE_ORDER_ID] = search.orderID;
+		j[MESSAGE_WAREHOUSE] = search.w_id;
 		return j;
 	}
 
@@ -199,6 +205,7 @@ public:
 		JSON j;
 		j[MESSAGE_TYPE] = MESSAGE_SEARCH_ITEM;
 		j[MESSAGE_ITEM_NAME] = searchItem.itemName;
+		j[MESSAGE_WAREHOUSE] = searchItem.w_id;
 		return j;
 	}
 
@@ -220,6 +227,7 @@ public:
 
 	static JSON toJSON(const GoodbyeMessage& goodbye) {
 		JSON j;
+		j[MESSAGE_WAREHOUSE] = goodbye.w_id;
 		j[MESSAGE_TYPE] = MESSAGE_GOODBYE;
 		return j;
 	}
