@@ -363,8 +363,8 @@ public:
 
 		if (success) {
 			orderID = "C0" + std::to_string(orderCounter);
-			Order order = Warehouse::toOrder(std::ref(orderID), std::ref(quote),
-				std::ref(inventory_), OrderType::CLIENT);
+			Order order = Warehouse::toOrder(std::ref(orderID), quote,
+				inventory_, OrderType::CLIENT);
 			outorder = order;
 		}
 		
