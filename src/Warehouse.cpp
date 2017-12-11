@@ -38,45 +38,31 @@ void service(WarehouseComputerAPI&& api_, OrderQueue& queue_, InventoryDatabase&
 			std::cout << "[special check] "<< "client ID " << add.clientID << std::endl;
 			// extract quote out of add message
 			Quote quote = add.quote;
+			Order od;
 			int clientID = add.clientID; 
 			std::string orderID;
 
-			bool success = true;
+			bool success;
 			std::string itemName;
 			int num;
-			// find if quote can be accomplished
-			for (auto& pair : quote.quote_) {
-				itemName = pair.first;
-				num = pair.second;
 
-				// find item
-				int quantity = inventory_.findItemQuantity(itemName);
-				if (quantity == ITEM_NOT_FOUND) {
-					success &= false;
-				}
-				else {
-					if (quantity >= num) {
-						success &= true;
-					}
-					else {
-						success &= false;
-					}
-				}
-			}
+			// find if quote can be accomplished			
+			success = Warehouse::confirmClientQuote(std::ref(quote), std::ref(inventory_),
+				std::ref(orderCounter), std::ref(od));
 
 			// send response message
 			if (success) {
-				orderID = "C0" + std::to_string(orderCounter);
-				AddResponseMessage add_re(add, orderID, clientID, MESSAGE_STATUS_OK);
+				//orderID = "C0" + std::to_string(orderCounter);
+				AddResponseMessage add_re(add, od.returnOrderID(), clientID, MESSAGE_STATUS_OK);
 				api_.sendMessage(add_re); // send back response message
 				orderCounter++; // increase order counter for orderID
 
 				// create client order
-				Order& order = Warehouse::toOrder(std::ref(orderID), std::ref(quote), 
-							std::ref(inventory_), OrderType::CLIENT);		
+			/*	Order order = Warehouse::toOrder(std::ref(orderID), std::ref(quote), 
+							std::ref(inventory_), OrderType::CLIENT);	*/	
 
 				// push client order to order queue
-				queue_.addOrder(std::ref(order));
+				queue_.addOrder(std::ref(od));
 				std::cout << "New order added to orderQueue" << std::endl;
 			}
 			else {

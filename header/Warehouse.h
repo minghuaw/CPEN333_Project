@@ -206,7 +206,7 @@ public:
 	bool remove_robot(int quantity) {
 		for (int i = 0; i < quantity; i++) {
 			if (robots.size() != 0) {
-				robotOrderQueue.add(Order(POISION_ID));
+				robotOrderQueue.addOrder(Order(POISION_ID));
 				robots.pop_back();
 			}
 			else {
@@ -287,7 +287,7 @@ public:
 	std::vector<std::pair<Coordinate, int>> findLocation(std::pair<std::string, int> itemQuan) {}
 
 	/**
-	* confirm a restocking quote and convert it to an order, the central computer will then
+	* confirm a restocking quote and convert it to an order (toOrder()), the central computer will then
 	* place the order in the truckOrderQueue, and put a void order in robotOrderQueue
 	* so that robots know to go to trucks
 	* @param quote		restocking quote to be confirmed by warehouse
@@ -304,7 +304,40 @@ public:
 	* @param outorder	output order
 	* @return true if a restocking quote can be confirmed, false otherwise
 	*/
-	bool confirmClientQuote(Quote quote, Order& outorder) {}
+	static bool confirmClientQuote(Quote& quote, InventoryDatabase& inventory_, int& orderCounter, Order& outorder) {
+		std::string itemName;
+		int num;
+		bool success = true;
+		std::string orderID;
+
+		for (auto& pair : quote.quote_) {
+			itemName = pair.first;
+			num = pair.second;
+
+			// find item
+			int quantity = inventory_.findItemQuantity(itemName);
+			if (quantity == ITEM_NOT_FOUND) {
+				success &= false;
+			}
+			else {
+				if (quantity >= num) {
+					success &= true;
+				}
+				else {
+					success &= false;
+				}
+			}
+		}
+
+		if (success) {
+			orderID = "C0" + std::to_string(orderCounter);
+			Order order = Warehouse::toOrder(std::ref(orderID), std::ref(quote),
+				std::ref(inventory_), OrderType::CLIENT);
+			outorder = order;
+		}
+		
+		return success;
+	}
 
 	/**
 	* place an order in the robotOrderQueue or truckOrderQueue depend on the order type
@@ -422,17 +455,13 @@ public:
 						}
 						break;
 					case CONFIRM_ORDER:
-						// place order in queue
-						for (auto q : quote.quote_) {
-							std::cout << q.first << q.second << std::endl;
-						}
 						{
 							std::string orderID = "M0" + std::to_string(orderCounter);
 							Order order = Warehouse::toOrder(std::ref(orderID), std::ref(quote),
 								std::ref(inventory), OrderType::MANAGER);
 							orderCounter++;
 							// push manager order to order queue
-							robotOrderQueue.addOrder(std::ref(order));
+							robotOrderQueue.addOrder(order);
 							std::cout << "order added to queue" << std::endl;
 						}
 						break;
@@ -462,9 +491,9 @@ public:
 	* @param quote		quote to convert
 	* @param inventory	inventory database
 	* @param type		type of order
-	* @return reference of order object
+	* @return order object
 	*/
-	static Order & toOrder(std::string & id, Quote & quote, InventoryDatabase & inventory, OrderType type) {
+	static Order toOrder(std::string & id, Quote & quote, InventoryDatabase & inventory, OrderType type) {
 		std::string name;
 		int num;
 		double weight;

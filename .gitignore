@@ -10,3 +10,4 @@ src/Warehouse_REMOTE_20052.cpp
 build/
 header/Warehouse.h.orig
 header/Order.h.orig
+*.orig

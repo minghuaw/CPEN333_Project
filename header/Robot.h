@@ -229,8 +229,8 @@ public:
 
 	int main() {
 		while (!check_quit()) {
-			Order t = robotOrderQueue.get();
-			if (t.returnOrderID() == POISION_ID)
+			Order o = robotOrderQueue.getOrder();
+			if (o.returnOrderID() == POISION_ID)
 				break;
 			else {
 				parse_order();
