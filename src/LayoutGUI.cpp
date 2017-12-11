@@ -175,7 +175,7 @@ public:
 			// set print location and increase count
 			display_.set_cursor_position(YOFF + print_count, XOFF + colwidth + 2);
 			print_count++;
-			std::printf("Delivery Truck %c: status %c, capcity %.2f kg, current load %.2f kg", me, s, cap, weight);
+			std::printf("Delivery Truck %c: status %c, capcity %3.2f kg, current load %3.2f kg", me, s, cap, weight);
 		}
 		for (size_t i = 0; i < nrtrucks; ++i) {
 			char me = 'A' + i;
@@ -190,7 +190,7 @@ public:
 			// set print location and increase count
 			display_.set_cursor_position(YOFF + print_count, XOFF + colwidth + 2);
 			print_count++;
-			std::printf("Restock Truck %c: status %c, capcity %.2f kg, current load %.2f kg", me, s, cap, weight);
+			std::printf("Restock Truck %c: status %c, capcity %3.2f kg, current load %3.2f kg", me, s, cap, weight);
 		}
 		
 	}

@@ -26,7 +26,7 @@ private:
     double capacity = ROBOT_CAPACITY;
 	double currWeight = 0;
 
-    std::vector<std::pair<Item,int>> items;
+    std::vector<ItemInfo> items;
     
     ItemQueue& unloadingQueue;
 	ItemQueue& loadingQueue;
@@ -250,21 +250,7 @@ public:
 
 		// if the order is from manager
 		if (o.returnOrderType() == OrderType::MANAGER) {
-			// go to unloading bay
-			if (go(linfo_.unloading[COL_IDX], linfo_.unloading[ROW_IDX]-1)) {
-				std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // hold on there for a bit
-			    // continously get iteminfo from queue
-				while (true) {	
-					ItemInfo i = unloadingQueue.get();
-					if (i.getID() == POISION_ID)
-						break;
-					else {
-						goToCoordinate(i.getLocation());
-						database.addItemInfo(i);
-						std::this_thread::sleep_for(std::chrono::milliseconds(1000)); // hold on there for a bit
-					}
-				}
-			}
+			process_manager_order(o);
 		}
 		else {
 			//std::cout << "client order" << std::endl;
@@ -286,7 +272,40 @@ public:
 
 	}
 
-	void process_manager_order(){}
+	/**
+	* process manager order, first go to unloading bay, load items and update currWeight, 
+	* if exceeding capacitance, unload and then comeback
+	*/
+	void process_manager_order(Order& o){
+		// continously get iteminfo from queue
+		bool finish = false;
+		while (!finish){
+			// go to unloading bay
+			if (go(linfo_.unloading[COL_IDX], linfo_.unloading[ROW_IDX] - 1)) {
+				// load until capacity is met
+				while (currWeight < capacity) {
+					ItemInfo i = unloadingQueue.get();
+					if (i.getID() == POISION_ID) {
+						finish = true;
+						break;
+					}	
+					std::this_thread::sleep_for(std::chrono::milliseconds(500)); // hold on there for a bit
+					currWeight += i.getWeight();
+					items.push_back(i);
+				}
+				// unload each item
+				for (auto& i : items) {
+					goToCoordinate(i.getLocation());
+					std::this_thread::sleep_for(std::chrono::milliseconds(500)); // hold on there for a bit
+					database.addItemInfo(i);
+				}
+				// clear items after unloading
+				items.clear();
+				currWeight = 0;
+			}
+		}
+		homeRobot();
+	}
 
 	/**
 	* Checks if we are supposed to quit
