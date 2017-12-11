@@ -108,6 +108,21 @@ public:
 		else
 			return false;
 	}
+
+	bool removeItem(std::string itemName) {
+		int size = items.size();
+		std::string name;
+
+		for (int i = 0; i < size; i++) {
+			name = items[i].first.getID();
+
+			if (name == itemName) {
+				items.erase(items.begin()+i);
+				return true;
+			}
+		}
+		return false;
+	}
    
 
     /**

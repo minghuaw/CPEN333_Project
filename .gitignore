@@ -11,3 +11,4 @@ build/
 header/Warehouse.h.orig
 header/Order.h.orig
 *.orig
+combine_headers.py

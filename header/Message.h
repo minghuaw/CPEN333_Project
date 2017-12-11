@@ -104,17 +104,17 @@ public:
  */
 class RemoveMessage : public Message {
 public:
-    const std::string orderID;
+	const std::string orderID;
 	const int clientID;
 
-    RemoveMessage(const std::string &orderID) : orderID(orderID), clientID(-1) {}
+	RemoveMessage(const std::string &orderID) : orderID(orderID), clientID(-1) {}
 
-	RemoveMessage(const std::string &orderID, int& clientID) : orderID(orderID), 
-				clientID(clientID) {}
+	RemoveMessage(const std::string &orderID, int& clientID) : orderID(orderID),
+		clientID(clientID) {}
 
-    MessageType type() const override {
-        return MessageType::REMOVE;
-    }
+	MessageType type() const override {
+		return MessageType::REMOVE;
+	}
 };
 
 /**
@@ -138,15 +138,19 @@ public:
  */
 class RemoveItemMessage : public Message {
 public:
-    const std::string orderID;
-    const std::string itemName;
+	const std::string orderID;
+	const std::string itemName;
+	const int clientID;
 
-    RemoveItemMessage(const std::string &orderID, const std::string &itemName)
-                        : orderID(orderID), itemName(itemName){}
+	RemoveItemMessage(const std::string &orderID, const std::string &itemName)
+		: orderID(orderID), itemName(itemName), clientID(-1) {}
 
-    MessageType type() const override {
-        return MessageType::REMOVE_ITEM;
-    }
+	RemoveItemMessage(const std::string &orderID, const std::string &itemName, int& clientID)
+		: orderID(orderID), itemName(itemName), clientID(clientID) {}
+
+	MessageType type() const override {
+		return MessageType::REMOVE_ITEM;
+	}
 };
 
 /**
@@ -170,14 +174,18 @@ public:
  */
 class SearchMessage : public Message {
 public:
-    const std::string orderID;
+	const std::string orderID;
+	const int clientID;
 
-    SearchMessage(const std::string &orderID) :
-            orderID(orderID) {}
+	SearchMessage(const std::string &orderID) :
+		orderID(orderID), clientID(-1) {}
 
-    MessageType type() const override {
-        return MessageType::SEARCH;
-    }
+	SearchMessage(const std::string &orderID, int& clientID) :
+		orderID(orderID), clientID(clientID) {}
+
+	MessageType type() const override {
+		return MessageType::SEARCH;
+	}
 };
 
 /**
@@ -185,16 +193,16 @@ public:
  */
 class SearchResponseMessage : public ResponseMessage {
 public:
-    const SearchMessage search;
-    //const std::string results;
+	const SearchMessage search;
+	//const std::string results;
 
-    SearchResponseMessage(const SearchMessage &search, const int clientID, const std::string &results,
-                          const std::string &status, const std::string &info = "") :
-            ResponseMessage(clientID, status, info), search(search) {}
+	SearchResponseMessage(const SearchMessage &search, const int clientID,
+		const std::string &status, const std::string &info = "") :
+		ResponseMessage(clientID, status, info), search(search) {}
 
-    MessageType type() const override {
-        return MessageType::SEARCH_RESPONSE;
-    }
+	MessageType type() const override {
+		return MessageType::SEARCH_RESPONSE;
+	}
 };
 
 /**
@@ -202,14 +210,18 @@ public:
  */
 class SearchItemMessage : public Message {
 public:
-    const std::string itemName;
+	const std::string itemName;
+	const int clientID;
 
-    SearchItemMessage(const std::string &itemName) :
-            itemName(itemName) {}
+	SearchItemMessage(const std::string &itemName) :
+		itemName(itemName), clientID(-1) {}
 
-    MessageType type() const override {
-        return MessageType::SEARCH_ITEM;
-    }
+	SearchItemMessage(const std::string &itemName, int& clientID) :
+		itemName(itemName), clientID(clientID) {}
+
+	MessageType type() const override {
+		return MessageType::SEARCH_ITEM;
+	}
 };
 
 /**
@@ -217,16 +229,16 @@ public:
  */
 class SearchItemResponseMessage : public ResponseMessage {
 public:
-    const SearchItemMessage searchItem;
-    //const std::string results; //--> use .info
+	const SearchItemMessage searchItem;
+	//const std::string results; //--> use .info
 
-    SearchItemResponseMessage(const SearchItemMessage &searchItem, const int clientID, const std::string &results,
-                          const std::string &status, const std::string &info = "") :
-            ResponseMessage(clientID, status, info), searchItem(searchItem) {}
+	SearchItemResponseMessage(const SearchItemMessage &searchItem, const int clientID,
+		const std::string &status, const std::string &info = "") :
+		ResponseMessage(clientID, status, info), searchItem(searchItem) {}
 
-    MessageType type() const override {
-        return MessageType::SEARCH_ITEM_RESPONSE;
-    }
+	MessageType type() const override {
+		return MessageType::SEARCH_ITEM_RESPONSE;
+	}
 };
 
 /**
@@ -234,9 +246,15 @@ public:
  */
 class GoodbyeMessage : public Message {
 public:
-    MessageType type() const override {
-        return MessageType::GOODBYE;
-    }
+	const int clientID;
+
+	GoodbyeMessage() : clientID(-1) {}
+
+	GoodbyeMessage(const int clientID) : clientID(clientID) {}
+
+	MessageType type() const override {
+		return MessageType::GOODBYE;
+	}
 };
 
 #endif //PROJECT_MESSAGES_H

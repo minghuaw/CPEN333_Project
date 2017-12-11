@@ -74,7 +74,11 @@ void service(WarehouseComputerAPI&& api_, OrderQueue& queue_, InventoryDatabase&
 		}
 		case MessageType::REMOVE: {
 			RemoveMessage& remove = (RemoveMessage &)(*msg);
+
+			// get order id
 			std::string orderID = remove.orderID;
+
+			// get client id
 			int clientID = remove.clientID;
 			std::cout << "Client " << clientID << " removing order " << orderID << std::endl;
 
@@ -93,15 +97,87 @@ void service(WarehouseComputerAPI&& api_, OrderQueue& queue_, InventoryDatabase&
 			break;		
 		}
 		case MessageType::REMOVE_ITEM: {
+			RemoveItemMessage& remove_item = (RemoveItemMessage &)(*msg);
+
+			std::string orderID = remove_item.orderID;
+			std::string itemName = remove_item.itemName;
+			int clientID = remove_item.clientID;
+
+			bool success;
+			Order od;
+			// try to find the order
+			success = queue_.searchOrderID(orderID, std::ref(od));
+
+			if (!success) {
+				// order does not exist
+				std::cout << "Order " << orderID << " not found" << std::endl;
+				RemoveItemResponseMessage remove_item_re(remove_item, std::ref(clientID), MESSAGE_STATUS_ERROR);
+				api_.sendMessage(remove_item_re);
+			}
+			else {
+				// order found
+				std::cout << "Order " << orderID << " found" << std::endl;
+				// try to remove item from order
+				success &= od.removeItem(itemName);
+
+				if (success) {
+					//item removed
+					std::cout << "Item " << itemName << " removed" << std::endl;
+					RemoveItemResponseMessage remove_item_re(remove_item, std::ref(clientID), MESSAGE_STATUS_OK);
+					api_.sendMessage(remove_item_re);
+				}
+				else {
+					std::cout << "Item " << itemName << " NOT removed" << std::endl;
+					RemoveItemResponseMessage remove_item_re(remove_item, std::ref(clientID), MESSAGE_STATUS_ERROR);
+					api_.sendMessage(remove_item_re);
+				}
+			}
 			break;
 		}
 		case MessageType::SEARCH: {
+			SearchMessage& search = (SearchMessage &)(*msg);
+			std::string orderID = search.orderID;
+			int clientID = search.clientID;
+			std::cout << "Client " << clientID << " searching order " << orderID << std::endl;
+
+			// search order
+			Order outorder;
+			bool success = queue_.searchOrderID(orderID, std::ref(outorder));
+			if (success) {
+				std::cout << "Order " << orderID << " found" << std::endl;
+				SearchResponseMessage search_re(search, std::ref(clientID), MESSAGE_STATUS_OK);
+				api_.sendMessage(search_re);
+			}
+			else {
+				std::cout << "Order " << orderID << " NOT found" << std::endl;
+				SearchResponseMessage search_re(search, std::ref(clientID), MESSAGE_STATUS_ERROR);
+				api_.sendMessage(search_re);
+			}
 			break;
 		}
 		case MessageType::SEARCH_ITEM: {
+			SearchItemMessage& search_item = (SearchItemMessage &)(*msg);
+			std::string itemName = search_item.itemName;
+			int clientID = search_item.clientID;
+
+			std::cout << "Client " << clientID << " searching for " << itemName << std::endl;
+
+			bool success = inventory_.findItem(itemName);
+			if (success) {
+				std::cout << "Item " << itemName << " found" << std::endl;
+				SearchItemResponseMessage search_item_re(search_item, std::ref(clientID), MESSAGE_STATUS_OK);
+				api_.sendMessage(search_item_re);
+			}
+			else {
+				std::cout << "Item " << itemName << " NOT found" << std::endl;
+				SearchItemResponseMessage search_item_re(search_item, std::ref(clientID), MESSAGE_STATUS_ERROR);
+				api_.sendMessage(search_item_re);
+			}
 			break;
 		}
 		case MessageType::GOODBYE: {
+			GoodbyeMessage& goodbye = (GoodbyeMessage &)(*msg);
+			std::cout << "Client " << goodbye.clientID << " left" << std::endl;
 			break;
 		}
 		default: {

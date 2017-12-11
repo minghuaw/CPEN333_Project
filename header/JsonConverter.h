@@ -299,6 +299,49 @@ public:
 		return add;
 	}
 
+	static RemoveMessage parseRemove(JSON& jmsg) {
+		std::cout << "client id--> " << jmsg[MESSAGE_CLIENT_ID] << std::endl;
+		std::string orderID = jmsg[MESSAGE_ORDER_ID];
+		int cliendID = jmsg[MESSAGE_CLIENT_ID];
+		RemoveMessage remove(orderID, cliendID);
+
+		return remove;
+	}
+
+	static SearchMessage parseSearch(JSON& jmsg) {
+		std::cout << "client id--> " << jmsg[MESSAGE_CLIENT_ID] << std::endl;
+		std::string orderID = jmsg[MESSAGE_ORDER_ID];
+		int cliendID = jmsg[MESSAGE_CLIENT_ID];
+		SearchMessage search(orderID, cliendID);
+
+		return search;
+	}
+
+	static RemoveItemMessage parseRemoveItem(JSON& jmsg) {
+		std::cout << "client id--> " << jmsg[MESSAGE_CLIENT_ID] << std::endl;
+		std::string orderID = jmsg[MESSAGE_ORDER_ID];
+		std::string itemName = jmsg[MESSAGE_ITEM_NAME];
+		int cliendID = jmsg[MESSAGE_CLIENT_ID];
+		RemoveItemMessage remove(orderID, itemName, cliendID);
+
+		return remove;
+	}
+
+	static SearchItemMessage parseSearchItem(JSON& jmsg) {
+		std::cout << "client id--> " << jmsg[MESSAGE_CLIENT_ID] << std::endl;
+		std::string itemName = jmsg[MESSAGE_ITEM_NAME];
+		int cliendID = jmsg[MESSAGE_CLIENT_ID];
+		SearchItemMessage searchItem(itemName, cliendID);
+
+		return searchItem;
+	}
+
+	static GoodbyeMessage parseGoodbye(JSON& jmsg) {
+		int clientID = jmsg[MESSAGE_CLIENT_ID];
+		GoodbyeMessage goodbye = GoodbyeMessage(clientID);
+		return goodbye;
+	}
+
 	/**
 	* Detects the message type from a JSON object
 	* @param jmsg JSON object
@@ -332,22 +375,27 @@ public:
 		case ADD_RESPONSE:
 			break;
 		case REMOVE:
+			return std::unique_ptr<Message>(new RemoveMessage(parseRemove(jmsg)));
 			break;
 		case REMOVE_RESPONSE:
 			break;
 		case REMOVE_ITEM:
+			return std::unique_ptr<Message>(new RemoveItemMessage(parseRemoveItem(jmsg)));
 			break;
 		case REMOVE_ITEM_RESPONSE:
 			break;
 		case SEARCH:
+			return std::unique_ptr<Message>(new SearchMessage(parseSearch(jmsg)));
 			break;
 		case SEARCH_RESPONSE:
 			break;
 		case SEARCH_ITEM:
+			return std::unique_ptr<Message>(new SearchItemMessage(parseSearchItem(jmsg)));
 			break;
 		case SEARCH_ITEM_RESPONSE:
 			break;
 		case GOODBYE:
+			return std::unique_ptr<Message>(new GoodbyeMessage(parseGoodbye(jmsg)));
 			break;
 		default:
 			break;

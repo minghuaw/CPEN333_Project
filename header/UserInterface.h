@@ -226,12 +226,12 @@ public:
 
 		std::cout << "Remove order request response" << std::endl;
 		if (jmsg[MESSAGE_STATUS] == MESSAGE_STATUS_OK) {
-			std::cout << "Order " << jmsg[MESSAGE_ORDER_ID] << " is successfully removed" << std::endl;
+			std::cout << "Order " << jmsg[MESSAGE_REMOVE][MESSAGE_ORDER_ID] << " is successfully removed" << std::endl;
 		}
 		else {
-			std::cout << "Order " << jmsg[MESSAGE_ORDER_ID] << " removal is unsuccesfull" << std::endl;
+			std::cout << "Order " << jmsg[MESSAGE_REMOVE][MESSAGE_ORDER_ID] << " removal is unsuccesfull" << std::endl;
 		}
-		//TODO: show response message
+		cpen333::pause();
 	}
 
 	void do_search() {
@@ -247,8 +247,17 @@ public:
 
 		// wait for response
 		std::unique_ptr<std::string> jsonStrPtr = api_.recvJSON();
+		JSON jmsg = JSON::parse(*jsonStrPtr);
 
 		//TODO: show response message
+		std::cout << "Search order request response" << std::endl;
+		if (jmsg[MESSAGE_STATUS] == MESSAGE_STATUS_OK) {
+			std::cout << "Order " << jmsg[MESSAGE_SEARCH][MESSAGE_ORDER_ID] << " is successfully found" << std::endl;
+		}
+		else {
+			std::cout << "Order " << jmsg[MESSAGE_SEARCH][MESSAGE_ORDER_ID] << " is NOT found" << std::endl;
+		}
+		cpen333::pause();
 	}
 
 	void do_remove_item() {
@@ -267,7 +276,17 @@ public:
 
 		// wait for response
 		std::unique_ptr<std::string> jsonStrPtr = api_.recvJSON();
-		std::cout << "Response " << *jsonStrPtr << std::endl;
+		JSON jmsg = JSON::parse(*jsonStrPtr);
+
+		// show responses
+		std::cout << "Search order request response" << std::endl;
+		if (jmsg[MESSAGE_STATUS] == MESSAGE_STATUS_OK) {
+			std::cout << "Item " << jmsg[MESSAGE_REMOVE_ITEM][MESSAGE_ITEM_NAME] << " is successfully removed" << std::endl;
+		}
+		else {
+			std::cout << "Item " << jmsg[MESSAGE_REMOVE_ITEM][MESSAGE_ITEM_NAME] << " is NOT found" << std::endl;
+		}
+		cpen333::pause();
 	}
 
 	void do_search_item() {
@@ -284,6 +303,17 @@ public:
 
 		// wait for response
 		std::unique_ptr<std::string> jsonStrPtr = api_.recvJSON();
+		JSON jmsg = JSON::parse(*jsonStrPtr);
+
+		// show responses
+		std::cout << "Search order request response" << std::endl;
+		if (jmsg[MESSAGE_STATUS] == MESSAGE_STATUS_OK) {
+			std::cout << "Item " << jmsg[MESSAGE_SEARCH_ITEM][MESSAGE_ITEM_NAME] << " is successfully found" << std::endl;
+		}
+		else {
+			std::cout << "Item " << jmsg[MESSAGE_SEARCH_ITEM][MESSAGE_ITEM_NAME] << " is NOT found" << std::endl;
+		}
+		cpen333::pause();
 	}
 
 	void do_goodbye() {
